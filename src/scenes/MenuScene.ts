@@ -1,44 +1,44 @@
-import { Container } from '@pixi/display';
 import { Text } from '@pixi/text';
 import { FancyButton } from '@pixi/ui';
 import { IScene, Manager } from '../Manager';
+import { Container } from 'pixi.js';
 
 export class MenuScene extends Container implements IScene {
+    private newGameButton: FancyButton;
+    private highScoreButton: FancyButton;
+    private exitGameButton: FancyButton;
+    private titleText: Text;
+
     constructor() {
         super();
 
         // Create a title text
-        const titleText = new Text('Main Menu', {
+        this.titleText = new Text('Main Menu', {
             fontSize: 36,
             fill: 0xffffff,
         });
-        titleText.position.set(Manager.width / 2, 100);
-        titleText.anchor.set(0.5);
-        this.addChild(titleText);
+        this.titleText.anchor.set(0.5);
+        this.addChild(this.titleText);
 
-        // Create buttons for New Game, High Score, and Exit Game
-        const buttonSpacing = 20;
-
-        const newGameButton = this.createAnimatedButton('New Game', () => {
+        this.newGameButton = this.createAnimatedButton('New Game', () => {
             // Handle New Game button click
             console.log('New Game button clicked');
         });
-        newGameButton.position.set(Manager.width / 2, 200);
-        this.addChild(newGameButton);
-
-        const highScoreButton = this.createAnimatedButton('High Score', () => {
+        this.highScoreButton = this.createAnimatedButton('High Score', () => {
             // Handle High Score button click
             console.log('High Score button clicked');
         });
-        highScoreButton.position.set(Manager.width / 2, newGameButton.y + newGameButton.height + buttonSpacing);
-        this.addChild(highScoreButton);
-
-        const exitGameButton = this.createAnimatedButton('Exit Game', () => {
+        this.exitGameButton = this.createAnimatedButton('Exit Game', () => {
             // Handle Exit Game button click
             console.log('Exit Game button clicked');
         });
-        exitGameButton.position.set(Manager.width / 2, highScoreButton.y + highScoreButton.height + buttonSpacing);
-        this.addChild(exitGameButton);
+
+        // Initial positioning
+        this.positionElements();
+
+        this.addChild(this.newGameButton);
+        this.addChild(this.highScoreButton);
+        this.addChild(this.exitGameButton);
     }
 
     private createAnimatedButton(label: string, onClick: () => void): FancyButton {
@@ -71,11 +71,24 @@ export class MenuScene extends Container implements IScene {
 
     // @ts-ignore
     public update(framesPassed: number): void {
-
+        // Your update logic here
     }
 
     // @ts-ignore
     public resize(screenWidth: number, screenHeight: number): void {
+        // Update positions of elements on resize
+        this.positionElements();
+    }
 
-    };
+    private positionElements(): void {
+        // Calculate positions based on screen dimensions
+        const buttonSpacing = 20;
+        const centerX = Manager.width / 2;
+
+        this.titleText.position.set(centerX, 100);
+
+        this.newGameButton.position.set(centerX, 200);
+        this.highScoreButton.position.set(centerX, this.newGameButton.y + this.newGameButton.height + buttonSpacing);
+        this.exitGameButton.position.set(centerX, this.highScoreButton.y + this.highScoreButton.height + buttonSpacing);
+    }
 }
