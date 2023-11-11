@@ -2,6 +2,7 @@ import { Text } from '@pixi/text';
 import { FancyButton } from '@pixi/ui';
 import { IScene, Manager } from '../Manager';
 import { Container } from 'pixi.js';
+import { GameScene } from './GameScene';
 
 export class MenuScene extends Container implements IScene {
     private newGameButton: FancyButton;
@@ -22,7 +23,7 @@ export class MenuScene extends Container implements IScene {
 
         this.newGameButton = this.createAnimatedButton('New Game', () => {
             // Handle New Game button click
-            console.log('New Game button clicked');
+            Manager.changeScene(new GameScene());
         });
         this.highScoreButton = this.createAnimatedButton('High Score', () => {
             // Handle High Score button click
