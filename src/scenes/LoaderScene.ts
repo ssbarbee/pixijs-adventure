@@ -1,6 +1,6 @@
 import { Container, Graphics, Assets } from "pixi.js";
-import { manifest } from "./manifest";
-import { IScene, Manager } from "./Manager";
+import { manifest } from "../assets";
+import { IScene, Manager } from "../Manager";
 import { GameScene } from "./GameScene";
 
 export class LoaderScene extends Container implements IScene {
@@ -54,7 +54,8 @@ export class LoaderScene extends Container implements IScene {
         Manager.changeScene(new GameScene());
     }
 
-    public update(framesPassed: number): void {
+    public update(_: number): void {
+    // public update(framesPassed: number): void {
         // To be a scene we must have the update method even if we don't use it.
     }
 }
