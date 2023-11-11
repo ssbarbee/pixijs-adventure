@@ -1,7 +1,7 @@
 import { Container, Graphics, Assets } from "pixi.js";
 import { manifest } from "../assets";
 import { IScene, Manager } from "../Manager";
-import { GameScene } from "./GameScene";
+import { MenuScene } from './MenuScene';
 
 export class LoaderScene extends Container implements IScene {
 
@@ -51,7 +51,7 @@ export class LoaderScene extends Container implements IScene {
 
     private gameLoaded(): void {
         // Change scene to the game scene!
-        Manager.changeScene(new GameScene());
+        Manager.changeScene(new MenuScene());
     }
 
     public update(_: number): void {

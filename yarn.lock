@@ -199,7 +199,7 @@
   resolved "https://registry.yarnpkg.com/@pixi/math/-/math-7.3.2.tgz#bcf2357d8bfa2a7836d645063b1f854c4a24d745"
   integrity sha512-dutoZ0IVJ5ME7UtYNo2szu4D7qsgtJB7e3ylujBVu7BOP2e710BVtFwFSFV768N14h9H5roGnuzVoDiJac2u+w==
 
-"@pixi/mesh-extras@7.3.2":
+"@pixi/mesh-extras@7.3.2", "@pixi/mesh-extras@^7.3.2":
   version "7.3.2"
   resolved "https://registry.yarnpkg.com/@pixi/mesh-extras/-/mesh-extras-7.3.2.tgz#fc00a6acb811a0780ce7b54ade844b32d20c9621"
   integrity sha512-s/tg9TsTZZxLEdCDKWnBChDGkc041HCTP7ykJv4fEROzb9B0lskULYyvv+/YNNKa2Ugb9WnkMknpOdOXCpjyyg==
@@ -278,7 +278,7 @@
   resolved "https://registry.yarnpkg.com/@pixi/text-html/-/text-html-7.3.2.tgz#443f669a3444386a62e28dd8f3da66e45593df05"
   integrity sha512-IYhBWEPOvqUtlHkS5/c1Hseuricj5jrrGd21ivcvHmcnK/x2m+CRGvvzeBp1mqoYBnDbQVrD2wSXSe4Dv9tEJA==
 
-"@pixi/text@7.3.2":
+"@pixi/text@7.3.2", "@pixi/text@^7.3.2":
   version "7.3.2"
   resolved "https://registry.yarnpkg.com/@pixi/text/-/text-7.3.2.tgz#c38dcecd3b6aceec53b1d4207327812d88b1cf26"
   integrity sha512-LdtNj+K5tPB/0UcDcO52M/C7xhwFTGFhtdF42fPhRuJawM23M3zm1Y8PapXv+mury+IxCHT1w30YlAi0qTVpKQ==
@@ -291,6 +291,15 @@
     "@pixi/extensions" "7.3.2"
     "@pixi/settings" "7.3.2"
     "@pixi/utils" "7.3.2"
+
+"@pixi/ui@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@pixi/ui/-/ui-0.10.0.tgz#778746bbfed5faed245dc9d3a04c264d41085219"
+  integrity sha512-IBnmOoR2KEbpOymLVB18RfDMmmtlxlG6F4YTYeyKEjygIqQVJvb0TjwdwX+w0sJI0/hjVuwPdnf90Y2AH6Lsaw==
+  dependencies:
+    "@pixi/mesh-extras" "^7.3.2"
+    tweedle.js "^2.1.0"
+    typed-signals "^2.5.0"
 
 "@pixi/utils@7.3.2":
   version "7.3.2"
@@ -3131,6 +3140,7 @@ statuses@2.0.1:
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -3307,6 +3317,11 @@ tslib@^2.0.3:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.2.tgz#703ac29425e7b37cd6fd456e92404d46d1f3e4ae"
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
 
+tweedle.js@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tweedle.js/-/tweedle.js-2.1.0.tgz#523f5d50e5223c3c809b1aa627c6e9648e576d93"
+  integrity sha512-0ReQgVjepoZkE6t0upWNgCRbplHkQJQYk1LStXugwSR728GLFmGDRuaQJlxeC/iBlxud6+P1RdODjaO25vHAqw==
+
 type-is@~1.6.18:
   version "1.6.18"
   resolved "https://registry.yarnpkg.com/type-is/-/type-is-1.6.18.tgz#4e552cd05df09467dcbc4ef739de89f2cf37c131"
@@ -3353,6 +3368,11 @@ typed-array-length@^1.0.4:
     call-bind "^1.0.2"
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
+
+typed-signals@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/typed-signals/-/typed-signals-2.5.0.tgz#7be73505c2ee0dc4e43f1c4ee002c855796bd89a"
+  integrity sha512-m9lHc3eBCJerXYdx+G0uWZihyUXdqTzzgOdqiDDsoUo75WjhFJH6vP5/6w/xhyu04zoxHUqgYhf9FEt85dk/Ng==
 
 typescript@^5.1.6:
   version "5.2.2"
