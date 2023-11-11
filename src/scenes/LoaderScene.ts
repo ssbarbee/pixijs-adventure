@@ -58,4 +58,9 @@ export class LoaderScene extends Container implements IScene {
     // public update(framesPassed: number): void {
         // To be a scene we must have the update method even if we don't use it.
     }
+
+    // @ts-ignore
+    public resize(screenWidth: number, screenHeight: number): void {
+
+    };
 }

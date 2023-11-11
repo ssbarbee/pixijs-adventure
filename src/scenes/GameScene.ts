@@ -31,4 +31,9 @@ export class GameScene extends Container implements IScene {
             this.clampyVelocity = -this.clampyVelocity;
         }
     }
+
+    // @ts-ignore
+    public resize(screenWidth: number, screenHeight: number): void {
+
+    };
 }

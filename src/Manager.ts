@@ -1,44 +1,41 @@
 import { Application, DisplayObject } from "pixi.js";
 
 export class Manager {
-    private constructor() { /*this class is purely static. No constructor to see here*/ }
-
-    // Safely store variables for our game
+    private constructor() { }
     private static app: Application;
     private static currentScene: IScene;
 
-    // Width and Height are read-only after creation (for now)
-    private static _width: number;
-    private static _height: number;
-
-
-    // With getters but not setters, these variables become read-only
+    // We no longer need to store width and height since now it is literally the size of the screen.
+    // We just modify our getters
     public static get width(): number {
-        return Manager._width;
+        return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     }
     public static get height(): number {
-        return Manager._height;
+        return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     }
 
-    // Use this function ONCE to start the entire machinery
-    public static initialize(width: number, height: number, background: number): void {
+    public static initialize(background: number): void {
 
-        // store our width and height
-        Manager._width = width;
-        Manager._height = height;
-
-        // Create our pixi app
         Manager.app = new Application({
             view: document.getElementById("pixi-canvas") as HTMLCanvasElement,
+            resizeTo: window, // This line here handles the actual resize!
             resolution: window.devicePixelRatio || 1,
             autoDensity: true,
             backgroundColor: background,
-            width: width,
-            height: height
         });
 
         // Add the ticker
         Manager.app.ticker.add(Manager.update)
+
+        // listen for the browser telling us that the screen size changed
+        window.addEventListener("resize", Manager.resize);
+    }
+
+    public static resize(): void {
+        // if we have a scene, we let it know that a resize happened!
+        if (Manager.currentScene) {
+            Manager.currentScene.resize(Manager.width, Manager.height);
+        }
     }
 
     // Call this function when you want to go to a new scene
@@ -66,8 +63,9 @@ export class Manager {
     }
 }
 
-// This could have a lot more generic functions that you force all your scenes to have. Update is just an example.
-// Also, this could be in its own file...
 export interface IScene extends DisplayObject {
     update(framesPassed: number): void;
+
+    // we added the resize method to the interface
+    resize(screenWidth: number, screenHeight: number): void;
 }
