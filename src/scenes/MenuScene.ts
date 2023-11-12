@@ -3,6 +3,7 @@ import { FancyButton } from '@pixi/ui';
 import { IScene, Manager } from '../Manager';
 import { Container } from 'pixi.js';
 import { GameScene } from './GameScene';
+import { WorldGenerator } from '../WorldGenerator';
 
 export class MenuScene extends Container implements IScene {
     private newGameButton: FancyButton;
@@ -23,7 +24,9 @@ export class MenuScene extends Container implements IScene {
 
         this.newGameButton = this.createAnimatedButton('New Game', () => {
             // Handle New Game button click
-            Manager.changeScene(new GameScene());
+            const worldGenerator = new WorldGenerator(128, 128);
+            const { world } = worldGenerator.generateWorld();
+            Manager.changeScene(new GameScene(world));
         });
         this.highScoreButton = this.createAnimatedButton('High Score', () => {
             // Handle High Score button click

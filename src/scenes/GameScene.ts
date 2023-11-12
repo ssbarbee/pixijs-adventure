@@ -1,39 +1,47 @@
-import { Container, Sprite } from "pixi.js";
-import { IScene, Manager } from "../Manager";
+import { Container, Sprite, Texture } from 'pixi.js';
+import { IScene } from "../Manager";
 
 export class GameScene extends Container implements IScene {
-    private clampy: Sprite;
-    private clampyVelocity: number;
-    constructor() {
+    private tileSize: number = 32;
+    constructor(world: string[][]) {
         super();
 
-        // Inside assets.ts we have a line that says `"Clampy from assets.ts!": "./clampy.png",`
-        this.clampy = Sprite.from("Clampy from assets.ts!");
-
-        this.clampy.anchor.set(0.5);
-        this.clampy.x = Manager.width / 2;
-        this.clampy.y = Manager.height / 2;
-        this.addChild(this.clampy);
-
-        this.clampyVelocity = 5;
+        // Call renderWorld to render the world
+        this.renderWorld(world);
     }
-    public update(framesPassed: number): void {
-        // Lets move clampy!
-        this.clampy.x += this.clampyVelocity * framesPassed;
 
-        if (this.clampy.x > Manager.width) {
-            this.clampy.x = Manager.width;
-            this.clampyVelocity = -this.clampyVelocity;
-        }
+    public update(_framesPassed: number): void {
+        // Implement game logic or sprite movements here
+        // For example, you can move the character sprite here
+    }
 
-        if (this.clampy.x < 0) {
-            this.clampy.x = 0;
-            this.clampyVelocity = -this.clampyVelocity;
+    private renderWorld(world: string[][]) {
+        const wallTexture = Texture.from('grass2');
+        const floorTexture = Texture.from('grass');
+        const clampyTexture = Texture.from('clampy');
+
+        for (let x = 0; x < world.length; x++) {
+            for (let y = 0; y < world[0].length; y++) {
+                const tile = world[x][y];
+                const texture = tile === '#' ? wallTexture : tile === 'P' ? clampyTexture : floorTexture;
+                const sprite = new Sprite(texture);
+                if(tile === 'P') {
+                    sprite.scale.set(32 / sprite.width, 32 / sprite.height);
+                } else {
+                    sprite.scale.set(1); // You can adjust this scale factor
+                }
+                sprite.anchor.set(0.5, 0.5); // Adjust anchor point if needed
+
+                // Position the sprite
+                sprite.x = y * this.tileSize + this.tileSize / 2;
+                sprite.y = x * this.tileSize + this.tileSize / 2;
+
+                this.addChild(sprite);
+            }
         }
     }
 
     // @ts-ignore
-    public resize(screenWidth: number, screenHeight: number): void {
-
-    };
+    resize(screenWidth: number, screenHeight: number): void {
+    }
 }

@@ -6,7 +6,9 @@ export const manifest:AssetsManifest = {
             name : "bundleName",
             assets:
                 {
-                    "Clampy from assets.ts!": "./clampy.png"
+                    "clampy": "./clampy.png",
+                    "grass": "./grass.png",
+                    "grass2": "./grass2.png",
                     // "another image" : "./monster.png",
                 }
         },
