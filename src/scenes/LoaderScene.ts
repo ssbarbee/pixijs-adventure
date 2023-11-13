@@ -3,7 +3,7 @@ import { manifest } from "../assets";
 import { IScene, Manager } from "../Manager";
 import { MenuScene } from './MenuScene';
 import { GameScene } from './GameScene';
-import { WorldGenerator } from '../WorldGenerator';
+import { CellularMapGenerator } from '../CellularMapGenerator';
 
 export class LoaderScene extends Container implements IScene {
 
@@ -54,7 +54,7 @@ export class LoaderScene extends Container implements IScene {
     private gameLoaded(): void {
         // Change scene to the game scene!
         // Manager.changeScene(new MenuScene());
-        const worldGenerator = new WorldGenerator(128, 128);
+        const worldGenerator = new CellularMapGenerator(128, 128);
         const { world, playerStartingY, playerStartingX } = worldGenerator.generateWorld();
         Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
     }

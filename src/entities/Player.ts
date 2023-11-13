@@ -5,7 +5,7 @@ export class Player extends Sprite {
     private tileSize: number;
 
     constructor(tileSize: number, startingX: number, startingY: number, world: string[][]) {
-        const texture = Texture.from('clampy');
+        const texture = Texture.from('player');
         super(texture);
 
         this.tileSize = tileSize;
@@ -49,12 +49,25 @@ export class Player extends Sprite {
                 break;
         }
 
-        // Calculate the new tile coordinates
-        const newTileX = Math.floor(newX / this.tileSize);
-        const newTileY = Math.floor(newY / this.tileSize);
+        // Calculate the edges of the player in the direction of movement
+        const halfWidth = this.width / 2;
+        const halfHeight = this.height / 2;
 
-        // Check if the new position is a wall
-        if (this.world[newTileX] && this.world[newTileX][newTileY] !== '#') {
+        let edgeX = newX;
+        let edgeY = newY;
+
+        if (direction === "ArrowUp") edgeY -= halfHeight;
+        if (direction === "ArrowDown") edgeY += halfHeight;
+        if (direction === "ArrowLeft") edgeX -= halfWidth;
+        if (direction === "ArrowRight") edgeX += halfWidth;
+
+        // Calculate the tile coordinates of the edge
+        const edgeTileX = Math.floor(edgeX / this.tileSize);
+        const edgeTileY = Math.floor(edgeY / this.tileSize);
+
+        // Check if the edge position is a wall
+        let isWall = !this.world[edgeTileX] || this.world[edgeTileX][edgeTileY] === 'w0' || this.world[edgeTileX][edgeTileY] === 'w1';
+        if (!isWall) {
             this.x = newX;
             this.y = newY;
         }

@@ -1,6 +1,7 @@
 import { Container, Sprite, Texture } from 'pixi.js';
 import { IScene, Manager } from '../Manager';
 import { Player } from '../entities/Player';
+import { GRASS0, GRASS1, GRASS2, WALL0, WALL1 } from '../constants';
 
 export class GameScene extends Container implements IScene {
     private tileSize: number = 32;
@@ -38,15 +39,20 @@ export class GameScene extends Container implements IScene {
     }
 
     private renderWorld(world: string[][]) {
-        const wallTexture = Texture.from('grass2');
-        const floorTexture = Texture.from('grass');
+        const worldTextures: Record<string, Texture> = {
+            [WALL0]: Texture.from(WALL0),
+            [WALL1]: Texture.from(WALL1),
+            [GRASS0]: Texture.from(GRASS0),
+            [GRASS1]: Texture.from(GRASS1),
+            [GRASS2]: Texture.from(GRASS2),
+        };
 
         for (let x = 0; x < world.length; x++) {
             for (let y = 0; y < world[0].length; y++) {
                 const tile = world[x][y];
-                const texture = tile === '#' ? wallTexture : floorTexture;
+                const texture = worldTextures[tile];
                 const sprite = new Sprite(texture);
-                sprite.scale.set(1); // You can adjust this scale factor
+                sprite.scale.set(this.tileSize / sprite.width, this.tileSize / sprite.height); // You can adjust this scale factor
                 sprite.anchor.set(0.5, 0.5); // Adjust anchor point if needed
 
                 // Position the sprite within the world container

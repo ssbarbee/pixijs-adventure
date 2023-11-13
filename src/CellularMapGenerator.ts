@@ -1,10 +1,11 @@
 import { Map } from 'rot-js';
 import Cellular from 'rot-js/lib/map/cellular';
+import { getRandomString } from './utils/getRandomString';
+import { GRASS0, GRASS1, GRASS2, WALL0, WALL1 } from './constants';
 
 // Define a class for world generation
-export class WorldGenerator {
+export class CellularMapGenerator {
     private map: Cellular;
-    private rooms: { x: number; y: number; width: number; height: number }[] = [];
 
     constructor(private width: number, private height: number) {
         this.map = new Map.Cellular(width, height);
@@ -35,12 +36,11 @@ export class WorldGenerator {
     generateWorld(): { world: string[][]; playerStartingX: number; playerStartingY: number } {
         const world: string[][] = Array.from({ length: this.width }).map((_, x) =>
             Array.from({ length: this.height }).map((__, y) =>
-                this.map._map[x][y] === 1 ? '#' : '.'
+                this.map._map[x][y] === 1 ? getRandomString([WALL0, WALL1]) : getRandomString([GRASS0, GRASS1, GRASS2])
             )
         );
 
         const {x: playerStartingX, y: playerStartingY} = this.findPlayerStartingPosition(world);
-
         return { world, playerStartingX, playerStartingY };
     }
 }

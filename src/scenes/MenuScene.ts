@@ -3,7 +3,7 @@ import { FancyButton } from '@pixi/ui';
 import { IScene, Manager } from '../Manager';
 import { Container } from 'pixi.js';
 import { GameScene } from './GameScene';
-import { WorldGenerator } from '../WorldGenerator';
+import { CellularMapGenerator } from '../CellularMapGenerator';
 
 export class MenuScene extends Container implements IScene {
     private newGameButton: FancyButton;
@@ -24,7 +24,7 @@ export class MenuScene extends Container implements IScene {
 
         this.newGameButton = this.createAnimatedButton('New Game', () => {
             // Handle New Game button click
-            const worldGenerator = new WorldGenerator(128, 128);
+            const worldGenerator = new CellularMapGenerator(128, 128);
             const { world, playerStartingY, playerStartingX } = worldGenerator.generateWorld();
             Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
         });

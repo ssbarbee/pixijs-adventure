@@ -1,0 +1,5 @@
+export const WALL0 = 'w0'
+export const WALL1 = 'w1'
+export const GRASS0 = 'g0'
+export const GRASS1 = 'g1'
+export const GRASS2 = 'g2'
