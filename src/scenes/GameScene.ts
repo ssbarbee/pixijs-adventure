@@ -20,7 +20,7 @@ export class GameScene extends Container implements IScene {
         this.renderWorld(world);
 
         // Create the player
-        this.player = new Player(this.tileSize, playerStartingX, playerStartingY);
+        this.player = new Player(this.tileSize, playerStartingX, playerStartingY, world);
 
         // Add the player to the GameScene container (worldContainer)
         this.worldContainer.addChild(this.player);
