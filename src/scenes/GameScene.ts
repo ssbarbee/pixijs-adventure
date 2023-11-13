@@ -6,7 +6,7 @@ import { GRASS0, GRASS1, GRASS2, WALL0, WALL1 } from '../constants';
 export class GameScene extends Container implements IScene {
     private tileSize: number = 32;
     private worldContainer: Container;
-    private player: Sprite;
+    private player: Player;
 
     constructor(world: string[][], playerStartingX: number, playerStartingY: number) {
         super();
@@ -30,12 +30,12 @@ export class GameScene extends Container implements IScene {
         this.centerCameraOnPlayer();
     }
 
-    public update(_framesPassed: number): void {
+    public update(framesPassed: number): void {
         // Call centerCameraOnPlayer to continuously center the world container on the player
         this.centerCameraOnPlayer();
-
         // Implement game logic or sprite movements here
         // For example, you can move the player sprite here
+        this.player.update(framesPassed);
     }
 
     private renderWorld(world: string[][]) {

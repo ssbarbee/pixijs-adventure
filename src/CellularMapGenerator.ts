@@ -9,8 +9,11 @@ export class CellularMapGenerator {
 
     constructor(private width: number, private height: number) {
         this.map = new Map.Cellular(width, height);
-        this.map.randomize(0.5); // Randomize tiles
-        this.map.create(); // Generate the cellular automaton map
+        /* cells with 1/2 probability */
+        this.map.randomize(0.5);
+
+        /* make a few generations */
+        for (let i=0; i<4; i++) this.map.create();
         /* now connect the maze so the player can reach all non-wall sections */
         this.map.connect(() => {}, 1);
     }
