@@ -50,8 +50,8 @@ export class GameScene extends Container implements IScene {
                 sprite.anchor.set(0.5, 0.5); // Adjust anchor point if needed
 
                 // Position the sprite within the world container
-                sprite.x = y * this.tileSize + this.tileSize / 2;
-                sprite.y = x * this.tileSize + this.tileSize / 2;
+                sprite.x = x * this.tileSize + this.tileSize / 2;
+                sprite.y = y * this.tileSize + this.tileSize / 2;
 
                 // Add the sprite to the world container
                 this.worldContainer.addChild(sprite);

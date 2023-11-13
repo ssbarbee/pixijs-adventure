@@ -10,38 +10,37 @@ export class WorldGenerator {
         this.map = new Map.Cellular(width, height);
         this.map.randomize(0.5); // Randomize tiles
         this.map.create(); // Generate the cellular automaton map
+        /* now connect the maze so the player can reach all non-wall sections */
+        this.map.connect(() => {}, 1);
+    }
+
+    private findPlayerStartingPosition(world: string[][]): { x: number, y: number } {
+        const dots: { x: number, y: number }[] = [];
+
+        // Collect all coordinates with value '.'
+        for (let x = 0; x < world.length; x++) {
+            for (let y = 0; y < world[x].length; y++) {
+                if (world[x][y] === '.') {
+                    dots.push({ x, y });
+                }
+            }
+        }
+
+        // Choose a random coordinate
+        if (dots.length === 0) return { x: 0, y: 0 };
+        const randomIndex = Math.floor(Math.random() * dots.length);
+        return dots[randomIndex];
     }
 
     generateWorld(): { world: string[][]; playerStartingX: number; playerStartingY: number } {
-        const world: string[][] = [];
-        let playerStartingX = -1;
-        let playerStartingY = -1;
+        const world: string[][] = Array.from({ length: this.width }).map((_, x) =>
+            Array.from({ length: this.height }).map((__, y) =>
+                this.map._map[x][y] === 1 ? '#' : '.'
+            )
+        );
 
-        for (let x = 0; x < this.width; x++) {
-            const column: string[] = [];
-            for (let y = 0; y < this.height; y++) {
-                // Check if the current position is the player's starting position
-                if (playerStartingX === -1 && playerStartingY === -1 && Math.random() < 0.05) {
-                    playerStartingX = x;
-                    playerStartingY = y;
-                    column.push('P'); // 'P' represents the player
-                } else {
-                    // You can add other content to the room here
-                    column.push(this.map._map[x][y] === 1 ? '#' : '.'); // Customize tile characters as needed
-                }
-            }
-            world.push(column);
-        }
+        const {x: playerStartingX, y: playerStartingY} = this.findPlayerStartingPosition(world);
 
-        // Randomly shuffle the player's starting position within the world map
-        const shuffledX = Math.floor(Math.random() * this.width);
-        const shuffledY = Math.floor(Math.random() * this.height);
-
-        // Swap the player's starting position with the shuffled position
-        const temp = world[playerStartingX][playerStartingY];
-        world[playerStartingX][playerStartingY] = world[shuffledX][shuffledY];
-        world[shuffledX][shuffledY] = temp;
-
-        return { world, playerStartingX: shuffledX, playerStartingY: shuffledY };
+        return { world, playerStartingX, playerStartingY };
     }
 }
