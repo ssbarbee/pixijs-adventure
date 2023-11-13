@@ -1,5 +1,6 @@
 import { Container, Sprite, Texture } from 'pixi.js';
 import { IScene, Manager } from '../Manager';
+import { Player } from '../entities/Player';
 
 export class GameScene extends Container implements IScene {
     private tileSize: number = 32;
@@ -18,15 +19,8 @@ export class GameScene extends Container implements IScene {
         // Render the world
         this.renderWorld(world);
 
-        // Create player sprite
-        const clampyTexture = Texture.from('clampy');
-        this.player = new Sprite(clampyTexture);
-        this.player.scale.set(this.tileSize / this.player.width, this.tileSize / this.player.height); // Scale the player to fit the tile
-        this.player.anchor.set(0.5, 0.5);
-
-        // Set the player's position to the starting position
-        this.player.x = playerStartingX * this.tileSize + this.tileSize / 2;
-        this.player.y = playerStartingY * this.tileSize + this.tileSize / 2;
+        // Create the player
+        this.player = new Player(this.tileSize, playerStartingX, playerStartingY);
 
         // Add the player to the GameScene container (worldContainer)
         this.worldContainer.addChild(this.player);
@@ -66,13 +60,18 @@ export class GameScene extends Container implements IScene {
     }
 
     private centerCameraOnPlayer() {
+        // Assuming you have access to the screen's width and height
+        const screenWidth = Manager.width;
+        const screenHeight = Manager.height;
+
         // Center the world container on the player's position
-        this.worldContainer.x = this.player.x - this.worldContainer.width / 2;
-        this.worldContainer.y = this.player.y - this.worldContainer.height / 2;
+        this.worldContainer.x = -this.player.x + screenWidth / 2;
+        this.worldContainer.y = -this.player.y + screenHeight / 2;
     }
 
     // @ts-ignore
     resize(screenWidth: number, screenHeight: number): void {
         // You can implement resizing logic here if needed
+        this.centerCameraOnPlayer();
     }
 }

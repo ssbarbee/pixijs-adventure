@@ -53,19 +53,17 @@ export class LoaderScene extends Container implements IScene {
 
     private gameLoaded(): void {
         // Change scene to the game scene!
-        // Manager.changeScene(new MenuScene());
-        const worldGenerator = new WorldGenerator(128, 128);
-        const { world, playerStartingY, playerStartingX } = worldGenerator.generateWorld();
-        Manager.changeScene(new GameScene(world, 20, 12));
+        Manager.changeScene(new MenuScene());
+        // const worldGenerator = new WorldGenerator(128, 128);
+        // const { world, playerStartingY, playerStartingX } = worldGenerator.generateWorld();
+        // Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
     }
 
-    public update(_: number): void {
-    // public update(framesPassed: number): void {
+    public update(_framesPassed: number): void {
         // To be a scene we must have the update method even if we don't use it.
     }
 
-    // @ts-ignore
-    public resize(screenWidth: number, screenHeight: number): void {
+    public resize(_screenWidth: number, _screenHeight: number): void {
 
     };
 }

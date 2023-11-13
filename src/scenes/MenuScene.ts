@@ -26,7 +26,7 @@ export class MenuScene extends Container implements IScene {
             // Handle New Game button click
             const worldGenerator = new WorldGenerator(128, 128);
             const { world, playerStartingY, playerStartingX } = worldGenerator.generateWorld();
-            Manager.changeScene(new GameScene(world, 20, 12));
+            Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
         });
         this.highScoreButton = this.createAnimatedButton('High Score', () => {
             // Handle High Score button click
