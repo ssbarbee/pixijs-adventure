@@ -15,7 +15,35 @@ export class Player extends Sprite {
         // Set the player's initial position
         this.x = startingX * tileSize + tileSize / 2;
         this.y = startingY * tileSize + tileSize / 2;
+        // Add keyboard event listeners
+        window.addEventListener("keydown", this.handleKeyDown.bind(this));
     }
 
-    // Add methods for player movement and other behaviors here
+    private handleKeyDown(event: KeyboardEvent) {
+        this.move(event.key);
+    }
+
+    public move(direction: string) {
+        const moveSpeed = 10; // Adjust this value for movement speed
+
+        switch (direction) {
+            case "ArrowUp":
+                this.y -= moveSpeed;
+                break;
+            case "ArrowDown":
+                this.y += moveSpeed;
+                break;
+            case "ArrowLeft":
+                this.x -= moveSpeed;
+                break;
+            case "ArrowRight":
+                this.x += moveSpeed;
+                break;
+        }
+    }
+
+    public override destroy() {
+        window.removeEventListener("keydown", this.handleKeyDown.bind(this));
+        super.destroy();
+    }
 }
