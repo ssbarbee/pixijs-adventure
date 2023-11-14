@@ -446,6 +446,11 @@
   dependencies:
     undici-types "~5.26.4"
 
+"@types/noisejs@0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@types/noisejs/-/noisejs-0.0.31.tgz#c4b7b7be57808c62ea841c558e166815c318f3cc"
+  integrity sha512-nOfGFkjxfttLI2WyNCJBWwdLvZKOEc8fKR7BEfVReW4hXC0eFf0WLDm1jgAKcVnXDitbGt8/3oS2bRT3zNjepA==
+
 "@types/offscreencanvas@^2019.6.4":
   version "2019.7.3"
   resolved "https://registry.yarnpkg.com/@types/offscreencanvas/-/offscreencanvas-2019.7.3.tgz#90267db13f64d6e9ccb5ae3eac92786a7c77a516"
@@ -2359,6 +2364,11 @@ node-releases@^2.0.13:
   version "2.0.13"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.13.tgz#d5ed1627c23e3461e819b02e57b75e4899b1c81d"
   integrity sha512-uYr7J37ae/ORWdZeQ1xxMJe3NtdmqMC/JZK+geofDrkLUApKRHPd18/TxtBOJ4A0/+uUIliorNrfYV6s1b02eQ==
+
+noisejs@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/noisejs/-/noisejs-2.1.0.tgz#84b4c4cd04ff43367034f65253e213e0d9fe1aff"
+  integrity sha512-sw39KaUS2YBta6apZ0/H+nnCsUyxT/ZRxgv/HnDxx6pWO2e2nUmWgLhpOaQdlxxkFepIpxDrlXy3fHVx0S3SLg==
 
 normalize-package-data@^2.3.2:
   version "2.5.0"
