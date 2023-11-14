@@ -1,10 +1,11 @@
 import { GRASS0, GRASS1, GRASS2 } from '../constants';
+import { isGrass } from './isGrass';
 export function findPlayerStartingPosition(world: string[][]): { x: number, y: number } {
     const dots: { x: number, y: number }[] = [];
 
     for (let x = 0; x < world.length; x++) {
         for (let y = 0; y < world[x].length; y++) {
-            if (world[x][y] === GRASS0 || world[x][y] === GRASS1 || world[x][y] === GRASS2) {
+            if (isGrass(world[x][y])) {
                 dots.push({ x, y });
             }
         }

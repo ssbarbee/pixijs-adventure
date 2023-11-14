@@ -17,7 +17,6 @@ export function generateMap(params: MapParams): { world: string[][]; playerStart
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             const value = noise(x / 100, y / 100); // Adjust scale factor as needed
-
             if (value < waterThreshold) {
                 map[y][x] = WATER0;
             } else if (value > mountainThreshold) {

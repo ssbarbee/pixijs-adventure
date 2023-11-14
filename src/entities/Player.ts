@@ -1,4 +1,5 @@
 import { Sprite, Texture } from 'pixi.js';
+import { isGrass } from '../utils/isGrass';
 
 export class Player extends Sprite {
     private world: string[][]; // Add a property for the world array
@@ -60,8 +61,8 @@ export class Player extends Sprite {
         const edgeTileY = Math.floor(edgeY / this.tileSize);
 
         // Check if the edge position is a wall
-        let isWall = !this.world[edgeTileX] || !this.world[edgeTileX][edgeTileY] || this.world[edgeTileX][edgeTileY] === 'w0' || this.world[edgeTileX][edgeTileY] === 'w1';
-        if (!isWall) {
+        let isGrassTile = this.world[edgeTileX] && this.world[edgeTileX][edgeTileY] && isGrass(this.world[edgeTileX][edgeTileY]);
+        if (isGrassTile) {
             this.x = newX;
             this.y = newY;
         }
