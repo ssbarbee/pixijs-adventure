@@ -1,7 +1,7 @@
 import { Container, Sprite, Texture } from 'pixi.js';
 import { IScene, Manager } from '../Manager';
 import { Player } from '../entities/Player';
-import { GRASS0, GRASS1, GRASS2, WALL0, WALL1 } from '../constants';
+import { generateTerrainSprite } from '../entities/terrainFactory';
 
 export class GameScene extends Container implements IScene {
     private tileSize: number = 32;
@@ -39,26 +39,10 @@ export class GameScene extends Container implements IScene {
     }
 
     private renderWorld(world: string[][]) {
-        const worldTextures: Record<string, Texture> = {
-            [WALL0]: Texture.from(WALL0),
-            [WALL1]: Texture.from(WALL1),
-            [GRASS0]: Texture.from(GRASS0),
-            [GRASS1]: Texture.from(GRASS1),
-            [GRASS2]: Texture.from(GRASS2),
-        };
-
         for (let x = 0; x < world.length; x++) {
             for (let y = 0; y < world[0].length; y++) {
                 const tile = world[x][y];
-                const texture = worldTextures[tile];
-                const sprite = new Sprite(texture);
-                sprite.scale.set(this.tileSize / sprite.width, this.tileSize / sprite.height); // You can adjust this scale factor
-                sprite.anchor.set(0.5, 0.5); // Adjust anchor point if needed
-
-                // Position the sprite within the world container
-                sprite.x = x * this.tileSize + this.tileSize / 2;
-                sprite.y = y * this.tileSize + this.tileSize / 2;
-
+                const sprite = generateTerrainSprite(x, y, tile);
                 // Add the sprite to the world container
                 this.worldContainer.addChild(sprite);
             }
