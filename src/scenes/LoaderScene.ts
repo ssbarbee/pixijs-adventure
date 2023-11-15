@@ -4,7 +4,7 @@ import { IScene, Manager } from "../Manager";
 import { GameScene } from './GameScene';
 import { generateWorld } from '../generators/map/CellularMapGenerator';
 import { generateMap } from '../generators/map/NoiseJSMapGenerator';
-import { GameProgramaticScene } from './GameProgramaticScene';
+import { GameProgramaticScene } from './GameProgramaticScene/GameProgramaticScene';
 
 export class LoaderScene extends Container implements IScene {
 
