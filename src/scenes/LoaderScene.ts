@@ -4,6 +4,7 @@ import { IScene, Manager } from "../Manager";
 import { GameScene } from './GameScene';
 import { generateWorld } from '../generators/map/CellularMapGenerator';
 import { generateMap } from '../generators/map/NoiseJSMapGenerator';
+import { GameProgramaticScene } from './GameProgramaticScene';
 
 export class LoaderScene extends Container implements IScene {
 
@@ -60,7 +61,7 @@ export class LoaderScene extends Container implements IScene {
             waterThreshold: -0.3,
             mountainThreshold: 0.3
         });
-        Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
+        Manager.changeScene(new GameProgramaticScene(world, playerStartingX, playerStartingY));
     }
 
     public update(_framesPassed: number): void {

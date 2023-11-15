@@ -2,8 +2,39 @@ import { Container, Graphics, Sprite, Texture } from 'pixi.js';
 import { IScene, Manager } from '../Manager';
 import { Player } from '../entities/Player';
 import { generateTerrainSprite } from '../entities/terrainFactory';
+import { GRASS0, WALL0, WALL1, WATER0 } from '../constants';
 
-export class GameScene extends Container implements IScene {
+function drawTerrainTile(x: number, y: number, tileSize: number, tileType: string): Graphics {
+    const graphics = new Graphics();
+
+    // Set the position for the tile
+    graphics.x = x * tileSize;
+    graphics.y = y * tileSize;
+
+    // Determine the color based on the tile type
+    switch (tileType) {
+        case WATER0:
+            graphics.beginFill(0x0000FF); // Blue for water
+            break;
+        case GRASS0:
+            graphics.beginFill(0x00FF00); // Green for grass
+            break;
+        case WALL0:
+            graphics.beginFill(0x888888); // Grey for wall
+            break;
+        default:
+            graphics.beginFill(0xFFFFFF); // White as default
+            break;
+    }
+
+    // Draw the tile as a rectangle
+    graphics.drawRect(0, 0, tileSize, tileSize);
+    graphics.endFill();
+
+    return graphics;
+}
+
+export class GameProgramaticScene extends Container implements IScene {
     private tileSize: number = 32;
     private worldContainer: Container;
     private player: Player;
@@ -73,9 +104,9 @@ export class GameScene extends Container implements IScene {
         for (let x = 0; x < world.length; x++) {
             for (let y = 0; y < world[0].length; y++) {
                 const tile = world[x][y];
-                const sprite = generateTerrainSprite(x, y, this.tileSize, tile);
+                const tileGraphics = drawTerrainTile(x, y, this.tileSize, tile);
                 // Add the sprite to the world container
-                this.worldContainer.addChild(sprite);
+                this.worldContainer.addChild(tileGraphics);
             }
         }
     }
@@ -94,11 +125,8 @@ export class GameScene extends Container implements IScene {
         for (let x = 0; x < world.length; x++) {
             for (let y = 0; y < world[0].length; y++) {
                 const tile = world[x][y];
-                const sprite = generateTerrainSprite(x, y, this.tileSize * this.minimapScale, tile);
-
-                // Scale down the sprite for the minimap
-                // sprite.scale.set(this.minimapScale);
-                this.minimap.addChild(sprite);
+                const tileGraphics = drawTerrainTile(x, y, this.tileSize * this.minimapScale, tile);
+                this.minimap.addChild(tileGraphics);
             }
         }
     }
