@@ -5,6 +5,7 @@ import { GameScene } from './GameScene';
 import { generateWorld } from '../generators/map/CellularMapGenerator';
 import { generateMap } from '../generators/map/NoiseJSMapGenerator';
 import { GameProgramaticScene } from './GameProgramaticScene/GameProgramaticScene';
+import { DungeonScene } from './DungeonScene';
 
 export class LoaderScene extends Container implements IScene {
 
@@ -55,13 +56,14 @@ export class LoaderScene extends Container implements IScene {
     private gameLoaded(): void {
         // Change scene to the game scene!
         // Manager.changeScene(new MenuScene());
-        const { world, playerStartingY, playerStartingX } = generateMap({
-            width: 128,
-            height: 128,
-            waterThreshold: -0.3,
-            mountainThreshold: 0.3
-        });
-        Manager.changeScene(new GameProgramaticScene(world, playerStartingX, playerStartingY));
+        Manager.changeScene(new DungeonScene());
+        // const { world, playerStartingY, playerStartingX } = generateMap({
+        //     width: 128,
+        //     height: 128,
+        //     waterThreshold: -0.3,
+        //     mountainThreshold: 0.3
+        // });
+        // Manager.changeScene(new GameProgramaticScene(world, playerStartingX, playerStartingY));
     }
 
     public update(_framesPassed: number): void {
