@@ -22,7 +22,13 @@
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,
 
+      /* Completeness */
+      "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
     },
+    "exclude": [
+      "dist",
+      "node_modules"
+    ],
     // Folder for your code
     "include": [
         "./src/**/*"
