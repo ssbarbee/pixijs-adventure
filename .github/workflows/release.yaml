@@ -23,4 +23,6 @@ jobs:
       - name: Prettier check, Eslint check, Typescript check
         run: make code-quality-check
       - name: Release to Github Pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PUBLISHING_TOKEN }}
         run: make release-gh-pages
