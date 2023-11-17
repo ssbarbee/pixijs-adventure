@@ -26,6 +26,8 @@ jobs:
         run: |
           git config --global user.email "ssbarbee@gmail.com"
           git config --global user.name "ssbarbee"
+          git config --global credential.helper store
+          echo "https://${{ secrets.GH_PUBLISHING_TOKEN }}:x-oauth-basic@github.com" > ~/.git-credentials
           make release-gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PUBLISHING_TOKEN }}
