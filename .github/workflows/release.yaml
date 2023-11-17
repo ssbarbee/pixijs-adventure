@@ -1,0 +1,26 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+jobs:
+  release:
+    name: Release UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.9.0'
+          cache: 'yarn'
+      - name: Install dependencies
+        run: make install-ci
+      - name: Prettier check, Eslint check, Typescript check
+        run: make code-quality-check
+      - name: Release to Github Pages
+        run: make release-gh-pages
