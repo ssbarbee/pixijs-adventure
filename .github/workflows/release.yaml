@@ -22,3 +22,5 @@ jobs:
         run: make install-ci
       - name: Prettier check, Eslint check, Typescript check
         run: make code-quality-check
+      - name: Build
+        run: make build
