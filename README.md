@@ -15,6 +15,9 @@ Before you start, make sure you have the following installed:
 - Node.js and npm
 - Any modern web browser
 
+## Demo
+https://ssbarbee.github.io/pixijs-adventure
+
 ## Usage
 
 1. Run `yarn` to install project dependencies.
