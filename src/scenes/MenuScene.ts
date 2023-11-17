@@ -3,11 +3,15 @@ import { FancyButton } from '@pixi/ui';
 import { Container } from 'pixi.js';
 
 import { generateWorld } from '../generators/map/CellularMapGenerator';
+import { generateMap as generateNoiseWorld } from '../generators/map/NoiseJSMapGenerator';
 import { IScene, Manager } from '../Manager';
+import { DungeonScene } from './DungeonScene';
 import { GameScene } from './GameScene';
 
 export class MenuScene extends Container implements IScene {
-  private newGameButton: FancyButton;
+  private cellularMapSceneButton: FancyButton;
+  private noiseMapSceneButton: FancyButton;
+  private dungeonSceneButton: FancyButton;
   private highScoreButton: FancyButton;
   private exitGameButton: FancyButton;
   private titleText: Text;
@@ -23,10 +27,24 @@ export class MenuScene extends Container implements IScene {
     this.titleText.anchor.set(0.5);
     this.addChild(this.titleText);
 
-    this.newGameButton = this.createAnimatedButton('New Game', () => {
+    this.cellularMapSceneButton = this.createAnimatedButton('CellularMapGenerator', () => {
       // Handle New Game button click
       const { world, playerStartingY, playerStartingX } = generateWorld(128, 128);
       Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
+    });
+    this.noiseMapSceneButton = this.createAnimatedButton('NoiseMapSceneButton', () => {
+      // Handle New Game button click
+      const { world, playerStartingY, playerStartingX } = generateNoiseWorld({
+        width: 128,
+        height: 128,
+        waterThreshold: -0.3,
+        mountainThreshold: 0.3,
+      });
+      Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
+    });
+    this.dungeonSceneButton = this.createAnimatedButton('Dungeon', () => {
+      // Handle New Game button click
+      Manager.changeScene(new DungeonScene());
     });
     this.highScoreButton = this.createAnimatedButton('High Score', () => {
       // Handle High Score button click
@@ -40,7 +58,9 @@ export class MenuScene extends Container implements IScene {
     // Initial positioning
     this.positionElements();
 
-    this.addChild(this.newGameButton);
+    this.addChild(this.cellularMapSceneButton);
+    this.addChild(this.noiseMapSceneButton);
+    this.addChild(this.dungeonSceneButton);
     this.addChild(this.highScoreButton);
     this.addChild(this.exitGameButton);
   }
@@ -87,16 +107,22 @@ export class MenuScene extends Container implements IScene {
     const buttonSpacing = 20;
     const centerX = Manager.width / 2;
 
-    this.titleText.position.set(centerX, 100);
+    // Set the initial Y position for the first button
+    let currentY = this.titleText.y + this.titleText.height + buttonSpacing;
 
-    this.newGameButton.position.set(centerX, 200);
-    this.highScoreButton.position.set(
-      centerX,
-      this.newGameButton.y + this.newGameButton.height + buttonSpacing,
-    );
-    this.exitGameButton.position.set(
-      centerX,
-      this.highScoreButton.y + this.highScoreButton.height + buttonSpacing,
-    );
+    // Array of buttons
+    const buttons = [
+      this.cellularMapSceneButton,
+      this.noiseMapSceneButton,
+      this.dungeonSceneButton,
+      this.highScoreButton,
+      this.exitGameButton,
+    ];
+
+    // Iterate through the buttons to position them
+    buttons.forEach((button) => {
+      button.position.set(centerX, currentY);
+      currentY += button.height + buttonSpacing;
+    });
   }
 }

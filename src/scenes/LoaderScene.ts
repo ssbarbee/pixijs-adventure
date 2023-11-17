@@ -2,7 +2,7 @@ import { Assets, Container, Graphics } from 'pixi.js';
 
 import { manifest } from '../assets';
 import { IScene, Manager } from '../Manager';
-import { DungeonScene } from './DungeonScene';
+import { MenuScene } from './MenuScene';
 
 export class LoaderScene extends Container implements IScene {
   // for making our loader graphics...
@@ -50,15 +50,7 @@ export class LoaderScene extends Container implements IScene {
 
   private gameLoaded(): void {
     // Change scene to the game scene!
-    // Manager.changeScene(new MenuScene());
-    Manager.changeScene(new DungeonScene());
-    // const { world, playerStartingY, playerStartingX } = generateMap({
-    //     width: 128,
-    //     height: 128,
-    //     waterThreshold: -0.3,
-    //     mountainThreshold: 0.3
-    // });
-    // Manager.changeScene(new GameProgramaticScene(world, playerStartingX, playerStartingY));
+    Manager.changeScene(new MenuScene());
   }
 
   public update(): void {
