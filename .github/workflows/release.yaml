@@ -22,9 +22,3 @@ jobs:
         run: make install-ci
       - name: Prettier check, Eslint check, Typescript check
         run: make code-quality-check
-      - name: Build
-        run: make build
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: dist # The folder the action should deploy.
