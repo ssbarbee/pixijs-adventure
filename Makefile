@@ -16,5 +16,5 @@ code-quality-check:
 	yarn code-quality:check
 
 release-gh-pages:
-    yarn deploy:gh-pages
+	yarn deploy:gh-pages
 
