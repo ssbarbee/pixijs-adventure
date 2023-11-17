@@ -26,7 +26,6 @@ jobs:
   deploy:
     # Add a dependency to the build job
     needs: release
-
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
       pages: write      # to deploy to Pages
@@ -43,3 +42,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
+        with:
+          artifact_name: 'dist'
