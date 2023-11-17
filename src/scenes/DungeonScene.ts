@@ -1,21 +1,17 @@
-import { Container, Graphics, Sprite, Texture } from 'pixi.js';
-import { IScene, Manager } from '../Manager';
-import { Player } from '../entities/Player';
-import { generateTerrainSprite } from '../entities/terrainFactory';
+import { Container } from 'pixi.js';
+
 import { Dungeon } from '../generators/map/Dungeon/Dungeon';
+import { IScene } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        let dungeon = new Dungeon(10);
-        dungeon.draw(this);
-    }
+    const dungeon = new Dungeon(10);
+    dungeon.draw(this);
+  }
 
-    public update(_framesPassed: number): void {
+  public update(): void {}
 
-    }
-
-    resize(_screenWidth: number, _screenHeight: number): void {
-    }
+  resize(): void {}
 }
