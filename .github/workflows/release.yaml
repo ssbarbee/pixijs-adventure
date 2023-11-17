@@ -22,9 +22,10 @@ jobs:
         run: make install-ci
       - name: Prettier check, Eslint check, Typescript check
         run: make code-quality-check
-      - name: Configure Git
-        run: |
-         git config --global user.email "ssbarbee@gmail.com"
-         git config --global user.name "ssbarbee"
       - name: Deploy to Github pages
-        run: make release-gh-pages
+        run: |
+          git config --global user.email "ssbarbee@gmail.com"
+          git config --global user.name "ssbarbee"
+          make release-gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PUBLISHING_TOKEN }}
