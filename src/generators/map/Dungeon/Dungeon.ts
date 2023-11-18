@@ -122,23 +122,21 @@ function createRoom(id: string): RectangleRoom {
   return createRectangleRoom(id, 0, 0, width, height);
 }
 
-function createConnection(
-  root: RectangleRoom,
+function adjustChildPosition(parent: RectangleRoom, child: RectangleRoom): void {
+  child.x += (Math.random() - 0.5) * parent.width;
+  child.y += (Math.random() - 0.5) * parent.height;
+}
+
+function setPositionAndDimensions(
+  direction: Direction,
   parent: RectangleRoom,
   child: RectangleRoom,
-): ConnectionRoom | null {
-  const connectionSize = getRandomConnectionLength();
-
-  let x = 0,
-    y = 0,
-    width = 0,
-    height = 0;
-
-  // Randomly decide the wall (direction) for the connection
-  const direction = getRandomNumber(0, DIRECTION_COUNT - 1) as Direction;
+  connectionSize: number,
+): { x: number; y: number; width: number; height: number } {
+  let x, y, width, height;
 
   switch (direction) {
-    case 0: // Right
+    case Direction.Right:
       x = parent.x + parent.width;
       y = parent.y + Math.random() * (parent.height - 1);
       width = connectionSize;
@@ -146,7 +144,7 @@ function createConnection(
       child.x = x + width;
       child.y = y;
       break;
-    case 1: // Bottom
+    case Direction.Bottom:
       x = parent.x + Math.random() * (parent.width - 1);
       y = parent.y + parent.height;
       width = 1;
@@ -154,7 +152,7 @@ function createConnection(
       child.x = x;
       child.y = y + height;
       break;
-    case 2: // Left
+    case Direction.Left:
       x = parent.x - connectionSize;
       y = parent.y + Math.random() * (parent.height - 1);
       width = connectionSize;
@@ -162,7 +160,7 @@ function createConnection(
       child.x = x - child.width;
       child.y = y;
       break;
-    case 3: // Top
+    case Direction.Top:
       x = parent.x + Math.random() * (parent.width - 1);
       y = parent.y - connectionSize;
       width = 1;
@@ -172,54 +170,28 @@ function createConnection(
       break;
   }
 
+  return { x, y, width, height };
+}
+
+function createConnection(
+  root: RectangleRoom,
+  parent: RectangleRoom,
+  child: RectangleRoom,
+): ConnectionRoom | null {
+  const connectionSize = getRandomConnectionLength();
+  const direction = getRandomNumber(0, DIRECTION_COUNT - 1) as Direction;
+
+  let { x, y, width, height } = setPositionAndDimensions(direction, parent, child, connectionSize);
+
   let attempts = 0;
   while (checkOverlap(root, child) && attempts < MAX_ATTEMPTS) {
-    // Randomly adjust the child's position
-    child.x += (Math.random() - 0.5) * parent.width;
-    child.y += (Math.random() - 0.5) * parent.height;
-
-    // Recalculate the connection position based on the new child position
-    switch (direction) {
-      case 0: // Right
-        x = parent.x + parent.width;
-        y = parent.y + Math.random() * (parent.height - 1);
-        width = connectionSize;
-        height = 1;
-        child.x = x + width;
-        child.y = y;
-        break;
-      case 1: // Bottom
-        x = parent.x + Math.random() * (parent.width - 1);
-        y = parent.y + parent.height;
-        width = 1;
-        height = connectionSize;
-        child.x = x;
-        child.y = y + height;
-        break;
-      case 2: // Left
-        x = parent.x - connectionSize;
-        y = parent.y + Math.random() * (parent.height - 1);
-        width = connectionSize;
-        height = 1;
-        child.x = x - child.width;
-        child.y = y;
-        break;
-      case 3: // Top
-        x = parent.x + Math.random() * (parent.width - 1);
-        y = parent.y - connectionSize;
-        width = 1;
-        height = connectionSize;
-        child.x = x;
-        child.y = y - child.height;
-        break;
-    }
-
+    adjustChildPosition(parent, child);
+    ({ x, y, width, height } = setPositionAndDimensions(direction, parent, child, connectionSize));
     attempts++;
   }
 
   if (checkOverlap(root, child)) {
-    // console.log('Unable to position room without overlap.');
-    return null;
+    return null; // Unable to position room without overlap
   }
 
   return createConnectionRoom(`${parent.id}->${child.id}`, x, y, width, height);
@@ -231,6 +203,24 @@ function createInitialRoom(): RectangleRoom {
   const width = getRandomRoomSize();
   const height = getRandomRoomSize();
   return createRectangleRoom('0', initialX, initialY, width, height);
+}
+
+function getAllRooms(root: RectangleRoom): RectangleRoom[] {
+  const allRooms: RectangleRoom[] = [];
+  const queue: RectangleRoom[] = [root];
+
+  while (queue.length > 0) {
+    const currentRoom = queue.shift()!;
+    allRooms.push(currentRoom);
+    currentRoom.children.forEach((child) => queue.push(child));
+  }
+
+  return allRooms;
+}
+
+function selectRandomRoom(root: RectangleRoom): RectangleRoom {
+  const allRooms = getAllRooms(root);
+  return allRooms[Math.floor(Math.random() * allRooms.length)];
 }
 
 export function generateDungeon(totalRooms: number): Dungeon {
@@ -259,22 +249,4 @@ export function generateDungeon(totalRooms: number): Dungeon {
   }
 
   return { root };
-}
-
-function getAllRooms(root: RectangleRoom): RectangleRoom[] {
-  const allRooms: RectangleRoom[] = [];
-  const queue: RectangleRoom[] = [root];
-
-  while (queue.length > 0) {
-    const currentRoom = queue.shift()!;
-    allRooms.push(currentRoom);
-    currentRoom.children.forEach((child) => queue.push(child));
-  }
-
-  return allRooms;
-}
-
-function selectRandomRoom(root: RectangleRoom): RectangleRoom {
-  const allRooms = getAllRooms(root);
-  return allRooms[Math.floor(Math.random() * allRooms.length)];
 }
