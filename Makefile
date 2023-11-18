@@ -18,6 +18,9 @@ code-quality-check:
 build:
 	yarn build
 
+release:
+	yarn release
+
 release-gh-pages:
 	yarn deploy:gh-pages
 

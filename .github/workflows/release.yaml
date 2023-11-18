@@ -26,6 +26,10 @@ jobs:
         run: make test-coverage
       - name: Generate coverage badges
         run: make generate-coverage-badges
+      - name: Release UI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PUBLISHING_TOKEN }}
+        run: make release
       - name: Deploy to Github pages
         run: |
           git config --global user.email "ssbarbee@gmail.com"
