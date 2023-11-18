@@ -1,3 +1,19 @@
+// Constants for better readability and maintainability
+const MIN_ROOM_SIZE = 3;
+const MAX_ROOM_SIZE = 6;
+const MIN_CONNECTION_LENGTH = 1;
+const MAX_CONNECTION_LENGTH = 3;
+const MAX_ATTEMPTS = 10;
+const DIRECTION_COUNT = 4;
+
+// Enum for directions
+enum Direction {
+  Right,
+  Bottom,
+  Left,
+  Top,
+}
+
 interface BaseRoom {
   id: string;
   x: number;
@@ -23,12 +39,17 @@ export interface Dungeon {
   root: RectangleRoom;
 }
 
-function getRandomSize(): number {
-  return Math.floor(Math.random() * 4) + 3; // Random size between 3 and 6
+// Utility functions
+function getRandomNumber(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomRoomSize(): number {
+  return getRandomNumber(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
 }
 
 function getRandomConnectionLength(): number {
-  return Math.floor(Math.random() * 3) + 1; // Random length between 1 and 3
+  return getRandomNumber(MIN_CONNECTION_LENGTH, MAX_CONNECTION_LENGTH);
 }
 
 function roomsOverlap(room1: RectangleRoom, room2: RectangleRoom): boolean {
@@ -96,8 +117,8 @@ function createConnectionRoom(
 }
 
 function createRoom(id: string): RectangleRoom {
-  const width = getRandomSize();
-  const height = getRandomSize();
+  const width = getRandomRoomSize();
+  const height = getRandomRoomSize();
   return createRectangleRoom(id, 0, 0, width, height);
 }
 
@@ -107,13 +128,14 @@ function createConnection(
   child: RectangleRoom,
 ): ConnectionRoom | null {
   const connectionSize = getRandomConnectionLength();
+
   let x = 0,
     y = 0,
     width = 0,
     height = 0;
 
   // Randomly decide the wall (direction) for the connection
-  const direction = Math.floor(Math.random() * 4); // 0: right, 1: bottom, 2: left, 3: top
+  const direction = getRandomNumber(0, DIRECTION_COUNT - 1) as Direction;
 
   switch (direction) {
     case 0: // Right
@@ -151,7 +173,7 @@ function createConnection(
   }
 
   let attempts = 0;
-  while (checkOverlap(root, child) && attempts < 10) {
+  while (checkOverlap(root, child) && attempts < MAX_ATTEMPTS) {
     // Randomly adjust the child's position
     child.x += (Math.random() - 0.5) * parent.width;
     child.y += (Math.random() - 0.5) * parent.height;
@@ -206,8 +228,8 @@ function createConnection(
 function createInitialRoom(): RectangleRoom {
   const initialX = 0;
   const initialY = 0;
-  const width = getRandomSize();
-  const height = getRandomSize();
+  const width = getRandomRoomSize();
+  const height = getRandomRoomSize();
   return createRectangleRoom('0', initialX, initialY, width, height);
 }
 
