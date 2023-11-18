@@ -1,7 +1,3 @@
-import { Container, Graphics, Text } from 'pixi.js';
-
-import { Manager } from '../../../Manager';
-const roomScaleFactor = 4;
 class Room {
   id: string;
   x: number;
@@ -14,7 +10,7 @@ class Room {
   }
 }
 
-class RectangleRoom extends Room {
+export class RectangleRoom extends Room {
   width: number;
   height: number;
   children: RectangleRoom[];
@@ -27,27 +23,9 @@ class RectangleRoom extends Room {
     this.children = [];
     this.connections = [];
   }
-
-  draw(graphics: Graphics, offsetX: number, offsetY: number): void {
-    graphics.beginFill(0x9966ff); // Purple color for RectangleRoom
-    graphics.drawRect(
-      this.x * roomScaleFactor + offsetX,
-      this.y * roomScaleFactor + offsetY,
-      this.width * roomScaleFactor,
-      this.height * roomScaleFactor,
-    );
-    graphics.endFill();
-
-    // Draw Room ID
-    const idText = new Text(`${this.id}`, { fontSize: roomScaleFactor / 1.5, fill: 0xffffff });
-    idText.x = this.x * roomScaleFactor + offsetX; // Adjust text position as needed
-    idText.y = this.y * roomScaleFactor + offsetY;
-    graphics.addChild(idText);
-  }
-  // Add methods to handle children and connections...
 }
 
-class ConnectionRoom extends Room {
+export class ConnectionRoom extends Room {
   width: number;
   height: number;
 
@@ -55,23 +33,6 @@ class ConnectionRoom extends Room {
     super(id, x, y);
     this.width = width;
     this.height = height;
-  }
-
-  draw(graphics: Graphics, offsetX: number, offsetY: number): void {
-    graphics.beginFill(0xff9933); // Orange color for ConnectionRoom
-    graphics.drawRect(
-      this.x * roomScaleFactor + offsetX,
-      this.y * roomScaleFactor + offsetY,
-      this.width * roomScaleFactor,
-      this.height * roomScaleFactor,
-    );
-    graphics.endFill();
-
-    // Draw Room ID
-    const idText = new Text(`${this.id}`, { fontSize: roomScaleFactor / 2, fill: 0xffffff });
-    idText.x = this.x * roomScaleFactor + offsetX; // Adjust text position as needed
-    idText.y = this.y * roomScaleFactor + offsetY;
-    graphics.addChild(idText);
   }
 }
 
@@ -261,30 +222,6 @@ export class Dungeon {
     }
 
     return new ConnectionRoom(`${parent.id}->${child.id}`, x, y, width, height);
-  }
-
-  draw(container: Container): void {
-    const graphics = new Graphics();
-    const offsetX = Manager.width / 2; // Center of the screen
-    const offsetY = Manager.height / 2;
-
-    // Use a queue for breadth-first traversal
-    const queue: RectangleRoom[] = [this.root];
-
-    while (queue.length > 0) {
-      const currentRoom = queue.shift()!;
-
-      // Draw the current room
-      currentRoom.draw(graphics, offsetX, offsetY);
-
-      // Draw connections and add children to the queue
-      currentRoom.connections.forEach((connection, index) => {
-        connection.draw(graphics, offsetX, offsetY);
-        queue.push(currentRoom.children[index]);
-      });
-    }
-
-    container.addChild(graphics);
   }
 
   checkOverlap(newRoom: RectangleRoom): boolean {
