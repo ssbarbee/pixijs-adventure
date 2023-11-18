@@ -21,3 +21,11 @@ build:
 release-gh-pages:
 	yarn deploy:gh-pages
 
+test:
+	yarn test
+
+test-coverage:
+	yarn test:coverage
+
+generate-coverage-badges:
+	yarn generate:coverage-badges

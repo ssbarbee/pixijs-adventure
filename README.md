@@ -1,3 +1,11 @@
+| Statements                  | Branches                | Functions                 | Lines             |
+| --------------------------- | ----------------------- | ------------------------- | ----------------- |
+| ![Statements](https://img.shields.io/badge/statements-3.39%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-8.95%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-6.08%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-2.79%25-red.svg?style=flat) |
+
+# react-metamask-avatar
+
+![https://img.shields.io/github/issues-raw/ssbarbee/pixijs-adventure](https://img.shields.io/github/issues-raw/ssbarbee/pixijs-adventure)
+
 # PixiJS Learning Project
 
 This project is a part of my journey to learn PixiJS, a powerful 2D rendering engine for the web. I'm following the tutorial provided at [PixiJS Elementals](https://www.pixijselementals.com) to enhance my PixiJS skills.

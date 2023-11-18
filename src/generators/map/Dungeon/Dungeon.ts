@@ -40,19 +40,19 @@ export interface Dungeon {
 }
 
 // Utility functions
-function getRandomNumber(min: number, max: number): number {
+export function getRandomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getRandomRoomSize(): number {
+export function getRandomRoomSize(): number {
   return getRandomNumber(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
 }
 
-function getRandomConnectionLength(): number {
+export function getRandomConnectionLength(): number {
   return getRandomNumber(MIN_CONNECTION_LENGTH, MAX_CONNECTION_LENGTH);
 }
 
-function roomsOverlap(room1: RectangleRoom, room2: RectangleRoom): boolean {
+export function roomsOverlap(room1: RectangleRoom, room2: RectangleRoom): boolean {
   // Basic AABB collision detection
   return (
     room1.x < room2.x + room2.width &&
@@ -62,7 +62,7 @@ function roomsOverlap(room1: RectangleRoom, room2: RectangleRoom): boolean {
   );
 }
 
-function checkOverlapRecursive(currentRoom: RectangleRoom, newRoom: RectangleRoom): boolean {
+export function checkOverlapRecursive(currentRoom: RectangleRoom, newRoom: RectangleRoom): boolean {
   if (roomsOverlap(currentRoom, newRoom)) {
     return true;
   }
@@ -76,11 +76,11 @@ function checkOverlapRecursive(currentRoom: RectangleRoom, newRoom: RectangleRoo
   return false;
 }
 
-function checkOverlap(root: RectangleRoom, newRoom: RectangleRoom): boolean {
+export function checkOverlap(root: RectangleRoom, newRoom: RectangleRoom): boolean {
   return checkOverlapRecursive(root, newRoom);
 }
 
-function createRectangleRoom(
+export function createRectangleRoom(
   id: string,
   x: number,
   y: number,
@@ -99,7 +99,7 @@ function createRectangleRoom(
   };
 }
 
-function createConnectionRoom(
+export function createConnectionRoom(
   id: string,
   x: number,
   y: number,
@@ -116,18 +116,18 @@ function createConnectionRoom(
   };
 }
 
-function createRoom(id: string): RectangleRoom {
+export function createRoom(id: string): RectangleRoom {
   const width = getRandomRoomSize();
   const height = getRandomRoomSize();
   return createRectangleRoom(id, 0, 0, width, height);
 }
 
-function adjustChildPosition(parent: RectangleRoom, child: RectangleRoom): void {
+export function adjustChildPosition(parent: RectangleRoom, child: RectangleRoom): void {
   child.x += (Math.random() - 0.5) * parent.width;
   child.y += (Math.random() - 0.5) * parent.height;
 }
 
-function setPositionAndDimensions(
+export function setPositionAndDimensions(
   direction: Direction,
   parent: RectangleRoom,
   child: RectangleRoom,
@@ -173,7 +173,7 @@ function setPositionAndDimensions(
   return { x, y, width, height };
 }
 
-function createConnection(
+export function createConnection(
   root: RectangleRoom,
   parent: RectangleRoom,
   child: RectangleRoom,
@@ -197,7 +197,7 @@ function createConnection(
   return createConnectionRoom(`${parent.id}->${child.id}`, x, y, width, height);
 }
 
-function createInitialRoom(): RectangleRoom {
+export function createInitialRoom(): RectangleRoom {
   const initialX = 0;
   const initialY = 0;
   const width = getRandomRoomSize();
@@ -205,7 +205,7 @@ function createInitialRoom(): RectangleRoom {
   return createRectangleRoom('0', initialX, initialY, width, height);
 }
 
-function getAllRooms(root: RectangleRoom): RectangleRoom[] {
+export function getAllRooms(root: RectangleRoom): RectangleRoom[] {
   const allRooms: RectangleRoom[] = [];
   const queue: RectangleRoom[] = [root];
 
@@ -218,7 +218,7 @@ function getAllRooms(root: RectangleRoom): RectangleRoom[] {
   return allRooms;
 }
 
-function selectRandomRoom(root: RectangleRoom): RectangleRoom {
+export function selectRandomRoom(root: RectangleRoom): RectangleRoom {
   const allRooms = getAllRooms(root);
   return allRooms[Math.floor(Math.random() * allRooms.length)];
 }
