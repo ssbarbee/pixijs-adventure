@@ -1,6 +1,6 @@
 | Statements                  | Branches                | Functions                 | Lines             |
 | --------------------------- | ----------------------- | ------------------------- | ----------------- |
-| ![Statements](https://img.shields.io/badge/statements-3.39%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-8.95%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-6.08%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-2.79%25-red.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-12.62%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-16.41%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-17.35%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-12.04%25-red.svg?style=flat) |
 
 # react-metamask-avatar
 
