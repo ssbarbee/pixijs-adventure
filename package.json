@@ -1,4 +1,5 @@
 {
+  "name": "pixijs-adventure",
   "version": "0.0.1",
   "repository": {
     "type": "git",
