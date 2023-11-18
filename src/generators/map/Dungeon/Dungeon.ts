@@ -1,13 +1,13 @@
 // Constants for better readability and maintainability
-const MIN_ROOM_SIZE = 3;
-const MAX_ROOM_SIZE = 6;
-const MIN_CONNECTION_LENGTH = 1;
-const MAX_CONNECTION_LENGTH = 3;
-const MAX_ATTEMPTS = 10;
-const DIRECTION_COUNT = 4;
+export const MIN_ROOM_SIZE = 3;
+export const MAX_ROOM_SIZE = 6;
+export const MIN_CONNECTION_LENGTH = 1;
+export const MAX_CONNECTION_LENGTH = 3;
+export const MAX_ATTEMPTS = 10;
+export const DIRECTION_COUNT = 4;
 
 // Enum for directions
-enum Direction {
+export enum Direction {
   Right,
   Bottom,
   Left,
