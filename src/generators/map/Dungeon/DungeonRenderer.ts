@@ -25,8 +25,9 @@ export class DungeonRenderer {
 
     while (queue.length > 0) {
       const currentRoom = queue.shift()!;
-      this.drawRoom(currentRoom);
-
+      if (currentRoom.type === 'rectangle') {
+        this.drawRectangleRoom(currentRoom);
+      }
       // Draw connections and add children to the queue
       currentRoom.connections.forEach((connection, index) => {
         this.drawConnection(connection);
@@ -37,13 +38,22 @@ export class DungeonRenderer {
     this.container.addChild(this.graphics);
   }
 
-  private drawRoom(room: RectangleRoom): void {
+  private drawRectangleRoom(room: RectangleRoom): void {
     this.graphics.beginFill(0x9966ff); // Purple color for RectangleRoom
     this.graphics.drawRect(
       room.x * roomScaleFactor + this.offsetX,
       room.y * roomScaleFactor + this.offsetY,
       room.width * roomScaleFactor,
       room.height * roomScaleFactor,
+    );
+    this.graphics.endFill();
+
+    // Draw a red dot at the x,y point
+    this.graphics.beginFill(0xff0000); // Red color
+    this.graphics.drawCircle(
+      room.x * roomScaleFactor + this.offsetX,
+      room.y * roomScaleFactor + this.offsetY,
+      2, // Radius of the dot
     );
     this.graphics.endFill();
 
@@ -61,6 +71,15 @@ export class DungeonRenderer {
       room.y * roomScaleFactor + this.offsetY,
       room.width * roomScaleFactor,
       room.height * roomScaleFactor,
+    );
+    this.graphics.endFill();
+
+    // Draw a red dot at the x,y point
+    this.graphics.beginFill(0xff0000); // Red color
+    this.graphics.drawCircle(
+      room.x * roomScaleFactor + this.offsetX,
+      room.y * roomScaleFactor + this.offsetY,
+      2, // Radius of the dot
     );
     this.graphics.endFill();
 
