@@ -51,13 +51,7 @@ export class DungeonRenderer {
     this.graphics.endFill();
 
     // Draw a red dot at the x,y point
-    this.graphics.beginFill(0xff0000); // Red color
-    this.graphics.drawCircle(
-      room.x * roomScaleFactor + this.offsetX,
-      room.y * roomScaleFactor + this.offsetY,
-      2, // Radius of the dot
-    );
-    this.graphics.endFill();
+    this.drawRedDot(room.x, room.y);
 
     // Draw Room ID
     const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 1.5, fill: 0xffffff });
@@ -76,13 +70,7 @@ export class DungeonRenderer {
     this.graphics.endFill();
 
     // Draw a red dot at the x,y point
-    this.graphics.beginFill(0xff0000); // Red color
-    this.graphics.drawCircle(
-      room.x * roomScaleFactor + this.offsetX,
-      room.y * roomScaleFactor + this.offsetY,
-      2, // Radius of the dot
-    );
-    this.graphics.endFill();
+    this.drawRedDot(room.x, room.y);
 
     // Draw Room ID
     const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 1.5, fill: 0xffffff });
@@ -102,18 +90,22 @@ export class DungeonRenderer {
     this.graphics.endFill();
 
     // Draw a red dot at the x,y point
-    this.graphics.beginFill(0xff0000); // Red color
-    this.graphics.drawCircle(
-      room.x * roomScaleFactor + this.offsetX,
-      room.y * roomScaleFactor + this.offsetY,
-      2, // Radius of the dot
-    );
-    this.graphics.endFill();
+    this.drawRedDot(room.x, room.y);
 
     // Draw Room ID
     const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 2, fill: 0xffffff });
     idText.x = room.x * roomScaleFactor + this.offsetX; // Adjust text position as needed
     idText.y = room.y * roomScaleFactor + this.offsetY;
     this.graphics.addChild(idText);
+  }
+
+  private drawRedDot(x: number, y: number): void {
+    this.graphics.beginFill(0xff0000); // Red color
+    this.graphics.drawCircle(
+      x * roomScaleFactor + this.offsetX,
+      y * roomScaleFactor + this.offsetY,
+      2, // Radius of the dot
+    );
+    this.graphics.endFill();
   }
 }
