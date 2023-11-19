@@ -52,12 +52,8 @@ export class DungeonRenderer {
 
     // Draw a red dot at the x,y point
     this.drawRedDot(room.x, room.y);
-
     // Draw Room ID
-    const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 1.5, fill: 0xffffff });
-    idText.x = room.x * roomScaleFactor + this.offsetX; // Adjust text position as needed
-    idText.y = room.y * roomScaleFactor + this.offsetY;
-    this.graphics.addChild(idText);
+    this.drawRoomID(room);
   }
 
   private drawCircularRoom(room: CircularRoom): void {
@@ -71,12 +67,8 @@ export class DungeonRenderer {
 
     // Draw a red dot at the x,y point
     this.drawRedDot(room.x, room.y);
-
     // Draw Room ID
-    const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 1.5, fill: 0xffffff });
-    idText.x = (room.x - room.radius) * roomScaleFactor + this.offsetX;
-    idText.y = (room.y - room.radius) * roomScaleFactor + this.offsetY;
-    this.graphics.addChild(idText);
+    this.drawRoomID(room);
   }
 
   private drawConnection(room: ConnectionRoom): void {
@@ -91,12 +83,8 @@ export class DungeonRenderer {
 
     // Draw a red dot at the x,y point
     this.drawRedDot(room.x, room.y);
-
     // Draw Room ID
-    const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 2, fill: 0xffffff });
-    idText.x = room.x * roomScaleFactor + this.offsetX; // Adjust text position as needed
-    idText.y = room.y * roomScaleFactor + this.offsetY;
-    this.graphics.addChild(idText);
+    this.drawRoomID(room);
   }
 
   private drawRedDot(x: number, y: number): void {
@@ -107,5 +95,12 @@ export class DungeonRenderer {
       2, // Radius of the dot
     );
     this.graphics.endFill();
+  }
+
+  private drawRoomID(room: ConnectableRoom | ConnectionRoom): void {
+    const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 1.5, fill: 0xffffff });
+    idText.x = room.x * roomScaleFactor + this.offsetX;
+    idText.y = room.y * roomScaleFactor + this.offsetY;
+    this.graphics.addChild(idText);
   }
 }
