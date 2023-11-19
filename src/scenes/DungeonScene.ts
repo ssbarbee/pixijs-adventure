@@ -18,7 +18,7 @@ export class DungeonScene extends Container implements IScene {
 
     // Generate and draw the new dungeon
     const dungeon = generateDungeon(10);
-    const dungeonRenderer = new DungeonRenderer(dungeon, this);
+    const dungeonRenderer = new DungeonRenderer(dungeon, this, 32);
     dungeonRenderer.draw();
   }
 

@@ -40,13 +40,13 @@ export function createRoom(id: string): ConnectableRoom {
 
 export function adjustChildPosition(parent: ConnectableRoom, child: ConnectableRoom): void {
   if (parent.type === 'rectangle') {
-    child.x += (Math.random() - 0.5) * (parent as RectangleRoom).width;
-    child.y += (Math.random() - 0.5) * (parent as RectangleRoom).height;
+    child.x += getRandomNumber(-2, 2) * (parent as RectangleRoom).width;
+    child.y += getRandomNumber(-2, 2) * (parent as RectangleRoom).height;
     return;
   }
   if (parent.type === 'circular') {
-    child.x += (Math.random() - 0.5) * (parent as CircularRoom).radius * 2;
-    child.y += (Math.random() - 0.5) * (parent as CircularRoom).radius * 2;
+    child.x += getRandomNumber(-2, 2) * (parent as CircularRoom).radius * 2;
+    child.y += getRandomNumber(-2, 2) * (parent as CircularRoom).radius * 2;
     return;
   }
   throw new Error(`type of room not supported! type: ${parent.type as string}`);
