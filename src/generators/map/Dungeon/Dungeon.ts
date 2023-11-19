@@ -63,34 +63,34 @@ export function setPositionAndDimensionsCircularRectangleRooms(
   switch (direction) {
     case Direction.Right:
       x = parent.x + parent.radius; // Connection starts at the edge of the circle
-      y = parent.y - connectionSize / 2; // Vertically centered on the parent
+      y = parent.y - 0.5; // Vertically centered on the parent
       width = connectionSize;
       height = 1;
       child.x = x + width; // The child's x starts after the connection
-      child.y = y + height / 2 - child.height / 2; // Center the child vertically
+      child.y = y - getRandomNumber(1, Math.floor(child.height / 2)); // Center the child vertically
       break;
     case Direction.Bottom:
-      x = parent.x - connectionSize / 2; // Horizontally centered on the parent
+      x = parent.x - 0.5; // Horizontally centered on the parent
       y = parent.y + parent.radius; // Connection starts at the edge of the circle
       width = 1;
       height = connectionSize;
-      child.x = x + width / 2 - child.width / 2; // Center the child horizontally
+      child.x = x - getRandomNumber(1, Math.floor(child.width / 2));
       child.y = y + height; // The child's y starts after the connection
       break;
     case Direction.Left:
       x = parent.x - parent.radius - connectionSize; // Connection starts at the left edge of the circle
-      y = parent.y - connectionSize / 2; // Vertically centered on the parent
+      y = parent.y - 0.5; // Vertically centered on the parent
       width = connectionSize;
       height = 1;
       child.x = x - child.width; // The child's x ends at the connection's start
-      child.y = y + height / 2 - child.height / 2; // Center the child vertically
+      child.y = y - getRandomNumber(1, Math.floor(child.height / 2)); // Center the child vertically
       break;
     case Direction.Top:
-      x = parent.x - connectionSize / 2; // Horizontally centered on the parent
+      x = parent.x - 0.5; // Horizontally centered on the parent
       y = parent.y - parent.radius - connectionSize; // Connection starts at the top edge of the circle
       width = 1;
       height = connectionSize;
-      child.x = x + width / 2 - child.width / 2; // Center the child horizontally
+      child.x = x - getRandomNumber(1, Math.floor(child.width / 2));
       child.y = y - child.height; // The child's y ends at the connection's start
       break;
   }
@@ -110,7 +110,7 @@ export function setPositionAndDimensionsRectangleCircularRooms(
   switch (direction) {
     case Direction.Right:
       x = parent.x + parent.width;
-      y = parent.y + parent.height / 2 - connectionSize / 2;
+      y = parent.y + (parent.height - getRandomNumber(1, parent.height - 1));
       width = connectionSize;
       height = 1;
       // Now set the circular child's center position
@@ -118,7 +118,7 @@ export function setPositionAndDimensionsRectangleCircularRooms(
       child.y = y + height / 2;
       break;
     case Direction.Bottom:
-      x = parent.x + parent.width / 2 - connectionSize / 2;
+      x = parent.x + (parent.width - getRandomNumber(1, parent.width - 1));
       y = parent.y + parent.height;
       width = 1;
       height = connectionSize;
@@ -127,14 +127,14 @@ export function setPositionAndDimensionsRectangleCircularRooms(
       break;
     case Direction.Left:
       x = parent.x - connectionSize;
-      y = parent.y + parent.height / 2 - connectionSize / 2;
+      y = parent.y + (parent.height - getRandomNumber(1, parent.height - 1));
       width = connectionSize;
       height = 1;
       child.x = x - child.radius;
       child.y = y + height / 2;
       break;
     case Direction.Top:
-      x = parent.x + parent.width / 2 - connectionSize / 2;
+      x = parent.x + (parent.width - getRandomNumber(1, parent.width - 1));
       y = parent.y - connectionSize;
       width = 1;
       height = connectionSize;
