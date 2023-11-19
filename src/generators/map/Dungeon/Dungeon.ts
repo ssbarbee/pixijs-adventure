@@ -157,34 +157,34 @@ export function setPositionAndDimensionsCircularRooms(
   switch (direction) {
     case Direction.Right:
       x = parent.x + parent.radius;
-      y = parent.y;
+      y = parent.y - 0.5;
       width = connectionSize;
       height = 1;
       child.x = x + width + child.radius;
-      child.y = y;
+      child.y = parent.y;
       break;
     case Direction.Bottom:
-      x = parent.x;
+      x = parent.x - 0.5;
       y = parent.y + parent.radius;
       width = 1;
       height = connectionSize;
-      child.x = x;
+      child.x = parent.x;
       child.y = y + height + child.radius;
       break;
     case Direction.Left:
       x = parent.x - parent.radius - connectionSize;
-      y = parent.y;
+      y = parent.y - 0.5;
       width = connectionSize;
       height = 1;
       child.x = x - child.radius;
-      child.y = y;
+      child.y = parent.y;
       break;
     case Direction.Top:
-      x = parent.x;
+      x = parent.x - 0.5;
       y = parent.y - parent.radius - connectionSize;
       width = 1;
       height = connectionSize;
-      child.x = x;
+      child.x = parent.x;
       child.y = y - child.radius;
       break;
   }
