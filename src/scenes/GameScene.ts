@@ -28,8 +28,11 @@ export class GameScene extends Container implements IScene {
     this.renderWorld(world);
 
     // Create the player
-    this.player = new Player(this.tileSize, playerStartingX, playerStartingY, (newX, newY) =>
-      this.onPlayerPositionUpdate(newX, newY),
+    this.player = new Player(
+      this.tileSize,
+      playerStartingX * this.tileSize + this.tileSize / 2,
+      playerStartingY * this.tileSize + this.tileSize / 2,
+      (newX, newY) => this.onPlayerPositionUpdate(newX, newY),
     );
 
     // Add the player to the GameScene container (worldContainer)

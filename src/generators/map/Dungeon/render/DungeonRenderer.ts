@@ -1,4 +1,4 @@
-import { Container, Graphics, Text } from 'pixi.js';
+import { Graphics, Text } from 'pixi.js';
 
 import { Manager } from '../../../../Manager';
 import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../types';
@@ -6,21 +6,19 @@ import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom }
 export class DungeonRenderer {
   private dungeon: Dungeon;
   private graphics: Graphics;
-  private container: Container;
   private offsetX: number;
   private offsetY: number;
   private tileSize: number;
 
-  constructor(dungeon: Dungeon, container: Container, tileSize: number) {
+  constructor(dungeon: Dungeon, tileSize: number) {
     this.dungeon = dungeon;
     this.graphics = new Graphics();
-    this.container = container;
     this.offsetX = Manager.width / 2; // Center of the screen
     this.offsetY = Manager.height / 2;
     this.tileSize = tileSize;
   }
 
-  draw(): void {
+  draw(): Graphics {
     // Use a queue for breadth-first traversal
     const queue: ConnectableRoom[] = [this.dungeon.root];
 
@@ -38,7 +36,7 @@ export class DungeonRenderer {
       });
     }
 
-    this.container.addChild(this.graphics);
+    return this.graphics;
   }
 
   private drawRectangleRoom(room: RectangleRoom): void {
@@ -116,7 +114,8 @@ export class DungeonRenderer {
     // Apply the mask to the tiles
     tilesGraphics.mask = maskGraphics;
 
-    // Add the tiles to the main graphics
+    // Add the mask to the main graphics before the tiles
+    this.graphics.addChild(maskGraphics);
     this.graphics.addChild(tilesGraphics);
 
     // Draw Room ID (if needed)

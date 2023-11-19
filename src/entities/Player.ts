@@ -17,8 +17,8 @@ export class Player extends Sprite {
     this.tileSize = tileSize;
     this.scale.set(this.tileSize / this.width, this.tileSize / this.height);
     this.anchor.set(0.5, 0.5);
-    this.x = startingX * this.tileSize + this.tileSize / 2;
-    this.y = startingY * this.tileSize + this.tileSize / 2;
+    this.x = startingX;
+    this.y = startingY;
     this.onPositionUpdate = onPositionUpdate;
     // Add keyboard event listeners for both keydown and keyup
     window.addEventListener('keydown', this.handleKeyDown.bind(this));
