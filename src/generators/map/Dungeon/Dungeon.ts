@@ -47,7 +47,7 @@ export interface ConnectionRoom extends BaseRoom {
 }
 
 export interface Dungeon {
-  root: RectangleRoom;
+  root: ConnectableRoom;
 }
 
 // Utility functions
@@ -423,7 +423,7 @@ export function setPositionAndDimensions(
 }
 
 export function createConnection(
-  root: RectangleRoom,
+  root: ConnectableRoom,
   parent: ConnectableRoom,
   child: ConnectableRoom,
 ): ConnectionRoom | null {
@@ -446,14 +446,6 @@ export function createConnection(
   return createConnectionRoom(`${parent.id}->${child.id}`, x, y, width, height);
 }
 
-export function createInitialRoom(): RectangleRoom {
-  const initialX = 0;
-  const initialY = 0;
-  const width = getRandomRectangleRoomSize();
-  const height = getRandomRectangleRoomSize();
-  return createRectangleRoom('0', initialX, initialY, width, height);
-}
-
 export function getAllRooms(root: ConnectableRoom): ConnectableRoom[] {
   const allRooms: ConnectableRoom[] = [];
   const queue: ConnectableRoom[] = [root];
@@ -473,8 +465,9 @@ export function selectRandomRoom(root: ConnectableRoom): ConnectableRoom {
 }
 
 export function generateDungeon(totalRooms: number): Dungeon {
-  const root = createInitialRoom();
-  let roomsCount = 1;
+  let roomsCount = 0;
+  const root = createRoom(roomsCount.toString());
+  roomsCount++;
   const queue: ConnectableRoom[] = [root];
 
   while (roomsCount < totalRooms) {
