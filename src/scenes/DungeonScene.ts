@@ -1,7 +1,6 @@
 import { Container } from 'pixi.js';
 
-import { generateDungeon } from '../generators/map/Dungeon/Dungeon';
-import { DungeonRenderer } from '../generators/map/Dungeon/render/DungeonRenderer';
+import { DungeonRenderer, generateDungeon } from '../generators/map/Dungeon';
 import { IScene } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {

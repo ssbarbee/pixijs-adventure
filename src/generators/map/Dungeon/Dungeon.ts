@@ -1,10 +1,15 @@
 // Constants for better readability and maintainability
-export const MIN_RECTANGLE_ROOM_SIZE = 3;
-export const MAX_RECTANGLE_ROOM_SIZE = 6;
-export const MIN_CIRCLE_ROOM_SIZE = 3;
-export const MAX_CIRCLE_ROOM_SIZE = 4;
-export const MIN_CONNECTION_LENGTH = 1;
-export const MAX_CONNECTION_LENGTH = 3;
+import { createCircularRoom } from './circular/createCircularRoom';
+import { getRandomCircleRoomSize } from './circular/getRandomCircleRoomSize';
+import { createConnectionRoom } from './connection/createConnectionRoom';
+import { getRandomConnectionLength } from './connection/getRandomConnectionLength';
+import { createRectangleRoom } from './rectangle/createRectangleRoom';
+import { getRandomRectangleRoomSize } from './rectangle/getRandomRectangleRoomSize';
+import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from './types';
+import { checkOverlap } from './utils/checkOverlap';
+import { getRandomNumber } from './utils/getRandomNumber';
+import { selectRandomRoom } from './utils/selectRandomRoom';
+
 export const MAX_ATTEMPTS = 10;
 export const DIRECTION_COUNT = 4;
 
@@ -16,157 +21,6 @@ export enum Direction {
   Top,
 }
 
-interface BaseRoom {
-  id: string;
-  x: number;
-  y: number;
-  type: 'rectangle' | 'circular' | 'connection';
-}
-
-export interface ConnectableRoom extends BaseRoom {
-  type: 'rectangle' | 'circular';
-  children: ConnectableRoom[];
-  connections: ConnectionRoom[];
-}
-
-export interface CircularRoom extends ConnectableRoom {
-  type: 'circular';
-  radius: number;
-}
-
-export interface RectangleRoom extends ConnectableRoom {
-  type: 'rectangle';
-  width: number;
-  height: number;
-}
-
-export interface ConnectionRoom extends BaseRoom {
-  type: 'connection';
-  width: number;
-  height: number;
-}
-
-export interface Dungeon {
-  root: ConnectableRoom;
-}
-
-// Utility functions
-export function getRandomNumber(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-export function getRandomRectangleRoomSize(): number {
-  return getRandomNumber(MIN_RECTANGLE_ROOM_SIZE, MAX_RECTANGLE_ROOM_SIZE);
-}
-
-export function getRandomCircleRoomSize(): number {
-  return getRandomNumber(MIN_CIRCLE_ROOM_SIZE, MAX_CIRCLE_ROOM_SIZE);
-}
-
-export function getRandomConnectionLength(): number {
-  return getRandomNumber(MIN_CONNECTION_LENGTH, MAX_CONNECTION_LENGTH);
-}
-
-export function roomsOverlapCoordinates(
-  room1: Omit<RectangleRoom, 'id' | 'connections' | 'type' | 'children'>,
-  room2: Omit<RectangleRoom, 'id' | 'connections' | 'type' | 'children'>,
-): boolean {
-  // Basic AABB collision detection
-  return (
-    room1.x < room2.x + room2.width &&
-    room1.x + room1.width > room2.x &&
-    room1.y < room2.y + room2.height &&
-    room1.y + room1.height > room2.y
-  );
-}
-
-export function roomsOverlap(room1: ConnectableRoom, room2: ConnectableRoom): boolean {
-  const convertToRect = (room: BaseRoom) => {
-    if (room.type === 'circular') {
-      const circular = room as CircularRoom;
-      return {
-        x: circular.x - circular.radius,
-        y: circular.y - circular.radius,
-        width: circular.radius * 2,
-        height: circular.radius * 2,
-      };
-    }
-    return room;
-  };
-
-  const rect1 = convertToRect(room1);
-  const rect2 = convertToRect(room2);
-  return roomsOverlapCoordinates(rect1 as RectangleRoom, rect2 as RectangleRoom);
-}
-
-export function checkOverlapRecursive(
-  currentRoom: ConnectableRoom,
-  newRoom: ConnectableRoom,
-): boolean {
-  if (roomsOverlap(currentRoom, newRoom)) {
-    return true;
-  }
-
-  for (const child of currentRoom.children) {
-    if (checkOverlapRecursive(child, newRoom)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-export function checkOverlap(root: ConnectableRoom, newRoom: ConnectableRoom): boolean {
-  return checkOverlapRecursive(root, newRoom);
-}
-
-export function createRectangleRoom(
-  id: string,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-): RectangleRoom {
-  return {
-    id,
-    x,
-    y,
-    width,
-    height,
-    type: 'rectangle',
-    children: [],
-    connections: [],
-  };
-}
-
-export function createCircularRoom(id: string, x: number, y: number, radius: number): CircularRoom {
-  return {
-    id,
-    x,
-    y,
-    radius,
-    type: 'circular',
-    children: [],
-    connections: [],
-  };
-}
-
-export function createConnectionRoom(
-  id: string,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-): ConnectionRoom {
-  return {
-    id,
-    x,
-    y,
-    width,
-    height,
-    type: 'connection',
-  };
-}
 // Function to randomly decide the room type
 function getRandomRoomType(): 'rectangle' | 'circular' {
   return Math.random() < 0.5 ? 'rectangle' : 'circular';
@@ -188,11 +42,14 @@ export function adjustChildPosition(parent: ConnectableRoom, child: ConnectableR
   if (parent.type === 'rectangle') {
     child.x += (Math.random() - 0.5) * (parent as RectangleRoom).width;
     child.y += (Math.random() - 0.5) * (parent as RectangleRoom).height;
+    return;
   }
   if (parent.type === 'circular') {
     child.x += (Math.random() - 0.5) * (parent as CircularRoom).radius * 2;
     child.y += (Math.random() - 0.5) * (parent as CircularRoom).radius * 2;
+    return;
   }
+  throw new Error(`type of room not supported! type: ${parent.type as string}`);
 }
 
 export function setPositionAndDimensionsCircularRectangleRooms(
@@ -240,6 +97,7 @@ export function setPositionAndDimensionsCircularRectangleRooms(
 
   return { x, y, width, height };
 }
+
 export function setPositionAndDimensionsRectangleCircularRooms(
   direction: Direction,
   parent: RectangleRoom,
@@ -444,24 +302,6 @@ export function createConnection(
   }
 
   return createConnectionRoom(`${parent.id}->${child.id}`, x, y, width, height);
-}
-
-export function getAllRooms(root: ConnectableRoom): ConnectableRoom[] {
-  const allRooms: ConnectableRoom[] = [];
-  const queue: ConnectableRoom[] = [root];
-
-  while (queue.length > 0) {
-    const currentRoom = queue.shift()!;
-    allRooms.push(currentRoom);
-    currentRoom.children.forEach((child) => queue.push(child));
-  }
-
-  return allRooms;
-}
-
-export function selectRandomRoom(root: ConnectableRoom): ConnectableRoom {
-  const allRooms = getAllRooms(root);
-  return allRooms[Math.floor(Math.random() * allRooms.length)];
 }
 
 export function generateDungeon(totalRooms: number): Dungeon {
