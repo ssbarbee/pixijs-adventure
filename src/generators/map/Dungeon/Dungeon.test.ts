@@ -1,5 +1,3 @@
-// Replace with your actual module path
-
 import {
   checkOverlapRecursive,
   createConnectionRoom,
