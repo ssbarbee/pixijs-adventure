@@ -10,6 +10,7 @@ import {
   MAX_ROOM_SIZE,
   MIN_CONNECTION_LENGTH,
   MIN_ROOM_SIZE,
+  RectangleRoom,
   roomsOverlap,
   setPositionAndDimensions,
 } from './Dungeon';
@@ -140,29 +141,155 @@ describe('Dungeon', () => {
     });
   });
 
-  // describe('createConnection', () => {
-  //   const root = createInitialRoom();
-  //   const parent = createRectangleRoom('parent', 10, 10, 5, 5);
-  //   const child = createRectangleRoom('child', 0, 0, 3, 3);
-  //
-  //   it('should create a connection room between parent and child rooms', () => {
-  //     const connection = createConnection(root, parent, child);
-  //     expect(connection).not.toBeNull();
-  //     expect(connection).toMatchObject({
-  //       type: 'connection',
-  //       x: expect.any(Number),
-  //       y: expect.any(Number),
-  //       width: expect.any(Number),
-  //       height: expect.any(Number),
-  //     });
-  //   });
-  //
-  //   it('should return null if unable to place child without overlap', () => {
-  //     // Mock checkOverlap to always return true to simulate overlap
-  //     jest.spyOn(Dungeon, 'checkOverlap').mockImplementation(() => true);
-  //
-  //     const connection = createConnection(root, parent, child);
-  //     expect(connection).toBeNull();
-  //   });
-  // });
+  describe('roomsOverlap', () => {
+    test('should return true for overlapping rooms', () => {
+      const room1: RectangleRoom = {
+        id: '1',
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+      const room2: RectangleRoom = {
+        id: '2',
+        x: 5,
+        y: 5,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+
+      expect(roomsOverlap(room1, room2)).toBe(true);
+    });
+
+    test('should return false for non-overlapping rooms', () => {
+      const room1: RectangleRoom = {
+        id: '1',
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+      const room2: RectangleRoom = {
+        id: '2',
+        x: 20,
+        y: 20,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+
+      expect(roomsOverlap(room1, room2)).toBe(false);
+    });
+
+    test('should return false for rooms touching but not overlapping horizontally', () => {
+      const room1: RectangleRoom = {
+        id: '1',
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+      const room2: RectangleRoom = {
+        id: '2',
+        x: 10,
+        y: 0,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+
+      expect(roomsOverlap(room1, room2)).toBe(false);
+    });
+
+    test('should return false for rooms touching but not overlapping vertically', () => {
+      const room1: RectangleRoom = {
+        id: '1',
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+      const room2: RectangleRoom = {
+        id: '2',
+        x: 0,
+        y: 10,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+
+      expect(roomsOverlap(room1, room2)).toBe(false);
+    });
+
+    test('should return true for a room completely inside another room', () => {
+      const room1: RectangleRoom = {
+        id: '1',
+        x: 0,
+        y: 0,
+        width: 20,
+        height: 20,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+      const room2: RectangleRoom = {
+        id: '2',
+        x: 5,
+        y: 5,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+
+      expect(roomsOverlap(room1, room2)).toBe(true);
+    });
+
+    test('should return true for a room that is the same size and position as another room', () => {
+      const room1: RectangleRoom = {
+        id: '1',
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+      const room2: RectangleRoom = {
+        id: '2',
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        type: 'rectangle',
+        children: [],
+        connections: [],
+      };
+
+      expect(roomsOverlap(room1, room2)).toBe(true);
+    });
+  });
 });
