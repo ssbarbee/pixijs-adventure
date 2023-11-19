@@ -203,34 +203,34 @@ export function setPositionAndDimensionsRectangleRooms(
   switch (direction) {
     case Direction.Right:
       x = parent.x + parent.width;
-      y = parent.y + Math.random() * (parent.height - 1);
+      y = parent.y + (parent.height - getRandomNumber(1, parent.height - 1));
       width = connectionSize;
       height = 1;
       child.x = x + width;
-      child.y = y;
+      child.y = y - getRandomNumber(1, Math.floor(child.height / 2));
       break;
     case Direction.Bottom:
-      x = parent.x + Math.random() * (parent.width - 1);
+      x = parent.x + (parent.width - getRandomNumber(1, parent.width - 1));
       y = parent.y + parent.height;
       width = 1;
       height = connectionSize;
-      child.x = x;
+      child.x = x - getRandomNumber(1, Math.floor(child.width / 2));
       child.y = y + height;
       break;
     case Direction.Left:
       x = parent.x - connectionSize;
-      y = parent.y + Math.random() * (parent.height - 1);
+      y = parent.y + (parent.height - getRandomNumber(1, parent.height - 1));
       width = connectionSize;
       height = 1;
       child.x = x - child.width;
-      child.y = y;
+      child.y = y - getRandomNumber(1, Math.floor(child.height / 2));
       break;
     case Direction.Top:
-      x = parent.x + Math.random() * (parent.width - 1);
+      x = parent.x + (parent.width - getRandomNumber(1, parent.width - 1));
       y = parent.y - connectionSize;
       width = 1;
       height = connectionSize;
-      child.x = x;
+      child.x = x - getRandomNumber(1, Math.floor(child.width / 2));
       child.y = y - child.height;
       break;
   }
