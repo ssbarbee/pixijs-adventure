@@ -5,11 +5,11 @@ import {
   Direction,
   getRandomConnectionLength,
   getRandomNumber,
-  getRandomRoomSize,
+  getRandomRectangleRoomSize,
   MAX_CONNECTION_LENGTH,
-  MAX_ROOM_SIZE,
+  MAX_RECTANGLE_ROOM_SIZE,
   MIN_CONNECTION_LENGTH,
-  MIN_ROOM_SIZE,
+  MIN_RECTANGLE_ROOM_SIZE,
   RectangleRoom,
   roomsOverlap,
   setPositionAndDimensions,
@@ -28,9 +28,9 @@ describe('Dungeon', () => {
 
   describe('getRandomRoomSize', () => {
     it('should return a room size within the predefined range', () => {
-      const size = getRandomRoomSize();
-      expect(size).toBeGreaterThanOrEqual(MIN_ROOM_SIZE);
-      expect(size).toBeLessThanOrEqual(MAX_ROOM_SIZE);
+      const size = getRandomRectangleRoomSize();
+      expect(size).toBeGreaterThanOrEqual(MIN_RECTANGLE_ROOM_SIZE);
+      expect(size).toBeLessThanOrEqual(MAX_RECTANGLE_ROOM_SIZE);
     });
   });
 

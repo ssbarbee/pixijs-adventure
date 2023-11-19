@@ -1,7 +1,7 @@
 import { Container, Graphics, Text } from 'pixi.js';
 
 import { Manager } from '../../../Manager';
-import { ConnectionRoom, Dungeon, RectangleRoom } from './Dungeon';
+import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from './Dungeon';
 const roomScaleFactor = 15;
 
 export class DungeonRenderer {
@@ -21,12 +21,14 @@ export class DungeonRenderer {
 
   draw(): void {
     // Use a queue for breadth-first traversal
-    const queue: RectangleRoom[] = [this.dungeon.root];
+    const queue: ConnectableRoom[] = [this.dungeon.root];
 
     while (queue.length > 0) {
       const currentRoom = queue.shift()!;
       if (currentRoom.type === 'rectangle') {
-        this.drawRectangleRoom(currentRoom);
+        this.drawRectangleRoom(currentRoom as RectangleRoom);
+      } else if (currentRoom.type === 'circular') {
+        this.drawCircularRoom(currentRoom as CircularRoom);
       }
       // Draw connections and add children to the queue
       currentRoom.connections.forEach((connection, index) => {
@@ -61,6 +63,31 @@ export class DungeonRenderer {
     const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 1.5, fill: 0xffffff });
     idText.x = room.x * roomScaleFactor + this.offsetX; // Adjust text position as needed
     idText.y = room.y * roomScaleFactor + this.offsetY;
+    this.graphics.addChild(idText);
+  }
+
+  private drawCircularRoom(room: CircularRoom): void {
+    this.graphics.beginFill(0x0099ff);
+    this.graphics.drawCircle(
+      room.x * roomScaleFactor + this.offsetX,
+      room.y * roomScaleFactor + this.offsetY,
+      room.radius * roomScaleFactor,
+    );
+    this.graphics.endFill();
+
+    // Draw a red dot at the x,y point
+    this.graphics.beginFill(0xff0000); // Red color
+    this.graphics.drawCircle(
+      room.x * roomScaleFactor + this.offsetX,
+      room.y * roomScaleFactor + this.offsetY,
+      2, // Radius of the dot
+    );
+    this.graphics.endFill();
+
+    // Draw Room ID
+    const idText = new Text(`${room.id}`, { fontSize: roomScaleFactor / 1.5, fill: 0xffffff });
+    idText.x = (room.x - room.radius) * roomScaleFactor + this.offsetX;
+    idText.y = (room.y - room.radius) * roomScaleFactor + this.offsetY;
     this.graphics.addChild(idText);
   }
 

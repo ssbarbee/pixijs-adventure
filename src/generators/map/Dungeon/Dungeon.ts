@@ -1,6 +1,8 @@
 // Constants for better readability and maintainability
-export const MIN_ROOM_SIZE = 3;
-export const MAX_ROOM_SIZE = 6;
+export const MIN_RECTANGLE_ROOM_SIZE = 3;
+export const MAX_RECTANGLE_ROOM_SIZE = 6;
+export const MIN_CIRCLE_ROOM_SIZE = 3;
+export const MAX_CIRCLE_ROOM_SIZE = 4;
 export const MIN_CONNECTION_LENGTH = 1;
 export const MAX_CONNECTION_LENGTH = 3;
 export const MAX_ATTEMPTS = 10;
@@ -18,15 +20,24 @@ interface BaseRoom {
   id: string;
   x: number;
   y: number;
-  type: 'rectangle' | 'connection';
+  type: 'rectangle' | 'circular' | 'connection';
 }
 
-export interface RectangleRoom extends BaseRoom {
+export interface ConnectableRoom extends BaseRoom {
+  type: 'rectangle' | 'circular';
+  children: ConnectableRoom[];
+  connections: ConnectionRoom[];
+}
+
+export interface CircularRoom extends ConnectableRoom {
+  type: 'circular';
+  radius: number;
+}
+
+export interface RectangleRoom extends ConnectableRoom {
   type: 'rectangle';
   width: number;
   height: number;
-  children: RectangleRoom[];
-  connections: ConnectionRoom[];
 }
 
 export interface ConnectionRoom extends BaseRoom {
@@ -44,15 +55,22 @@ export function getRandomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function getRandomRoomSize(): number {
-  return getRandomNumber(MIN_ROOM_SIZE, MAX_ROOM_SIZE);
+export function getRandomRectangleRoomSize(): number {
+  return getRandomNumber(MIN_RECTANGLE_ROOM_SIZE, MAX_RECTANGLE_ROOM_SIZE);
+}
+
+export function getRandomCircleRoomSize(): number {
+  return getRandomNumber(MIN_CIRCLE_ROOM_SIZE, MAX_CIRCLE_ROOM_SIZE);
 }
 
 export function getRandomConnectionLength(): number {
   return getRandomNumber(MIN_CONNECTION_LENGTH, MAX_CONNECTION_LENGTH);
 }
 
-export function roomsOverlap(room1: RectangleRoom, room2: RectangleRoom): boolean {
+export function roomsOverlapCoordinates(
+  room1: Omit<RectangleRoom, 'id' | 'connections' | 'type' | 'children'>,
+  room2: Omit<RectangleRoom, 'id' | 'connections' | 'type' | 'children'>,
+): boolean {
   // Basic AABB collision detection
   return (
     room1.x < room2.x + room2.width &&
@@ -62,7 +80,29 @@ export function roomsOverlap(room1: RectangleRoom, room2: RectangleRoom): boolea
   );
 }
 
-export function checkOverlapRecursive(currentRoom: RectangleRoom, newRoom: RectangleRoom): boolean {
+export function roomsOverlap(room1: ConnectableRoom, room2: ConnectableRoom): boolean {
+  const convertToRect = (room: BaseRoom) => {
+    if (room.type === 'circular') {
+      const circular = room as CircularRoom;
+      return {
+        x: circular.x - circular.radius,
+        y: circular.y - circular.radius,
+        width: circular.radius * 2,
+        height: circular.radius * 2,
+      };
+    }
+    return room;
+  };
+
+  const rect1 = convertToRect(room1);
+  const rect2 = convertToRect(room2);
+  return roomsOverlapCoordinates(rect1 as RectangleRoom, rect2 as RectangleRoom);
+}
+
+export function checkOverlapRecursive(
+  currentRoom: ConnectableRoom,
+  newRoom: ConnectableRoom,
+): boolean {
   if (roomsOverlap(currentRoom, newRoom)) {
     return true;
   }
@@ -76,7 +116,7 @@ export function checkOverlapRecursive(currentRoom: RectangleRoom, newRoom: Recta
   return false;
 }
 
-export function checkOverlap(root: RectangleRoom, newRoom: RectangleRoom): boolean {
+export function checkOverlap(root: ConnectableRoom, newRoom: ConnectableRoom): boolean {
   return checkOverlapRecursive(root, newRoom);
 }
 
@@ -99,6 +139,18 @@ export function createRectangleRoom(
   };
 }
 
+export function createCircularRoom(id: string, x: number, y: number, radius: number): CircularRoom {
+  return {
+    id,
+    x,
+    y,
+    radius,
+    type: 'circular',
+    children: [],
+    connections: [],
+  };
+}
+
 export function createConnectionRoom(
   id: string,
   x: number,
@@ -115,19 +167,174 @@ export function createConnectionRoom(
     type: 'connection',
   };
 }
-
-export function createRoom(id: string): RectangleRoom {
-  const width = getRandomRoomSize();
-  const height = getRandomRoomSize();
-  return createRectangleRoom(id, 0, 0, width, height);
+// Function to randomly decide the room type
+function getRandomRoomType(): 'rectangle' | 'circular' {
+  return Math.random() < 0.5 ? 'rectangle' : 'circular';
 }
 
-export function adjustChildPosition(parent: RectangleRoom, child: RectangleRoom): void {
-  child.x += (Math.random() - 0.5) * parent.width;
-  child.y += (Math.random() - 0.5) * parent.height;
+export function createRoom(id: string): ConnectableRoom {
+  const roomType = getRandomRoomType();
+  if (roomType === 'rectangle') {
+    const width = getRandomRectangleRoomSize();
+    const height = getRandomRectangleRoomSize();
+    return createRectangleRoom(id, 0, 0, width, height);
+  } else {
+    const radius = getRandomCircleRoomSize();
+    return createCircularRoom(id, 0, 0, radius);
+  }
 }
 
-export function setPositionAndDimensions(
+export function adjustChildPosition(parent: ConnectableRoom, child: ConnectableRoom): void {
+  if (parent.type === 'rectangle') {
+    child.x += (Math.random() - 0.5) * (parent as RectangleRoom).width;
+    child.y += (Math.random() - 0.5) * (parent as RectangleRoom).height;
+  }
+  if (parent.type === 'circular') {
+    child.x += (Math.random() - 0.5) * (parent as CircularRoom).radius * 2;
+    child.y += (Math.random() - 0.5) * (parent as CircularRoom).radius * 2;
+  }
+}
+
+export function setPositionAndDimensionsCircularRectangleRooms(
+  direction: Direction,
+  parent: CircularRoom,
+  child: RectangleRoom,
+  connectionSize: number,
+): { x: number; y: number; width: number; height: number } {
+  let x, y, width, height;
+
+  switch (direction) {
+    case Direction.Right:
+      x = parent.x + parent.radius; // Connection starts at the edge of the circle
+      y = parent.y - connectionSize / 2; // Vertically centered on the parent
+      width = connectionSize;
+      height = 1;
+      child.x = x + width; // The child's x starts after the connection
+      child.y = y + height / 2 - child.height / 2; // Center the child vertically
+      break;
+    case Direction.Bottom:
+      x = parent.x - connectionSize / 2; // Horizontally centered on the parent
+      y = parent.y + parent.radius; // Connection starts at the edge of the circle
+      width = 1;
+      height = connectionSize;
+      child.x = x + width / 2 - child.width / 2; // Center the child horizontally
+      child.y = y + height; // The child's y starts after the connection
+      break;
+    case Direction.Left:
+      x = parent.x - parent.radius - connectionSize; // Connection starts at the left edge of the circle
+      y = parent.y - connectionSize / 2; // Vertically centered on the parent
+      width = connectionSize;
+      height = 1;
+      child.x = x - child.width; // The child's x ends at the connection's start
+      child.y = y + height / 2 - child.height / 2; // Center the child vertically
+      break;
+    case Direction.Top:
+      x = parent.x - connectionSize / 2; // Horizontally centered on the parent
+      y = parent.y - parent.radius - connectionSize; // Connection starts at the top edge of the circle
+      width = 1;
+      height = connectionSize;
+      child.x = x + width / 2 - child.width / 2; // Center the child horizontally
+      child.y = y - child.height; // The child's y ends at the connection's start
+      break;
+  }
+
+  return { x, y, width, height };
+}
+export function setPositionAndDimensionsRectangleCircularRooms(
+  direction: Direction,
+  parent: RectangleRoom,
+  child: CircularRoom,
+  connectionSize: number,
+): { x: number; y: number; width: number; height: number } {
+  let x, y, width, height;
+
+  // Calculate the connection's position and size
+  switch (direction) {
+    case Direction.Right:
+      x = parent.x + parent.width;
+      y = parent.y + parent.height / 2 - connectionSize / 2;
+      width = connectionSize;
+      height = 1;
+      // Now set the circular child's center position
+      child.x = x + width + child.radius;
+      child.y = y + height / 2;
+      break;
+    case Direction.Bottom:
+      x = parent.x + parent.width / 2 - connectionSize / 2;
+      y = parent.y + parent.height;
+      width = 1;
+      height = connectionSize;
+      child.x = x + width / 2;
+      child.y = y + height + child.radius;
+      break;
+    case Direction.Left:
+      x = parent.x - connectionSize;
+      y = parent.y + parent.height / 2 - connectionSize / 2;
+      width = connectionSize;
+      height = 1;
+      child.x = x - child.radius;
+      child.y = y + height / 2;
+      break;
+    case Direction.Top:
+      x = parent.x + parent.width / 2 - connectionSize / 2;
+      y = parent.y - connectionSize;
+      width = 1;
+      height = connectionSize;
+      child.x = x + width / 2;
+      child.y = y - child.radius;
+      break;
+  }
+
+  return { x, y, width, height };
+}
+
+export function setPositionAndDimensionsCircularRooms(
+  direction: Direction,
+  parent: CircularRoom,
+  child: CircularRoom,
+  connectionSize: number,
+): { x: number; y: number; width: number; height: number } {
+  let x, y, width, height;
+
+  switch (direction) {
+    case Direction.Right:
+      x = parent.x + parent.radius;
+      y = parent.y;
+      width = connectionSize;
+      height = 1;
+      child.x = x + width + child.radius;
+      child.y = y;
+      break;
+    case Direction.Bottom:
+      x = parent.x;
+      y = parent.y + parent.radius;
+      width = 1;
+      height = connectionSize;
+      child.x = x;
+      child.y = y + height + child.radius;
+      break;
+    case Direction.Left:
+      x = parent.x - parent.radius - connectionSize;
+      y = parent.y;
+      width = connectionSize;
+      height = 1;
+      child.x = x - child.radius;
+      child.y = y;
+      break;
+    case Direction.Top:
+      x = parent.x;
+      y = parent.y - parent.radius - connectionSize;
+      width = 1;
+      height = connectionSize;
+      child.x = x;
+      child.y = y - child.radius;
+      break;
+  }
+
+  return { x, y, width, height };
+}
+
+export function setPositionAndDimensionsRectangleRooms(
   direction: Direction,
   parent: RectangleRoom,
   child: RectangleRoom,
@@ -173,10 +380,52 @@ export function setPositionAndDimensions(
   return { x, y, width, height };
 }
 
+export function setPositionAndDimensions(
+  direction: Direction,
+  parent: ConnectableRoom,
+  child: ConnectableRoom,
+  connectionSize: number,
+): { x: number; y: number; width: number; height: number } {
+  if (parent.type === 'rectangle' && child.type === 'rectangle') {
+    return setPositionAndDimensionsRectangleRooms(
+      direction,
+      parent as RectangleRoom,
+      child as RectangleRoom,
+      connectionSize,
+    );
+  }
+  if (parent.type === 'rectangle' && child.type === 'circular') {
+    return setPositionAndDimensionsRectangleCircularRooms(
+      direction,
+      parent as RectangleRoom,
+      child as CircularRoom,
+      connectionSize,
+    );
+  }
+  if (parent.type === 'circular' && child.type === 'rectangle') {
+    return setPositionAndDimensionsCircularRectangleRooms(
+      direction,
+      parent as CircularRoom,
+      child as RectangleRoom,
+      connectionSize,
+    );
+  }
+  if (parent.type === 'circular' && child.type === 'circular') {
+    return setPositionAndDimensionsCircularRooms(
+      direction,
+      parent as CircularRoom,
+      child as CircularRoom,
+      connectionSize,
+    );
+  }
+
+  throw new Error('unsupported rooms');
+}
+
 export function createConnection(
   root: RectangleRoom,
-  parent: RectangleRoom,
-  child: RectangleRoom,
+  parent: ConnectableRoom,
+  child: ConnectableRoom,
 ): ConnectionRoom | null {
   const connectionSize = getRandomConnectionLength();
   const direction = getRandomNumber(0, DIRECTION_COUNT - 1) as Direction;
@@ -200,14 +449,14 @@ export function createConnection(
 export function createInitialRoom(): RectangleRoom {
   const initialX = 0;
   const initialY = 0;
-  const width = getRandomRoomSize();
-  const height = getRandomRoomSize();
+  const width = getRandomRectangleRoomSize();
+  const height = getRandomRectangleRoomSize();
   return createRectangleRoom('0', initialX, initialY, width, height);
 }
 
-export function getAllRooms(root: RectangleRoom): RectangleRoom[] {
-  const allRooms: RectangleRoom[] = [];
-  const queue: RectangleRoom[] = [root];
+export function getAllRooms(root: ConnectableRoom): ConnectableRoom[] {
+  const allRooms: ConnectableRoom[] = [];
+  const queue: ConnectableRoom[] = [root];
 
   while (queue.length > 0) {
     const currentRoom = queue.shift()!;
@@ -218,7 +467,7 @@ export function getAllRooms(root: RectangleRoom): RectangleRoom[] {
   return allRooms;
 }
 
-export function selectRandomRoom(root: RectangleRoom): RectangleRoom {
+export function selectRandomRoom(root: ConnectableRoom): ConnectableRoom {
   const allRooms = getAllRooms(root);
   return allRooms[Math.floor(Math.random() * allRooms.length)];
 }
@@ -226,7 +475,7 @@ export function selectRandomRoom(root: RectangleRoom): RectangleRoom {
 export function generateDungeon(totalRooms: number): Dungeon {
   const root = createInitialRoom();
   let roomsCount = 1;
-  const queue: RectangleRoom[] = [root];
+  const queue: ConnectableRoom[] = [root];
 
   while (roomsCount < totalRooms) {
     const currentRoom = queue.length > 0 ? queue.shift()! : selectRandomRoom(root);
