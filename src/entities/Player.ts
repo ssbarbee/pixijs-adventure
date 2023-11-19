@@ -1,23 +1,25 @@
 import { Sprite, Texture } from 'pixi.js';
 
-import { isGrass } from '../utils/isGrass';
-
 export class Player extends Sprite {
-  private world: string[][]; // Add a property for the world array
   private tileSize: number;
   private keysPressed: Set<string> = new Set(); // Holds the keys that are currently pressed
+  private onPositionUpdate: (x: number, y: number) => boolean;
 
-  constructor(tileSize: number, startingX: number, startingY: number, world: string[][]) {
+  constructor(
+    tileSize: number,
+    startingX: number,
+    startingY: number,
+    onPositionUpdate: (x: number, y: number) => boolean,
+  ) {
     const texture = Texture.from('player');
     super(texture);
 
     this.tileSize = tileSize;
-    this.world = world;
     this.scale.set(this.tileSize / this.width, this.tileSize / this.height);
     this.anchor.set(0.5, 0.5);
     this.x = startingX * this.tileSize + this.tileSize / 2;
     this.y = startingY * this.tileSize + this.tileSize / 2;
-
+    this.onPositionUpdate = onPositionUpdate;
     // Add keyboard event listeners for both keydown and keyup
     window.addEventListener('keydown', this.handleKeyDown.bind(this));
     window.addEventListener('keyup', this.handleKeyUp.bind(this));
@@ -62,12 +64,7 @@ export class Player extends Sprite {
     const edgeTileX = Math.floor(edgeX / this.tileSize);
     const edgeTileY = Math.floor(edgeY / this.tileSize);
 
-    // Check if the edge position is a wall
-    const isGrassTile =
-      this.world[edgeTileX] &&
-      this.world[edgeTileX][edgeTileY] &&
-      isGrass(this.world[edgeTileX][edgeTileY]);
-    if (isGrassTile) {
+    if (this.onPositionUpdate(edgeTileX, edgeTileY)) {
       this.x = newX;
       this.y = newY;
     }

@@ -2,6 +2,7 @@ import { Container, Graphics } from 'pixi.js';
 
 import { Player } from '../../entities/Player';
 import { IScene, Manager } from '../../Manager';
+import { isGrass } from '../../utils/isGrass';
 import { drawMinimapTerrainTile } from './drawMinimapTile';
 import { drawTerrainTile } from './drawTerrainTile';
 
@@ -9,12 +10,14 @@ export class GameProgramaticScene extends Container implements IScene {
   private tileSize: number = 32;
   private worldContainer: Container;
   private player: Player;
+  private world: string[][];
   private minimap: Container;
   private minimapScale: number = 0.05; // Adjust this value as needed
   private playerDot: Graphics = new Graphics();
 
   constructor(world: string[][], playerStartingX: number, playerStartingY: number) {
     super();
+    this.world = world;
 
     // Create a container for the entire world
     this.worldContainer = new Container();
@@ -26,7 +29,9 @@ export class GameProgramaticScene extends Container implements IScene {
     this.renderWorld(world);
 
     // Create the player
-    this.player = new Player(this.tileSize, playerStartingX, playerStartingY, world);
+    this.player = new Player(this.tileSize, playerStartingX, playerStartingY, (newX, newY) =>
+      this.onPlayerPositionUpdate(newX, newY),
+    );
 
     // Add the player to the GameScene container (worldContainer)
     this.worldContainer.addChild(this.player);
@@ -80,6 +85,13 @@ export class GameProgramaticScene extends Container implements IScene {
         this.worldContainer.addChild(tileGraphics);
       }
     }
+  }
+
+  private onPlayerPositionUpdate(newX: number, newY: number) {
+    // Check if the edge position is a wall
+    const isGrassTile =
+      this.world[newX] && this.world[newX][newY] && isGrass(this.world[newX][newY]);
+    return Boolean(isGrassTile);
   }
 
   private centerCameraOnPlayer() {
