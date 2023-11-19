@@ -1,7 +1,7 @@
 import { Container, Graphics, Text } from 'pixi.js';
 
-import { Manager } from '../../../Manager';
-import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from './Dungeon';
+import { Manager } from '../../../../Manager';
+import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../Dungeon';
 const roomScaleFactor = 15;
 
 export class DungeonRenderer {
