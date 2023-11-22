@@ -1,16 +1,23 @@
 import { Graphics, Sprite, Texture } from 'pixi.js';
 
+export type PlayerBox = {
+  left: number;
+  right: number;
+  bottom: number;
+  top: number;
+};
+
 export class Player extends Sprite {
   private tileSize: number;
   private keysPressed: Set<string> = new Set(); // Holds the keys that are currently pressed
-  private onPositionUpdate: (x: number, y: number) => boolean;
+  private onPositionUpdate: (box: PlayerBox) => boolean;
   private dot: Graphics;
 
   constructor(
     tileSize: number,
     startingX: number,
     startingY: number,
-    onPositionUpdate: (x: number, y: number) => boolean,
+    onPositionUpdate: (box: PlayerBox) => boolean,
   ) {
     const texture = Texture.from('player');
     super(texture);
@@ -57,7 +64,7 @@ export class Player extends Sprite {
   private move(framesPassed: number) {
     if (this.keysPressed.size !== 0) {
       // Use framesPassed to account for frame rate
-      const baseMoveSpeed = this.tileSize / 4; // Base move speed, you can adjust this as needed
+      const baseMoveSpeed = this.tileSize * 0.1; // Base move speed, you can adjust this as needed
       const moveSpeed = baseMoveSpeed * framesPassed; // Scale move speed by frames passed
 
       let newX = this.x;
@@ -68,7 +75,20 @@ export class Player extends Sprite {
       if (this.keysPressed.has('ArrowLeft')) newX -= moveSpeed;
       if (this.keysPressed.has('ArrowRight')) newX += moveSpeed;
 
-      if (this.onPositionUpdate(newX, newY)) {
+      // Calculate the bounds of the player
+      const left = newX;
+      const right = newX + this.width - 1;
+      const top = newY;
+      const bottom = newY + this.height - 1;
+
+      if (
+        this.onPositionUpdate({
+          left,
+          right,
+          top,
+          bottom,
+        })
+      ) {
         this.x = newX;
         this.y = newY;
       }

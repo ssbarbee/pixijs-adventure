@@ -381,15 +381,9 @@ function isPointInsideAnyRoom(node: ConnectableRoom, x: number, y: number): bool
 }
 
 // Main function to check if the player's square is hitting a wall
-export function isWallAt(node: ConnectableRoom, x: number, y: number, size: number): boolean {
-  // Check every point in the player's square
-  for (let offsetX = 0; offsetX < size; offsetX++) {
-    for (let offsetY = 0; offsetY < size; offsetY++) {
-      // If any point of the player's square is not inside any room, it's hitting a wall
-      if (!isPointInsideAnyRoom(node, x + offsetX, y + offsetY)) {
-        return true;
-      }
-    }
+export function isWallAt(node: ConnectableRoom, x: number, y: number): boolean {
+  if (!isPointInsideAnyRoom(node, x, y)) {
+    return true;
   }
   // All points of the player's square are inside rooms, so it's not hitting a wall
   return false;

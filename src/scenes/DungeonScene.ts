@@ -1,6 +1,6 @@
 import { Container, Text } from 'pixi.js';
 
-import { Player } from '../entities/Player';
+import { Player, PlayerBox } from '../entities/Player';
 import { Dungeon, DungeonRenderer, generateDungeon } from '../generators/map/Dungeon';
 import { isWallAt } from '../generators/map/Dungeon/Dungeon';
 import { IScene, Manager } from '../Manager';
@@ -24,8 +24,8 @@ export class DungeonScene extends Container implements IScene {
     this.generateAndDrawDungeon();
 
     // Create the player
-    this.player = new Player(this.tileSize, Manager.width / 2, Manager.height / 2, (newX, newY) =>
-      this.onPlayerPositionUpdate(newX, newY),
+    this.player = new Player(this.tileSize, Manager.width / 2, Manager.height / 2, (box) =>
+      this.onPlayerPositionUpdate(box),
     );
 
     // Add the player to the GameScene container (worldContainer)
@@ -37,17 +37,25 @@ export class DungeonScene extends Container implements IScene {
     window.addEventListener('keypress', (e) => this.handleKeypress(e));
   }
 
-  private onPlayerPositionUpdate(newX: number, newY: number) {
-    // Convert screen coordinates (newX, newY) to dungeon coordinates
-    const dungeonX = (newX - Manager.width / 2) / this.tileSize;
-    const dungeonY = (newY - Manager.height / 2) / this.tileSize;
+  private onPlayerPositionUpdate({ left, right, top, bottom }: PlayerBox) {
     if (!this.dungeon) {
       return false;
     }
-    // Prevent the move if there's a wall
-    if (isWallAt(this.dungeon.root, dungeonX, dungeonY, 1)) {
-      return false;
+
+    // Check if any corner of the player is on a non-grass tile
+    for (let x = left; x <= right; x++) {
+      for (let y = top; y <= bottom; y++) {
+        // Convert screen coordinates (newX, newY) to dungeon coordinates
+        const dungeonX = (x - Manager.width / 2) / this.tileSize;
+        const dungeonY = (y - Manager.height / 2) / this.tileSize;
+
+        // Prevent the move if there's a wall
+        if (isWallAt(this.dungeon.root, dungeonX, dungeonY)) {
+          return false;
+        }
+      }
     }
+
     // Move was successful
     return true;
   }

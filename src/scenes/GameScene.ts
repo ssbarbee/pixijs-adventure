@@ -1,6 +1,6 @@
 import { Container, Graphics } from 'pixi.js';
 
-import { Player } from '../entities/Player';
+import { Player, PlayerBox } from '../entities/Player';
 import { generateTerrainSprite } from '../entities/terrainFactory';
 import { IScene, Manager } from '../Manager';
 import { isGrass } from '../utils/isGrass';
@@ -32,7 +32,7 @@ export class GameScene extends Container implements IScene {
       this.tileSize,
       playerStartingX * this.tileSize,
       playerStartingY * this.tileSize,
-      (newX, newY) => this.onPlayerPositionUpdate(newX, newY),
+      (box) => this.onPlayerPositionUpdate(box),
     );
 
     // Add the player to the GameScene container (worldContainer)
@@ -89,16 +89,18 @@ export class GameScene extends Container implements IScene {
     }
   }
 
-  private onPlayerPositionUpdate(newX: number, newY: number) {
-    const gameSceneX = Math.floor(newX / this.tileSize);
-    const gameSceneY = Math.floor(newY / this.tileSize);
+  private onPlayerPositionUpdate({ left, right, top, bottom }: PlayerBox) {
+    // Check if any corner of the player is on a non-grass tile
+    for (let x = left; x <= right; x++) {
+      for (let y = top; y <= bottom; y++) {
+        if (this.world[x] && this.world[x][y] && isGrass(this.world[x][y])) {
+          // Collision detected, don't move the player
+          return false;
+        }
+      }
+    }
 
-    // Check if the edge position is a wall
-    const isGrassTile =
-      this.world[gameSceneX] &&
-      this.world[gameSceneX][gameSceneY] &&
-      isGrass(this.world[gameSceneX][gameSceneY]);
-    return Boolean(isGrassTile);
+    return true;
   }
 
   private centerCameraOnPlayer() {
