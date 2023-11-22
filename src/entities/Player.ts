@@ -1,9 +1,10 @@
-import { Sprite, Texture } from 'pixi.js';
+import { Graphics, Sprite, Texture } from 'pixi.js';
 
 export class Player extends Sprite {
   private tileSize: number;
   private keysPressed: Set<string> = new Set(); // Holds the keys that are currently pressed
   private onPositionUpdate: (x: number, y: number) => boolean;
+  private dot: Graphics;
 
   constructor(
     tileSize: number,
@@ -16,13 +17,23 @@ export class Player extends Sprite {
 
     this.tileSize = tileSize;
     this.scale.set(this.tileSize / this.width, this.tileSize / this.height);
-    this.anchor.set(0.5, 0.5);
     this.x = startingX;
     this.y = startingY;
     this.onPositionUpdate = onPositionUpdate;
     // Add keyboard event listeners for both keydown and keyup
     window.addEventListener('keydown', this.handleKeyDown.bind(this));
     window.addEventListener('keyup', this.handleKeyUp.bind(this));
+    // Initialize the dot
+    this.dot = new Graphics();
+    this.addChild(this.dot); // Add the dot as a child of the player sprite
+    this.drawDot();
+  }
+
+  private drawDot() {
+    this.dot.clear();
+    this.dot.beginFill(0x00ff00); // Green color
+    this.dot.drawCircle(0, 0, 2); // Draw a circle at the player's center
+    this.dot.endFill();
   }
 
   private handleKeyDown(event: KeyboardEvent) {
@@ -35,38 +46,32 @@ export class Player extends Sprite {
   }
 
   public update(framesPassed: number) {
-    // Use framesPassed to account for frame rate
-    const baseMoveSpeed = 5; // Base move speed, you can adjust this as needed
-    const moveSpeed = baseMoveSpeed * framesPassed; // Scale move speed by frames passed
+    if (this.keysPressed.size === 0) {
+      return;
+    }
 
-    let newX = this.x;
-    let newY = this.y;
+    this.move(framesPassed);
+    this.drawDot();
+  }
 
-    // Check for each key in the keysPressed set and move accordingly
-    if (this.keysPressed.has('ArrowUp')) newY -= moveSpeed;
-    if (this.keysPressed.has('ArrowDown')) newY += moveSpeed;
-    if (this.keysPressed.has('ArrowLeft')) newX -= moveSpeed;
-    if (this.keysPressed.has('ArrowRight')) newX += moveSpeed;
+  private move(framesPassed: number) {
+    if (this.keysPressed.size !== 0) {
+      // Use framesPassed to account for frame rate
+      const baseMoveSpeed = this.tileSize / 4; // Base move speed, you can adjust this as needed
+      const moveSpeed = baseMoveSpeed * framesPassed; // Scale move speed by frames passed
 
-    // Calculate the edges of the player in the direction of movement
-    const halfWidth = this.width / 2;
-    const halfHeight = this.height / 2;
+      let newX = this.x;
+      let newY = this.y;
+      // Check for each key in the keysPressed set and move accordingly
+      if (this.keysPressed.has('ArrowUp')) newY -= moveSpeed;
+      if (this.keysPressed.has('ArrowDown')) newY += moveSpeed;
+      if (this.keysPressed.has('ArrowLeft')) newX -= moveSpeed;
+      if (this.keysPressed.has('ArrowRight')) newX += moveSpeed;
 
-    let edgeX = newX;
-    let edgeY = newY;
-
-    if (this.keysPressed.has('ArrowUp')) edgeY -= halfHeight;
-    if (this.keysPressed.has('ArrowDown')) edgeY += halfHeight;
-    if (this.keysPressed.has('ArrowLeft')) edgeX -= halfWidth;
-    if (this.keysPressed.has('ArrowRight')) edgeX += halfWidth;
-
-    // Calculate the tile coordinates of the edge
-    const edgeTileX = Math.floor(edgeX / this.tileSize);
-    const edgeTileY = Math.floor(edgeY / this.tileSize);
-
-    if (this.onPositionUpdate(edgeTileX, edgeTileY)) {
-      this.x = newX;
-      this.y = newY;
+      if (this.onPositionUpdate(newX, newY)) {
+        this.x = newX;
+        this.y = newY;
+      }
     }
   }
 

@@ -91,9 +91,14 @@ export class GameProgramaticScene extends Container implements IScene {
   }
 
   private onPlayerPositionUpdate(newX: number, newY: number) {
+    const edgeTileX = Math.floor(newX / this.tileSize);
+    const edgeTileY = Math.floor(newY / this.tileSize);
+
     // Check if the edge position is a wall
     const isGrassTile =
-      this.world[newX] && this.world[newX][newY] && isGrass(this.world[newX][newY]);
+      this.world[edgeTileX] &&
+      this.world[edgeTileX][edgeTileY] &&
+      isGrass(this.world[edgeTileX][edgeTileY]);
     return Boolean(isGrassTile);
   }
 

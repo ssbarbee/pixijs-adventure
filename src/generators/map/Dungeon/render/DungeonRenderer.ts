@@ -76,9 +76,6 @@ export class DungeonRenderer {
     );
     this.graphics.endFill();
 
-    // Draw a red dot at the center
-    this.drawRedDot(room.x, room.y);
-
     // Create a graphics object for the tiles
     const tilesGraphics = new Graphics();
 
@@ -118,6 +115,8 @@ export class DungeonRenderer {
     this.graphics.addChild(maskGraphics);
     this.graphics.addChild(tilesGraphics);
 
+    // Draw a red dot at the center
+    this.drawRedDot(room.x, room.y);
     // Draw Room ID (if needed)
     this.drawRoomID(room);
   }
@@ -150,13 +149,15 @@ export class DungeonRenderer {
   }
 
   private drawRedDot(x: number, y: number): void {
-    this.graphics.beginFill(0xff0000); // Red color
-    this.graphics.drawCircle(
+    const graphics = new Graphics();
+    graphics.beginFill(0xff0000); // Red color
+    graphics.drawCircle(
       x * this.tileSize + this.offsetX,
       y * this.tileSize + this.offsetY,
-      2, // Radius of the dot
+      this.tileSize / 8, // Radius of the dot
     );
-    this.graphics.endFill();
+    graphics.endFill();
+    this.graphics.addChild(graphics);
   }
 
   private drawRoomID(room: ConnectableRoom | ConnectionRoom): void {

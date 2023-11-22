@@ -332,3 +332,65 @@ export function generateDungeon(totalRooms: number): Dungeon {
 
   return { root };
 }
+// Helper function to check if a point is inside a rectangle
+function isPointInsideRectangle(rect: RectangleRoom, x: number, y: number): boolean {
+  return x >= rect.x && x < rect.x + rect.width && y >= rect.y && y < rect.y + rect.height;
+}
+
+// Helper function to check if a point is inside a circle
+function isPointInsideCircle(circle: CircularRoom, x: number, y: number): boolean {
+  const dx = x - circle.x;
+  const dy = y - circle.y;
+  const distanceSquared = dx * dx + dy * dy;
+  return distanceSquared < circle.radius * circle.radius;
+}
+
+// Helper function to check if a point is inside any room or connection in the dungeon
+function isPointInsideAnyRoom(node: ConnectableRoom, x: number, y: number): boolean {
+  // Check if the point is inside the current room
+  if (node.type === 'rectangle' && isPointInsideRectangle(node as RectangleRoom, x, y)) {
+    return true;
+  }
+  if (node.type === 'circular' && isPointInsideCircle(node as CircularRoom, x, y)) {
+    return true;
+  }
+
+  // Check if the point is inside any connection
+  for (const connection of node.connections) {
+    if (connection.width === 1) {
+      // Vertical connection
+      if (x === connection.x && y >= connection.y && y < connection.y + connection.height) {
+        return true;
+      }
+    } else if (connection.height === 1) {
+      // Horizontal connection
+      if (y === connection.y && x >= connection.x && x < connection.x + connection.width) {
+        return true;
+      }
+    }
+  }
+
+  // Recursively check child rooms
+  for (const child of node.children) {
+    if (isPointInsideAnyRoom(child, x, y)) {
+      return true;
+    }
+  }
+  // The point is not inside any room or connection
+  return false;
+}
+
+// Main function to check if the player's square is hitting a wall
+export function isWallAt(node: ConnectableRoom, x: number, y: number, size: number): boolean {
+  // Check every point in the player's square
+  for (let offsetX = 0; offsetX < size; offsetX++) {
+    for (let offsetY = 0; offsetY < size; offsetY++) {
+      // If any point of the player's square is not inside any room, it's hitting a wall
+      if (!isPointInsideAnyRoom(node, x + offsetX, y + offsetY)) {
+        return true;
+      }
+    }
+  }
+  // All points of the player's square are inside rooms, so it's not hitting a wall
+  return false;
+}
