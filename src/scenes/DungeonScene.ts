@@ -8,6 +8,7 @@ import { IScene, Manager } from '../Manager';
 export class DungeonScene extends Container implements IScene {
   private player: Player;
   private tileSize = 64;
+  private playerTileSize = 32;
   private worldContainer: Container;
   private dungeon: Dungeon | null = null;
   private debugText: Text | null = null;
@@ -24,7 +25,7 @@ export class DungeonScene extends Container implements IScene {
     this.generateAndDrawDungeon();
 
     // Create the player
-    this.player = new Player(this.tileSize, Manager.width / 2, Manager.height / 2, (box) =>
+    this.player = new Player(this.playerTileSize, Manager.width / 2, Manager.height / 2, (box) =>
       this.onPlayerPositionUpdate(box),
     );
 
