@@ -22,7 +22,6 @@ export enum Direction {
   Top,
 }
 
-const c = 0;
 // Function to randomly decide the room type
 function getRandomRoomType(): 'rectangle' | 'circular' {
   return Math.random() < 0.5 ? 'rectangle' : 'circular';
