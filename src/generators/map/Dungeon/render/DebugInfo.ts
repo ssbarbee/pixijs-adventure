@@ -1,4 +1,4 @@
-import { Container, Graphics, Text } from 'pixi.js';
+import { Container, Graphics, Text, Ticker } from 'pixi.js';
 
 import { INK_COLOR, TILE_COLOR } from '../../../../constants';
 
@@ -14,7 +14,9 @@ export class DebugInfo {
   }
 
   public draw({ playerX, playerY }: { playerX: number; playerY: number }): void {
-    const debugInfo = `Player: x:${playerX}, y:${playerY}`;
+    const debugInfo = `Player: x:${playerX.toFixed(3)}, y:${playerY.toFixed(
+      3,
+    )},\nFPS:${Ticker.shared.FPS.toFixed(2)}`;
 
     if (!this.debugText) {
       this.debugText = new Text(debugInfo, {
