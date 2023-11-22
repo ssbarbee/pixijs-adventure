@@ -333,7 +333,14 @@ export function generateDungeon(totalRooms: number): Dungeon {
   return { root };
 }
 // Helper function to check if a point is inside a rectangle
-function isPointInsideRectangle(rect: RectangleRoom, x: number, y: number): boolean {
+interface IRectangle {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+function isPointInsideRectangle(rect: IRectangle, x: number, y: number): boolean {
   return x >= rect.x && x < rect.x + rect.width && y >= rect.y && y < rect.y + rect.height;
 }
 
@@ -357,16 +364,8 @@ function isPointInsideAnyRoom(node: ConnectableRoom, x: number, y: number): bool
 
   // Check if the point is inside any connection
   for (const connection of node.connections) {
-    if (connection.width === 1) {
-      // Vertical connection
-      if (x === connection.x && y >= connection.y && y < connection.y + connection.height) {
-        return true;
-      }
-    } else if (connection.height === 1) {
-      // Horizontal connection
-      if (y === connection.y && x >= connection.x && x < connection.x + connection.width) {
-        return true;
-      }
+    if (isPointInsideRectangle(connection, x, y)) {
+      return true;
     }
   }
 
