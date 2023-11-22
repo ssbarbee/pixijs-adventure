@@ -30,8 +30,8 @@ export class GameScene extends Container implements IScene {
     // Create the player
     this.player = new Player(
       this.tileSize,
-      playerStartingX * this.tileSize + this.tileSize / 2,
-      playerStartingY * this.tileSize + this.tileSize / 2,
+      playerStartingX * this.tileSize,
+      playerStartingY * this.tileSize,
       (newX, newY) => this.onPlayerPositionUpdate(newX, newY),
     );
 
@@ -90,14 +90,14 @@ export class GameScene extends Container implements IScene {
   }
 
   private onPlayerPositionUpdate(newX: number, newY: number) {
-    const edgeTileX = Math.floor(newX / this.tileSize);
-    const edgeTileY = Math.floor(newY / this.tileSize);
+    const gameSceneX = Math.floor(newX / this.tileSize);
+    const gameSceneY = Math.floor(newY / this.tileSize);
 
     // Check if the edge position is a wall
     const isGrassTile =
-      this.world[edgeTileX] &&
-      this.world[edgeTileX][edgeTileY] &&
-      isGrass(this.world[edgeTileX][edgeTileY]);
+      this.world[gameSceneX] &&
+      this.world[gameSceneX][gameSceneY] &&
+      isGrass(this.world[gameSceneX][gameSceneY]);
     return Boolean(isGrassTile);
   }
 

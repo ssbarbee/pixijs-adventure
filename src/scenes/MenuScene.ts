@@ -27,12 +27,12 @@ export class MenuScene extends Container implements IScene {
     this.titleText.anchor.set(0.5);
     this.addChild(this.titleText);
 
-    this.cellularMapSceneButton = this.createAnimatedButton('CellularMapGenerator', () => {
+    this.cellularMapSceneButton = this.createAnimatedButton('Woods', () => {
       // Handle New Game button click
       const { world, playerStartingY, playerStartingX } = generateWorld(128, 128);
       Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
     });
-    this.noiseMapSceneButton = this.createAnimatedButton('NoiseMapSceneButton', () => {
+    this.noiseMapSceneButton = this.createAnimatedButton('Terrain', () => {
       // Handle New Game button click
       const { world, playerStartingY, playerStartingX } = generateNoiseWorld({
         width: 128,
