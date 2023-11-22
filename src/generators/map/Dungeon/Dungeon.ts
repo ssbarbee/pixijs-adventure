@@ -12,6 +12,7 @@ import { selectRandomRoom } from './utils/selectRandomRoom';
 
 export const MAX_ATTEMPTS = 10;
 export const DIRECTION_COUNT = 4;
+export const WALL_THICKNESS = 0.1; // Adjust as per your requirement
 
 // Enum for directions
 export enum Direction {
@@ -21,6 +22,7 @@ export enum Direction {
   Top,
 }
 
+const c = 0;
 // Function to randomly decide the room type
 function getRandomRoomType(): 'rectangle' | 'circular' {
   return Math.random() < 0.5 ? 'rectangle' : 'circular';
@@ -62,23 +64,23 @@ export function setPositionAndDimensionsCircularRectangleRooms(
 
   switch (direction) {
     case Direction.Right:
-      x = parent.x + parent.radius; // Connection starts at the edge of the circle
+      x = parent.x + parent.radius - WALL_THICKNESS; // Connection starts at the edge of the circle
       y = parent.y - 0.5; // Vertically centered on the parent
       width = connectionSize;
       height = 1;
-      child.x = x + width; // The child's x starts after the connection
-      child.y = y - getRandomNumber(1, Math.floor(child.height / 2)); // Center the child vertically
+      child.x = x + width;
+      child.y = y - getRandomNumber(1, Math.floor(child.height / 2));
       break;
     case Direction.Bottom:
       x = parent.x - 0.5; // Horizontally centered on the parent
-      y = parent.y + parent.radius; // Connection starts at the edge of the circle
+      y = parent.y + parent.radius - WALL_THICKNESS; // Connection starts at the edge of the circle
       width = 1;
       height = connectionSize;
       child.x = x - getRandomNumber(1, Math.floor(child.width / 2));
       child.y = y + height; // The child's y starts after the connection
       break;
     case Direction.Left:
-      x = parent.x - parent.radius - connectionSize; // Connection starts at the left edge of the circle
+      x = parent.x - parent.radius - connectionSize + WALL_THICKNESS; // Connection starts at the left edge of the circle
       y = parent.y - 0.5; // Vertically centered on the parent
       width = connectionSize;
       height = 1;
@@ -87,7 +89,7 @@ export function setPositionAndDimensionsCircularRectangleRooms(
       break;
     case Direction.Top:
       x = parent.x - 0.5; // Horizontally centered on the parent
-      y = parent.y - parent.radius - connectionSize; // Connection starts at the top edge of the circle
+      y = parent.y - parent.radius - connectionSize + WALL_THICKNESS; // Connection starts at the top edge of the circle
       width = 1;
       height = connectionSize;
       child.x = x - getRandomNumber(1, Math.floor(child.width / 2));
@@ -106,15 +108,13 @@ export function setPositionAndDimensionsRectangleCircularRooms(
 ): { x: number; y: number; width: number; height: number } {
   let x, y, width, height;
 
-  // Calculate the connection's position and size
   switch (direction) {
     case Direction.Right:
       x = parent.x + parent.width;
       y = parent.y + (parent.height - getRandomNumber(1, parent.height - 1));
       width = connectionSize;
       height = 1;
-      // Now set the circular child's center position
-      child.x = x + width + child.radius;
+      child.x = x + width + child.radius - WALL_THICKNESS;
       child.y = y + height / 2;
       break;
     case Direction.Bottom:
@@ -123,14 +123,14 @@ export function setPositionAndDimensionsRectangleCircularRooms(
       width = 1;
       height = connectionSize;
       child.x = x + width / 2;
-      child.y = y + height + child.radius;
+      child.y = y + height + child.radius - WALL_THICKNESS;
       break;
     case Direction.Left:
       x = parent.x - connectionSize;
       y = parent.y + (parent.height - getRandomNumber(1, parent.height - 1));
       width = connectionSize;
       height = 1;
-      child.x = x - child.radius;
+      child.x = x - child.radius + WALL_THICKNESS;
       child.y = y + height / 2;
       break;
     case Direction.Top:
@@ -139,7 +139,7 @@ export function setPositionAndDimensionsRectangleCircularRooms(
       width = 1;
       height = connectionSize;
       child.x = x + width / 2;
-      child.y = y - child.radius;
+      child.y = y - child.radius + WALL_THICKNESS;
       break;
   }
 
@@ -156,36 +156,36 @@ export function setPositionAndDimensionsCircularRooms(
 
   switch (direction) {
     case Direction.Right:
-      x = parent.x + parent.radius;
+      x = parent.x + parent.radius - WALL_THICKNESS;
       y = parent.y - 0.5;
       width = connectionSize;
       height = 1;
-      child.x = x + width + child.radius;
+      child.x = x + width + child.radius - WALL_THICKNESS;
       child.y = parent.y;
       break;
     case Direction.Bottom:
       x = parent.x - 0.5;
-      y = parent.y + parent.radius;
+      y = parent.y + parent.radius - WALL_THICKNESS;
       width = 1;
       height = connectionSize;
       child.x = parent.x;
-      child.y = y + height + child.radius;
+      child.y = y + height + child.radius - WALL_THICKNESS;
       break;
     case Direction.Left:
-      x = parent.x - parent.radius - connectionSize;
+      x = parent.x - parent.radius - connectionSize + WALL_THICKNESS;
       y = parent.y - 0.5;
       width = connectionSize;
       height = 1;
-      child.x = x - child.radius;
+      child.x = x - child.radius + WALL_THICKNESS;
       child.y = parent.y;
       break;
     case Direction.Top:
       x = parent.x - 0.5;
-      y = parent.y - parent.radius - connectionSize;
+      y = parent.y - parent.radius - connectionSize + WALL_THICKNESS;
       width = 1;
       height = connectionSize;
       child.x = parent.x;
-      child.y = y - child.radius;
+      child.y = y - child.radius + WALL_THICKNESS;
       break;
   }
 

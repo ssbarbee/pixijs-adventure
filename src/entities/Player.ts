@@ -64,7 +64,7 @@ export class Player extends Sprite {
   private move(framesPassed: number) {
     if (this.keysPressed.size !== 0) {
       // Use framesPassed to account for frame rate
-      const baseMoveSpeed = this.tileSize * 0.1; // Base move speed, you can adjust this as needed
+      const baseMoveSpeed = this.tileSize * 0.2; // Base move speed, you can adjust this as needed
       const moveSpeed = baseMoveSpeed * framesPassed; // Scale move speed by frames passed
 
       let newX = this.x;

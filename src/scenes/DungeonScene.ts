@@ -1,20 +1,22 @@
-import { Container, Text } from 'pixi.js';
+import { Container } from 'pixi.js';
 
 import { Player, PlayerBox } from '../entities/Player';
 import { Dungeon, DungeonRenderer, generateDungeon } from '../generators/map/Dungeon';
 import { isWallAt } from '../generators/map/Dungeon/Dungeon';
+import { DebugInfo } from '../generators/map/Dungeon/render/DebugInfo';
 import { IScene, Manager } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {
   private player: Player;
-  private tileSize = 64;
-  private playerTileSize = 32;
+  private tileSize = Manager.width / 32;
+  private playerTileSize = this.tileSize / 2;
   private worldContainer: Container;
   private dungeon: Dungeon | null = null;
-  private debugText: Text | null = null;
+  private debugInfo: DebugInfo;
 
   constructor() {
     super();
+    this.sortableChildren = true;
 
     // Create a container for the entire world
     this.worldContainer = new Container();
@@ -34,6 +36,8 @@ export class DungeonScene extends Container implements IScene {
 
     // Call centerCameraOnPlayer to initially center the world container on the player
     this.centerCameraOnPlayer();
+
+    this.debugInfo = new DebugInfo(this, this.tileSize);
 
     window.addEventListener('keypress', (e) => this.handleKeypress(e));
   }
@@ -66,7 +70,7 @@ export class DungeonScene extends Container implements IScene {
     this.worldContainer.removeChildren();
 
     // Generate and draw the new dungeon
-    const dungeon = generateDungeon(2);
+    const dungeon = generateDungeon(10);
     this.dungeon = dungeon;
     const dungeonRenderer = new DungeonRenderer(dungeon, this.tileSize);
     const dungeonGraphics = dungeonRenderer.draw();
@@ -102,30 +106,16 @@ export class DungeonScene extends Container implements IScene {
   private normalizeXtoDungeonX(x: number) {
     return (x - Manager.width / 2) / this.tileSize;
   }
+
   private normalizeYtoDungeonY(y: number) {
     return (y - Manager.height / 2) / this.tileSize;
   }
-  private drawDebugInfo(): void {
-    const debugInfo = `Player: x:${this.normalizeXtoDungeonX(
-      this.player.x,
-    )}, y:${this.normalizeYtoDungeonY(this.player.y)}`;
 
-    if (this.debugText) {
-      // Update the existing text
-      this.debugText.text = debugInfo;
-    } else {
-      // Create a new text object and store it
-      this.debugText = new Text(debugInfo, {
-        fontSize: this.tileSize / 4,
-        fill: 0x274c7f,
-        fontWeight: 'bold',
-        fontFamily: 'Arial',
-        fontStyle: 'italic',
-      });
-      this.debugText.x = 0;
-      this.debugText.y = 0;
-      this.addChild(this.debugText);
-    }
+  private drawDebugInfo(): void {
+    this.debugInfo.draw({
+      playerX: this.normalizeXtoDungeonX(this.player.x),
+      playerY: this.normalizeYtoDungeonY(this.player.y),
+    });
   }
 
   resize(): void {

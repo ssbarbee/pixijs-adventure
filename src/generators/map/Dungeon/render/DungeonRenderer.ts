@@ -1,5 +1,6 @@
 import { Graphics, Text } from 'pixi.js';
 
+import { INK_COLOR, TILE_COLOR } from '../../../../constants';
 import { Manager } from '../../../../Manager';
 import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../types';
 
@@ -22,6 +23,7 @@ export class DungeonRenderer {
     // Use a queue for breadth-first traversal
     const queue: ConnectableRoom[] = [this.dungeon.root];
 
+    const connections: ConnectionRoom[] = [];
     while (queue.length > 0) {
       const currentRoom = queue.shift()!;
       if (currentRoom.type === 'rectangle') {
@@ -29,13 +31,13 @@ export class DungeonRenderer {
       } else if (currentRoom.type === 'circular') {
         this.drawCircularRoom(currentRoom as CircularRoom);
       }
-      // Draw connections and add children to the queue
-      currentRoom.connections.forEach((connection, index) => {
-        this.drawConnection(connection);
-        queue.push(currentRoom.children[index]);
-      });
+      currentRoom.children.forEach((child) => queue.push(child));
+      currentRoom.connections.forEach((connection) => connections.push(connection));
     }
-
+    // Draw connections and add children to the queue
+    connections.forEach((connection) => {
+      this.drawConnection(connection);
+    });
     return this.graphics;
   }
 
@@ -53,7 +55,7 @@ export class DungeonRenderer {
 
         // Draw a square with a dashed border
         this.graphics.lineStyle(1, 0x000000, 1, 0.5, true); // 1px solid black dashed border
-        this.graphics.beginFill(0xd9d5c3);
+        this.graphics.beginFill(TILE_COLOR);
         this.graphics.drawRect(squareX, squareY, squareSize, squareSize);
         this.graphics.endFill();
       }
@@ -68,7 +70,7 @@ export class DungeonRenderer {
 
   private drawCircularRoom(room: CircularRoom): void {
     // Draw the circle as the "floor" of the room
-    this.graphics.beginFill(0xd9d5c3); // Room's floor color
+    this.graphics.beginFill(TILE_COLOR); // Room's floor color
     this.graphics.drawCircle(
       room.x * this.tileSize + this.offsetX,
       room.y * this.tileSize + this.offsetY,
@@ -87,7 +89,7 @@ export class DungeonRenderer {
     for (let i = start; i < end; i++) {
       for (let j = start; j < end; j++) {
         tilesGraphics.lineStyle(1, 0x000000, 1, 0.5, true); // Line style for the tile borders
-        tilesGraphics.beginFill(0xd9d5c3); // Tile color
+        tilesGraphics.beginFill(TILE_COLOR); // Tile color
         tilesGraphics.drawRect(
           (room.x + i) * this.tileSize + this.offsetX,
           (room.y + j) * this.tileSize + this.offsetY,
@@ -135,7 +137,7 @@ export class DungeonRenderer {
 
         // Draw a square with a dashed border
         this.graphics.lineStyle(1, 0x000000, 1, 0.5, true); // 1px solid black dashed border
-        this.graphics.beginFill(0xd9d5c3);
+        this.graphics.beginFill(TILE_COLOR);
         this.graphics.drawRect(squareX, squareY, squareSize, squareSize);
         this.graphics.endFill();
       }
@@ -163,7 +165,7 @@ export class DungeonRenderer {
   private drawRoomID(room: ConnectableRoom | ConnectionRoom): void {
     const idText = new Text(`${room.id}`, {
       fontSize: this.tileSize,
-      fill: 0x274c7f,
+      fill: INK_COLOR,
       fontWeight: 'bold',
       fontFamily: 'Arial',
       fontStyle: 'italic',
