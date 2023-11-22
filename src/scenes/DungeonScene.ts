@@ -45,9 +45,9 @@ export class DungeonScene extends Container implements IScene {
     // Check if any corner of the player is on a non-grass tile
     for (let x = left; x <= right; x++) {
       for (let y = top; y <= bottom; y++) {
-        // Convert screen coordinates (newX, newY) to dungeon coordinates
-        const dungeonX = (x - Manager.width / 2) / this.tileSize;
-        const dungeonY = (y - Manager.height / 2) / this.tileSize;
+        // Convert screen coordinates (x, y) to dungeon coordinates
+        const dungeonX = this.normalizeXtoDungeonX(x);
+        const dungeonY = this.normalizeYtoDungeonY(y);
 
         // Prevent the move if there's a wall
         if (isWallAt(this.dungeon.root, dungeonX, dungeonY)) {
@@ -98,10 +98,16 @@ export class DungeonScene extends Container implements IScene {
     this.drawDebugInfo();
   }
 
+  private normalizeXtoDungeonX(x: number) {
+    return (x - Manager.width / 2) / this.tileSize;
+  }
+  private normalizeYtoDungeonY(y: number) {
+    return (y - Manager.height / 2) / this.tileSize;
+  }
   private drawDebugInfo(): void {
-    const debugInfo = `Player: x:${(this.player.x - Manager.width / 2) / this.tileSize}, y:${
-      (this.player.y - Manager.height / 2) / this.tileSize
-    }`;
+    const debugInfo = `Player: x:${this.normalizeXtoDungeonX(
+      this.player.x,
+    )}, y:${this.normalizeYtoDungeonY(this.player.y)}`;
 
     if (this.debugText) {
       // Update the existing text
