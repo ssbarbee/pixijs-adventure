@@ -44,12 +44,20 @@ export class Player extends Sprite {
   }
 
   private handleKeyDown(event: KeyboardEvent) {
-    this.keysPressed.add(event.key); // Add the key to the state when it's pressed
-    event.preventDefault(); // Prevent default to avoid scrolling the window
+    // Recognize both WASD and Arrow keys
+    // Convert to lower case for uniformity
+    const key = event.key.toLowerCase();
+    if (['arrowup', 'w', 'arrowdown', 's', 'arrowleft', 'a', 'arrowright', 'd'].includes(key)) {
+      // Add the key to the state when it's pressed
+      this.keysPressed.add(key);
+      // Prevent default to avoid scrolling the window
+      event.preventDefault();
+    }
   }
 
   private handleKeyUp(event: KeyboardEvent) {
-    this.keysPressed.delete(event.key); // Remove the key from the state when it's released
+    // Remove the key from the state when it's released
+    this.keysPressed.delete(event.key.toLowerCase());
   }
 
   public update(framesPassed: number) {
@@ -70,10 +78,10 @@ export class Player extends Sprite {
       let newX = this.x;
       let newY = this.y;
       // Check for each key in the keysPressed set and move accordingly
-      if (this.keysPressed.has('ArrowUp')) newY -= moveSpeed;
-      if (this.keysPressed.has('ArrowDown')) newY += moveSpeed;
-      if (this.keysPressed.has('ArrowLeft')) newX -= moveSpeed;
-      if (this.keysPressed.has('ArrowRight')) newX += moveSpeed;
+      if (this.keysPressed.has('w') || this.keysPressed.has('arrowup')) newY -= moveSpeed;
+      if (this.keysPressed.has('s') || this.keysPressed.has('arrowdown')) newY += moveSpeed;
+      if (this.keysPressed.has('a') || this.keysPressed.has('arrowleft')) newX -= moveSpeed;
+      if (this.keysPressed.has('d') || this.keysPressed.has('arrowright')) newX += moveSpeed;
 
       // Calculate the bounds of the player
       const left = newX;
