@@ -30,4 +30,8 @@ export interface ConnectionRoom extends BaseRoom {
 
 export interface Dungeon {
   root: ConnectableRoom;
+  grid: (ConnectableRoom | ConnectionRoom)[][][];
+  gridSize: number;
+  width: number;
+  height: number;
 }

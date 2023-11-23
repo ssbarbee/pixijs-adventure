@@ -13,6 +13,8 @@ export class DungeonScene extends Container implements IScene {
   private worldContainer: Container;
   private dungeon: Dungeon | null = null;
   private debugInfo: DebugInfo;
+  private dungeonOffsetX: number = 0;
+  private dungeonOffsetY: number = 0;
 
   constructor() {
     super();
@@ -25,8 +27,7 @@ export class DungeonScene extends Container implements IScene {
     this.addChild(this.worldContainer);
 
     this.generateAndDrawDungeon();
-
-    // Create the player
+    // Create the player, centered in middle of screen
     this.player = new Player(this.playerTileSize, Manager.width / 2, Manager.height / 2, (box) =>
       this.onPlayerPositionUpdate(box),
     );
@@ -46,7 +47,6 @@ export class DungeonScene extends Container implements IScene {
     if (!this.dungeon) {
       return false;
     }
-
     // Check if any corner of the player is on a non-grass tile
     for (let x = left; x <= right; x++) {
       for (let y = top; y <= bottom; y++) {
@@ -55,7 +55,7 @@ export class DungeonScene extends Container implements IScene {
         const dungeonY = this.normalizeYtoDungeonY(y);
 
         // Prevent the move if there's a wall
-        if (isWallAt(this.dungeon.root, dungeonX, dungeonY)) {
+        if (isWallAt(dungeonX, dungeonY, this.dungeon)) {
           return false;
         }
       }
@@ -70,9 +70,21 @@ export class DungeonScene extends Container implements IScene {
     this.worldContainer.removeChildren();
 
     // Generate and draw the new dungeon
-    const dungeon = generateDungeon(10);
-    this.dungeon = dungeon;
-    const dungeonRenderer = new DungeonRenderer(dungeon, this.tileSize);
+    this.dungeon = generateDungeon(10);
+    // 'root' is the starting room
+    const startRoom = this.dungeon.root;
+    const startRoomX = startRoom.x * this.tileSize;
+    const startRoomY = startRoom.y * this.tileSize;
+
+    this.dungeonOffsetX = Manager.width / 2 - startRoomX;
+    this.dungeonOffsetY = Manager.height / 2 - startRoomY;
+
+    const dungeonRenderer = new DungeonRenderer(
+      this.dungeon,
+      this.tileSize,
+      this.dungeonOffsetX,
+      this.dungeonOffsetY,
+    );
     const dungeonGraphics = dungeonRenderer.draw();
     this.worldContainer.addChild(dungeonGraphics);
   }
@@ -104,11 +116,11 @@ export class DungeonScene extends Container implements IScene {
   }
 
   private normalizeXtoDungeonX(x: number) {
-    return (x - Manager.width / 2) / this.tileSize;
+    return (x - this.dungeonOffsetX) / this.tileSize;
   }
 
   private normalizeYtoDungeonY(y: number) {
-    return (y - Manager.height / 2) / this.tileSize;
+    return (y - this.dungeonOffsetY) / this.tileSize;
   }
 
   private drawDebugInfo(): void {

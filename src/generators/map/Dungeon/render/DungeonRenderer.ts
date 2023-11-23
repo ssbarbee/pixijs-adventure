@@ -1,7 +1,6 @@
 import { Graphics, Text } from 'pixi.js';
 
 import { INK_COLOR, TILE_COLOR } from '../../../../constants';
-import { Manager } from '../../../../Manager';
 import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../types';
 
 export class DungeonRenderer {
@@ -11,11 +10,14 @@ export class DungeonRenderer {
   private offsetY: number;
   private tileSize: number;
 
-  constructor(dungeon: Dungeon, tileSize: number) {
+  constructor(dungeon: Dungeon, tileSize: number, offsetX: number, offsetY: number) {
     this.dungeon = dungeon;
     this.graphics = new Graphics();
-    this.offsetX = Manager.width / 2; // Center of the screen
-    this.offsetY = Manager.height / 2;
+
+    // Offset, normally center of the screen, but adjustable
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+
     this.tileSize = tileSize;
   }
 

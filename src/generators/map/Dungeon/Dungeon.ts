@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 // Constants for better readability and maintainability
 import { createCircularRoom } from './circular/createCircularRoom';
 import { getRandomCircleRoomSize } from './circular/getRandomCircleRoomSize';
@@ -303,11 +304,40 @@ export function createConnection(
   return createConnectionRoom(`${parent.id}->${child.id}`, x, y, width, height);
 }
 
+// export function generateDungeon(totalRooms: number): Dungeon {
+//   let roomsCount = 0;
+//   const root = createRoom(roomsCount.toString());
+//   roomsCount++;
+//   const queue: ConnectableRoom[] = [root];
+//
+//   while (roomsCount < totalRooms) {
+//     const currentRoom = queue.length > 0 ? queue.shift()! : selectRandomRoom(root);
+//
+//     for (let i = 0; i < 4; i++) {
+//       if (Math.random() < 0.5) {
+//         const newRoom = createRoom(roomsCount.toString());
+//         const connection = createConnection(root, currentRoom, newRoom);
+//
+//         if (connection) {
+//           currentRoom.children.push(newRoom);
+//           currentRoom.connections.push(connection);
+//           queue.push(newRoom);
+//           roomsCount++;
+//         }
+//
+//         if (roomsCount >= totalRooms) break;
+//       }
+//     }
+//   }
+//
+//   return { root };
+// }
 export function generateDungeon(totalRooms: number): Dungeon {
   let roomsCount = 0;
-  const root = createRoom(roomsCount.toString());
+  const root = createRoom('0');
   roomsCount++;
   const queue: ConnectableRoom[] = [root];
+  const allRoomsAndConnections: (ConnectableRoom | ConnectionRoom)[] = [root];
 
   while (roomsCount < totalRooms) {
     const currentRoom = queue.length > 0 ? queue.shift()! : selectRandomRoom(root);
@@ -322,6 +352,9 @@ export function generateDungeon(totalRooms: number): Dungeon {
           currentRoom.connections.push(connection);
           queue.push(newRoom);
           roomsCount++;
+
+          allRoomsAndConnections.push(newRoom);
+          allRoomsAndConnections.push(connection);
         }
 
         if (roomsCount >= totalRooms) break;
@@ -329,7 +362,75 @@ export function generateDungeon(totalRooms: number): Dungeon {
     }
   }
 
-  return { root };
+  const { minX, minY } = findMinCoordinates(allRoomsAndConnections);
+  adjustCoordinates(allRoomsAndConnections, -minX, -minY);
+
+  const { maxX, maxY } = findMaxCoordinates(allRoomsAndConnections);
+  const dungeonWidth = maxX - minX;
+  const dungeonHeight = maxY - minY;
+
+  // Determine an ideal grid size based on dungeon dimensions (adjust as needed)
+  const gridSize = determineGridSize(dungeonWidth, dungeonHeight);
+
+  const grid = createEmptyGrid(dungeonWidth, dungeonHeight, gridSize);
+  allRoomsAndConnections.forEach((item) => addToGrid(item, grid, gridSize));
+
+  return {
+    root,
+    grid,
+    width: dungeonWidth,
+    height: dungeonHeight,
+    gridSize,
+  };
+}
+
+function findMaxCoordinates(items: (ConnectableRoom | ConnectionRoom)[]): {
+  maxX: number;
+  maxY: number;
+} {
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  items.forEach((item) => {
+    const bounds = getItemBounds(item);
+    maxX = Math.max(maxX, bounds.x + bounds.width);
+    maxY = Math.max(maxY, bounds.y + bounds.height);
+  });
+
+  return { maxX, maxY };
+}
+
+function determineGridSize(dungeonWidth: number, dungeonHeight: number): number {
+  // Example: Use a fraction of the dungeon's width or height, or a fixed value
+  // Adjust this logic based on your game's requirements
+  return Math.max(1, Math.min(dungeonWidth, dungeonHeight) / 10);
+}
+
+function findMinCoordinates(items: (ConnectableRoom | ConnectionRoom)[]): {
+  minX: number;
+  minY: number;
+} {
+  let minX = Infinity;
+  let minY = Infinity;
+
+  items.forEach((item) => {
+    const bounds = getItemBounds(item);
+    minX = Math.min(minX, bounds.x);
+    minY = Math.min(minY, bounds.y);
+  });
+
+  return { minX, minY };
+}
+
+function adjustCoordinates(
+  items: (ConnectableRoom | ConnectionRoom)[],
+  offsetX: number,
+  offsetY: number,
+): void {
+  items.forEach((item) => {
+    item.x += offsetX;
+    item.y += offsetY;
+  });
 }
 // Helper function to check if a point is inside a rectangle
 interface IRectangle {
@@ -351,38 +452,121 @@ function isPointInsideCircle(circle: CircularRoom, x: number, y: number): boolea
   return distanceSquared < circle.radius * circle.radius;
 }
 
-// Helper function to check if a point is inside any room or connection in the dungeon
-function isPointInsideAnyRoom(node: ConnectableRoom, x: number, y: number): boolean {
-  // Check if the point is inside the current room
-  if (node.type === 'rectangle' && isPointInsideRectangle(node as RectangleRoom, x, y)) {
-    return true;
-  }
-  if (node.type === 'circular' && isPointInsideCircle(node as CircularRoom, x, y)) {
+// Main function to check if the player's square is hitting a wall
+export function isWallAt(x: number, y: number, dungeon: Dungeon): boolean {
+  const { gridSize, grid } = dungeon;
+  const roomOrConnection = getRoomAt(x, y, grid, gridSize);
+  if (!roomOrConnection) {
+    // If no room or connection is found at the position, it's likely a wall or empty space
     return true;
   }
 
-  // Check if the point is inside any connection
-  for (const connection of node.connections) {
-    if (isPointInsideRectangle(connection, x, y)) {
-      return true;
+  // Additional logic here if needed, to determine if the point is on the wall of the room
+  // This part depends on how you define the walls in your rooms and connections
+
+  return false; // Modify as needed based on your game's logic
+}
+
+// Grid-based spatial partitioning system
+function createEmptyGrid(
+  dungeonWidth: number,
+  dungeonHeight: number,
+  gridSize: number,
+): (ConnectableRoom | ConnectionRoom)[][][] {
+  const gridWidth = Math.ceil(dungeonWidth / gridSize);
+  const gridHeight = Math.ceil(dungeonHeight / gridSize);
+  const grid: (ConnectableRoom | ConnectionRoom)[][][] = new Array<
+    (ConnectableRoom | ConnectionRoom)[][]
+  >(gridWidth);
+
+  for (let x = 0; x < gridWidth; x++) {
+    grid[x] = new Array<(ConnectableRoom | ConnectionRoom)[]>(gridHeight);
+    for (let y = 0; y < gridHeight; y++) {
+      grid[x][y] = [];
     }
   }
 
-  // Recursively check child rooms
-  for (const child of node.children) {
-    if (isPointInsideAnyRoom(child, x, y)) {
-      return true;
+  return grid;
+}
+
+function getItemBounds(item: ConnectableRoom | ConnectionRoom): IRectangle {
+  if (item.type === 'rectangle') {
+    // For rectangular rooms, return the position and dimensions as is
+    return {
+      x: item.x,
+      y: item.y,
+      width: (item as RectangleRoom).width,
+      height: (item as RectangleRoom).height,
+    };
+  } else if (item.type === 'circular') {
+    // For circular rooms, calculate the bounding box
+    return {
+      x: item.x - (item as CircularRoom).radius,
+      y: item.y - (item as CircularRoom).radius,
+      width: (item as CircularRoom).radius * 2,
+      height: (item as CircularRoom).radius * 2,
+    };
+  } else if (item.type === 'connection') {
+    // For connections, assume they are rectangular
+    return {
+      x: item.x,
+      y: item.y,
+      width: item.width,
+      height: item.height,
+    };
+  }
+
+  throw new Error('Unknown item type');
+}
+
+function addToGrid(
+  item: ConnectableRoom | ConnectionRoom,
+  grid: (ConnectableRoom | ConnectionRoom)[][][],
+  gridSize: number,
+): void {
+  const bounds = getItemBounds(item);
+  const startX = Math.floor(bounds.x / gridSize);
+  const endX = Math.floor((bounds.x + bounds.width) / gridSize);
+  const startY = Math.floor(bounds.y / gridSize);
+  const endY = Math.floor((bounds.y + bounds.height) / gridSize);
+
+  for (let x = startX; x <= endX; x++) {
+    for (let y = startY; y <= endY; y++) {
+      if (grid[x] && grid[x][y]) {
+        grid[x][y].push(item);
+      }
     }
   }
-  // The point is not inside any room or connection
+}
+
+function isPointInsideItem(x: number, y: number, item: ConnectableRoom | ConnectionRoom): boolean {
+  if (item.type === 'rectangle' || item.type === 'connection') {
+    // Rectangular room or connection
+    return isPointInsideRectangle(item as RectangleRoom, x, y);
+  } else if (item.type === 'circular') {
+    // Circular room
+    return isPointInsideCircle(item as CircularRoom, x, y);
+  }
   return false;
 }
 
-// Main function to check if the player's square is hitting a wall
-export function isWallAt(node: ConnectableRoom, x: number, y: number): boolean {
-  if (!isPointInsideAnyRoom(node, x, y)) {
-    return true;
+function getRoomAt(
+  x: number,
+  y: number,
+  grid: (ConnectableRoom | ConnectionRoom)[][][],
+  gridSize: number,
+): ConnectableRoom | ConnectionRoom | null {
+  const gridX = Math.floor(x / gridSize);
+  const gridY = Math.floor(y / gridSize);
+
+  if (grid[gridX] && grid[gridX][gridY]) {
+    const items = grid[gridX][gridY];
+    for (const item of items) {
+      if (isPointInsideItem(x, y, item)) {
+        return item;
+      }
+    }
   }
-  // All points of the player's square are inside rooms, so it's not hitting a wall
-  return false;
+
+  return null;
 }

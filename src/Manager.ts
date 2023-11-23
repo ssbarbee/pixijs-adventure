@@ -5,11 +5,10 @@ export class Manager {
   private static app: Application;
   private static currentScene: IScene;
 
-  // We no longer need to store width and height since now it is literally the size of the screen.
-  // We just modify our getters
   public static get width(): number {
     return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
   }
+
   public static get height(): number {
     return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
   }
@@ -53,12 +52,10 @@ export class Manager {
   // This update will be called by a pixi ticker and tell the scene that a tick happened
   private static update(framesPassed: number): void {
     // Let the current scene know that we updated it...
-    // Just for funzies, sanity check that it exists first.
     if (Manager.currentScene) {
+      // Alternative use `Manager.app.ticker.deltaMS` and not pass param
       Manager.currentScene.update(framesPassed);
     }
-
-    // as I said before, I HATE the "frame passed" approach. I would rather use `Manager.app.ticker.deltaMS`
   }
 }
 
