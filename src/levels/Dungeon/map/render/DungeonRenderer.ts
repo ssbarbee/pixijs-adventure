@@ -52,8 +52,8 @@ export class DungeonRenderer {
     for (let x = room.x; x < room.x + room.width; x++) {
       for (let y = room.y; y < room.y + room.height; y++) {
         // Calculate the coordinates for the current square
-        const squareX = x * squareSize + this.offsetX;
-        const squareY = y * squareSize + this.offsetY;
+        const squareX = this.dungeonXToSceneX(x);
+        const squareY = this.dungeonYToSceneY(y);
 
         // Draw a square with a dashed border
         this.graphics.lineStyle(1, 0x000000, 1, 0.5, true); // 1px solid black dashed border
@@ -74,8 +74,8 @@ export class DungeonRenderer {
     // Draw the circle as the "floor" of the room
     this.graphics.beginFill(TILE_COLOR); // Room's floor color
     this.graphics.drawCircle(
-      room.x * this.tileSize + this.offsetX,
-      room.y * this.tileSize + this.offsetY,
+      this.dungeonXToSceneX(room.x),
+      this.dungeonYToSceneY(room.y),
       room.radius * this.tileSize,
     );
     this.graphics.endFill();
@@ -93,8 +93,8 @@ export class DungeonRenderer {
         tilesGraphics.lineStyle(1, 0x000000, 1, 0.5, true); // Line style for the tile borders
         tilesGraphics.beginFill(TILE_COLOR); // Tile color
         tilesGraphics.drawRect(
-          (room.x + i) * this.tileSize + this.offsetX,
-          (room.y + j) * this.tileSize + this.offsetY,
+          this.dungeonXToSceneX(room.x + i),
+          this.dungeonYToSceneY(room.y + j),
           this.tileSize,
           this.tileSize,
         );
@@ -106,8 +106,8 @@ export class DungeonRenderer {
     const maskGraphics = new Graphics();
     maskGraphics.beginFill(0xffffff);
     maskGraphics.drawCircle(
-      room.x * this.tileSize + this.offsetX,
-      room.y * this.tileSize + this.offsetY,
+      this.dungeonXToSceneX(room.x),
+      this.dungeonYToSceneY(room.y),
       room.radius * this.tileSize,
     );
     maskGraphics.endFill();
@@ -172,8 +172,16 @@ export class DungeonRenderer {
       fontFamily: 'Arial',
       fontStyle: 'italic',
     });
-    idText.x = room.x * this.tileSize + this.offsetX;
-    idText.y = room.y * this.tileSize + this.offsetY;
+    idText.x = this.dungeonXToSceneX(room.x);
+    idText.y = this.dungeonYToSceneY(room.y);
     this.graphics.addChild(idText);
+  }
+
+  private dungeonXToSceneX(dungeonX: number): number {
+    return dungeonX * this.tileSize + this.offsetX;
+  }
+
+  private dungeonYToSceneY(dungeonY: number): number {
+    return dungeonY * this.tileSize + this.offsetY;
   }
 }

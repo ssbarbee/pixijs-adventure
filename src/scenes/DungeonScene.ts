@@ -56,8 +56,8 @@ export class DungeonScene extends Container implements IScene {
     for (let x = left; x <= right; x++) {
       for (let y = top; y <= bottom; y++) {
         // Convert screen coordinates (x, y) to dungeon coordinates
-        const dungeonX = this.normalizeXtoDungeonX(x);
-        const dungeonY = this.normalizeYtoDungeonY(y);
+        const dungeonX = this.sceneXtoDungeonX(x);
+        const dungeonY = this.sceneYtoDungeonY(y);
 
         // Prevent the move if there's a wall
         if (isWallAt(dungeonX, dungeonY, this.dungeon)) {
@@ -120,18 +120,18 @@ export class DungeonScene extends Container implements IScene {
     this.drawDebugInfo();
   }
 
-  private normalizeXtoDungeonX(x: number) {
+  private sceneXtoDungeonX(x: number) {
     return (x - this.dungeonOffsetX) / this.tileSize;
   }
 
-  private normalizeYtoDungeonY(y: number) {
+  private sceneYtoDungeonY(y: number) {
     return (y - this.dungeonOffsetY) / this.tileSize;
   }
 
   private drawDebugInfo(): void {
     this.debugInfo.draw({
-      playerX: this.normalizeXtoDungeonX(this.player.x),
-      playerY: this.normalizeYtoDungeonY(this.player.y),
+      playerX: this.sceneXtoDungeonX(this.player.x),
+      playerY: this.sceneYtoDungeonY(this.player.y),
     });
   }
 
