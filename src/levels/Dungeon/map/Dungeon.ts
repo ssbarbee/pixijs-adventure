@@ -304,34 +304,6 @@ export function createConnection(
   return createConnectionRoom(`${parent.id}->${child.id}`, x, y, width, height);
 }
 
-// export function generateDungeon(totalRooms: number): Dungeon {
-//   let roomsCount = 0;
-//   const root = createRoom(roomsCount.toString());
-//   roomsCount++;
-//   const queue: ConnectableRoom[] = [root];
-//
-//   while (roomsCount < totalRooms) {
-//     const currentRoom = queue.length > 0 ? queue.shift()! : selectRandomRoom(root);
-//
-//     for (let i = 0; i < 4; i++) {
-//       if (Math.random() < 0.5) {
-//         const newRoom = createRoom(roomsCount.toString());
-//         const connection = createConnection(root, currentRoom, newRoom);
-//
-//         if (connection) {
-//           currentRoom.children.push(newRoom);
-//           currentRoom.connections.push(connection);
-//           queue.push(newRoom);
-//           roomsCount++;
-//         }
-//
-//         if (roomsCount >= totalRooms) break;
-//       }
-//     }
-//   }
-//
-//   return { root };
-// }
 export function generateDungeon(totalRooms: number): Dungeon {
   let roomsCount = 0;
   const root = createRoom('0');

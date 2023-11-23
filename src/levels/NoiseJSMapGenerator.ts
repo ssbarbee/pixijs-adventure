@@ -1,7 +1,7 @@
 import { createNoise2D } from 'simplex-noise';
 
-import { GRASS0, WALL0, WATER0 } from '../../constants';
-import { findPlayerStartingPosition } from '../../utils/findPlayerStartingPosition';
+import { GRASS0, WALL0, WATER0 } from '../constants';
+import { findPlayerStartingPosition } from '../utils/findPlayerStartingPosition';
 
 type MapParams = {
   width: number;

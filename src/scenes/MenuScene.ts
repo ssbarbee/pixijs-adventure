@@ -2,8 +2,8 @@ import { Text } from '@pixi/text';
 import { FancyButton } from '@pixi/ui';
 import { Container } from 'pixi.js';
 
-import { generateWorld } from '../generators/map/CellularMapGenerator';
-import { generateMap as generateNoiseWorld } from '../generators/map/NoiseJSMapGenerator';
+import { generateWorld } from '../levels/CellularMapGenerator';
+import { generateMap as generateNoiseWorld } from '../levels/NoiseJSMapGenerator';
 import { IScene, Manager } from '../Manager';
 import { DungeonScene } from './DungeonScene';
 import { GameScene } from './GameScene';

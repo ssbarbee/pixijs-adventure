@@ -1,9 +1,14 @@
 import { Container } from 'pixi.js';
 
-import { Player, PlayerBox } from '../entities/Player';
-import { Dungeon, DungeonRenderer, generateDungeon } from '../generators/map/Dungeon';
-import { isWallAt } from '../generators/map/Dungeon/Dungeon';
-import { DebugInfo } from '../generators/map/Dungeon/render/DebugInfo';
+import {
+  DebugInfo,
+  Dungeon,
+  DungeonRenderer,
+  generateDungeon,
+  isWallAt,
+  Player,
+  PlayerBox,
+} from '../levels/Dungeon';
 import { IScene, Manager } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {

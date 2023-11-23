@@ -1,9 +1,9 @@
 import { Map } from 'rot-js';
 import Cellular from 'rot-js/lib/map/cellular';
 
-import { GRASS0, GRASS1, GRASS2, WALL0, WALL1 } from '../../constants';
-import { findPlayerStartingPosition } from '../../utils/findPlayerStartingPosition';
-import { getRandomString } from '../../utils/getRandomString';
+import { GRASS0, GRASS1, GRASS2, WALL0, WALL1 } from '../constants';
+import { findPlayerStartingPosition } from '../utils/findPlayerStartingPosition';
+import { getRandomString } from '../utils/getRandomString';
 
 function initializeMap(width: number, height: number): Cellular {
   const map = new Map.Cellular(width, height);
