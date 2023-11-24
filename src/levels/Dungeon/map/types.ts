@@ -28,6 +28,21 @@ export interface ConnectionRoom extends BaseRoom {
   height: number;
 }
 
+export interface IRectangle {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+// Enum for directions
+export enum Direction {
+  Right,
+  Bottom,
+  Left,
+  Top,
+}
+
 export interface Dungeon {
   root: ConnectableRoom;
   grid: (ConnectableRoom | ConnectionRoom)[][][];
