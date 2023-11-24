@@ -59,13 +59,20 @@ async function fileExists(filePath) {
   }
 }
 
-async function recursivelyExtractFiles(filePath, extracted = new Set()) {
+function isExcluded(filePath, excludedPaths) {
+  const normalizedFilePath = path.normalize(filePath);
+  return excludedPaths.some((excludedPath) =>
+    normalizedFilePath.includes(path.normalize(excludedPath)),
+  );
+}
+
+async function recursivelyExtractFiles(filePath, excludedPaths, extracted = new Set()) {
   const files = await extractFiles(filePath);
 
   for (let file of files) {
-    if (!extracted.has(file)) {
+    if (!extracted.has(file) && !isExcluded(file, excludedPaths)) {
       extracted.add(file);
-      await recursivelyExtractFiles(file, extracted);
+      await recursivelyExtractFiles(file, excludedPaths, extracted);
     }
   }
 
@@ -110,8 +117,9 @@ async function processExtractedFiles(files, outputFilePath) {
 
 const relativeFilePath = process.env.FILE_PATH;
 const outputFilePath = process.env.OUTPUT_FILE_PATH; // New env variable for the output file
+const excludedFiles = process.env.EXCLUDED_FILES ? process.env.EXCLUDED_FILES.split(',') : []; // Excluded files from env variable
 
-recursivelyExtractFiles(relativeFilePath).then(async (files) => {
+recursivelyExtractFiles(relativeFilePath, excludedFiles).then(async (files) => {
   console.log('Extracted Files:', files);
   if (await fileExists(outputFilePath)) {
     console.log('Output file already exists. Appending to it.');
