@@ -8,7 +8,11 @@ import {
   ConnectionRoom,
   Direction,
   Dungeon,
+  IRectangle,
+  RectangleObstacle,
   RectangleRoom,
+  SquareObstacle,
+  SupportedObstacles,
 } from './types';
 import { addToGrid } from './utils/addToGrid';
 import { checkOverlap } from './utils/checkOverlap';
@@ -123,4 +127,156 @@ function adjustCoordinates(
     item.x += offsetX;
     item.y += offsetY;
   });
+}
+
+export function createRectangleObstacleInRectangleRoom(room: RectangleRoom): RectangleObstacle {
+  const horizontal = Math.random() < 0.5;
+
+  // Ensure the width and height of the obstacle are within the room's dimensions
+  const maxWidth = horizontal ? room.width : getRandomNumber(0.05, 0.3) * room.width;
+  const maxHeight = horizontal ? getRandomNumber(0.05, 0.3) * room.height : room.height;
+
+  // Randomly determine the dimensions of the obstacle within the constraints
+  const width = getRandomNumber(0.05 * room.width, maxWidth);
+  const height = getRandomNumber(0.05 * room.height, maxHeight);
+
+  // Adjust the x and y position to ensure the obstacle is within the room's bounds
+  const x = room.x + getRandomNumber(0, room.width - width);
+  const y = room.y + getRandomNumber(0, room.height - height);
+
+  return {
+    x,
+    y,
+    width,
+    height,
+    type: 'rectangle',
+  };
+}
+
+export function createSquareObstacleInRectangleRoom(room: RectangleRoom): SquareObstacle {
+  const maxSize = Math.min(room.width, room.height, 2);
+  const size = getRandomNumber(0.5, maxSize);
+
+  const x = room.x + getRandomNumber(0, room.width - size);
+  const y = room.y + getRandomNumber(0, room.height - size);
+
+  return {
+    x,
+    y,
+    width: size,
+    height: size,
+    type: 'square',
+  };
+}
+
+export function addObstaclesToRoom(room: ConnectableRoom): void {
+  const obstacleCount = getRandomNumber(0, 4); // 0 to 4 obstacles
+  room.obstacles = [];
+
+  for (let i = 0; i < obstacleCount; i++) {
+    let attempts = 0;
+    let obstaclePlaced = false;
+
+    while (attempts < 10 && !obstaclePlaced) {
+      const obstacleType = Math.random() < 0.5 ? 'rectangle' : 'square';
+      let obstacle: SupportedObstacles | null = null;
+      if (obstacleType === 'rectangle') {
+        if (room.type === 'rectangle') {
+          obstacle = createRectangleObstacleInRectangleRoom(room as RectangleRoom);
+        }
+        if (room.type === 'circular') {
+          obstacle = createRectangleObstacleInCircularRoom(room as CircularRoom);
+        }
+      }
+      if (obstacleType === 'square') {
+        if (room.type === 'rectangle') {
+          obstacle = createSquareObstacleInRectangleRoom(room as RectangleRoom);
+        }
+        if (room.type === 'circular') {
+          obstacle = createSquareObstacleInCircularRoom(room as CircularRoom);
+        }
+      }
+      if (obstacle) {
+        if (!checkObstacleOverlap(room.obstacles, obstacle)) {
+          room.obstacles.push(obstacle);
+          obstaclePlaced = true;
+        }
+      }
+      attempts++;
+    }
+
+    if (!obstaclePlaced) {
+      // Could not place an obstacle after 10 attempts
+      break;
+    }
+  }
+}
+
+function checkObstacleOverlap(
+  obstacles: SupportedObstacles[],
+  newObstacle: SupportedObstacles,
+): boolean {
+  for (const obstacle of obstacles) {
+    if (obstaclesOverlap(obstacle, newObstacle)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function obstaclesOverlap(obstacle1: SupportedObstacles, obstacle2: SupportedObstacles): boolean {
+  if (obstacle1.type === 'rectangle' && obstacle2.type === 'rectangle') {
+    return rectangleRectangleOverlap(obstacle1, obstacle2);
+  }
+  if (obstacle1.type === 'rectangle' && obstacle2.type === 'square') {
+    return rectangleRectangleOverlap(obstacle1, obstacle2);
+  }
+  if (obstacle1.type === 'square' && obstacle2.type === 'rectangle') {
+    return rectangleRectangleOverlap(obstacle1, obstacle2);
+  }
+  if (obstacle1.type === 'square' && obstacle2.type === 'square') {
+    return rectangleRectangleOverlap(obstacle1, obstacle2);
+  }
+  throw new Error('unknown obstacles');
+}
+
+function rectangleRectangleOverlap(rect1: IRectangle, rect2: IRectangle): boolean {
+  return (
+    rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.y + rect1.height > rect2.y
+  );
+}
+
+export function createRectangleObstacleInCircularRoom(room: CircularRoom): RectangleObstacle {
+  // Logic to ensure the rectangle is within the circle
+  // Adjust as needed
+  const horizontal = Math.random() < 0.5;
+  const maxSize = room.radius * Math.sqrt(2); // Maximum size fitting in the circle
+  const width = horizontal ? getRandomNumber(0.05, maxSize) : room.radius * 2;
+  const height = horizontal ? room.radius * 2 : getRandomNumber(0.05, maxSize);
+
+  return {
+    x: getRandomNumber(room.x - room.radius, room.x + room.radius - width),
+    y: getRandomNumber(room.y - room.radius, room.y + room.radius - height),
+    width,
+    height,
+    type: 'rectangle',
+  };
+}
+
+export function createSquareObstacleInCircularRoom(room: CircularRoom): SquareObstacle {
+  // Logic to ensure the square is within the circle
+  // Adjust as needed
+  const maxSize = room.radius * Math.sqrt(2); // Maximum size fitting in the circle
+  const size = getRandomNumber(0.5, maxSize);
+
+  return {
+    x: getRandomNumber(room.x - room.radius, room.x + room.radius - size),
+    y: getRandomNumber(room.y - room.radius, room.y + room.radius - size),
+    width: size,
+    height: size,
+    type: 'square',
+  };
 }

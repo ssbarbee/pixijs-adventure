@@ -9,5 +9,6 @@ export function createCircularRoom(id: string, x: number, y: number, radius: num
     type: 'circular',
     children: [],
     connections: [],
+    obstacles: [],
   };
 }

@@ -16,5 +16,6 @@ export function createRectangleRoom(
     type: 'rectangle',
     children: [],
     connections: [],
+    obstacles: [],
   };
 }

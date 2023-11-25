@@ -1,3 +1,24 @@
+// New interfaces for obstacles
+export interface Obstacle {
+  x: number;
+  y: number;
+  type: 'rectangle' | 'square';
+}
+
+export interface RectangleObstacle extends Obstacle {
+  width: number;
+  height: number;
+  type: 'rectangle';
+}
+
+export interface SquareObstacle extends Obstacle {
+  width: number;
+  height: number;
+  type: 'square';
+}
+
+export type SupportedObstacles = RectangleObstacle | SquareObstacle;
+
 interface BaseRoom {
   id: string;
   x: number;
@@ -9,6 +30,7 @@ export interface ConnectableRoom extends BaseRoom {
   type: 'rectangle' | 'circular';
   children: ConnectableRoom[];
   connections: ConnectionRoom[];
+  obstacles: SupportedObstacles[];
 }
 
 export interface CircularRoom extends ConnectableRoom {

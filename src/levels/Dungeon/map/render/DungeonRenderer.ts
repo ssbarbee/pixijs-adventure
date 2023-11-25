@@ -1,7 +1,14 @@
 import { Graphics, Text } from 'pixi.js';
 
 import { INK_COLOR, TILE_COLOR } from '../../../../constants';
-import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../types';
+import {
+  CircularRoom,
+  ConnectableRoom,
+  ConnectionRoom,
+  Dungeon,
+  RectangleRoom,
+  SupportedObstacles,
+} from '../types';
 
 export class DungeonRenderer {
   private dungeon: Dungeon;
@@ -68,6 +75,9 @@ export class DungeonRenderer {
     this.drawRoomID(room);
     // Reset the line style to its previous values
     this.graphics.lineStyle(savedLineStyle);
+
+    // Draw obstacles within the room
+    this.drawObstacles(room.obstacles);
   }
 
   private drawCircularRoom(room: CircularRoom): void {
@@ -118,6 +128,8 @@ export class DungeonRenderer {
     // Add the mask to the main graphics before the tiles
     this.graphics.addChild(maskGraphics);
     this.graphics.addChild(tilesGraphics);
+    // Draw obstacles within the room
+    this.drawObstacles(room.obstacles);
 
     // Draw a red dot at the center
     this.drawRedDot(room.x, room.y);
@@ -175,6 +187,19 @@ export class DungeonRenderer {
     idText.x = this.dungeonXToSceneX(room.x);
     idText.y = this.dungeonYToSceneY(room.y);
     this.graphics.addChild(idText);
+  }
+
+  private drawObstacles(obstacles: SupportedObstacles[]): void {
+    obstacles.forEach((obstacle) => {
+      const obstacleX = this.dungeonXToSceneX(obstacle.x);
+      const obstacleY = this.dungeonYToSceneY(obstacle.y);
+      const obstacleWidth = obstacle.width * this.tileSize;
+      const obstacleHeight = obstacle.height * this.tileSize;
+
+      this.graphics.beginFill(0x000000); // Black color for obstacles
+      this.graphics.drawRect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
+      this.graphics.endFill();
+    });
   }
 
   private dungeonXToSceneX(dungeonX: number): number {
