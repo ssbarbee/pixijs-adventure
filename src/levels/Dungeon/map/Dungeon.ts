@@ -71,7 +71,8 @@ export function generateDungeon(totalRooms: number): Dungeon {
   const root = createRoom('0');
   roomsCount++;
   const queue: ConnectableRoom[] = [root];
-  const allRoomsAndConnections: (ConnectableRoom | ConnectionRoom)[] = [root];
+  const allRooms: ConnectableRoom[] = [root];
+  const allConnections: ConnectionRoom[] = [];
 
   while (roomsCount < totalRooms) {
     const currentRoom = queue.length > 0 ? queue.shift()! : selectRandomRoom(root);
@@ -86,15 +87,18 @@ export function generateDungeon(totalRooms: number): Dungeon {
           currentRoom.connections.push(connection);
           queue.push(newRoom);
           roomsCount++;
-
-          allRoomsAndConnections.push(newRoom);
-          allRoomsAndConnections.push(connection);
+          allRooms.push(newRoom);
+          allConnections.push(connection);
         }
 
         if (roomsCount >= totalRooms) break;
       }
     }
   }
+
+  const allRoomsAndConnections = [...allRooms, ...allConnections];
+
+  allRooms.forEach(addObstaclesToRoom);
 
   const { minX, minY } = findMinCoordinates(allRoomsAndConnections);
   adjustCoordinates(allRoomsAndConnections, -minX, -minY);
@@ -126,23 +130,26 @@ function adjustCoordinates(
   items.forEach((item) => {
     item.x += offsetX;
     item.y += offsetY;
+
+    if (item.type !== 'connection') {
+      item.obstacles.forEach((obstacle) => {
+        obstacle.x += offsetX;
+        obstacle.y += offsetY;
+      });
+    }
   });
 }
 
 export function createRectangleObstacleInRectangleRoom(room: RectangleRoom): RectangleObstacle {
   const horizontal = Math.random() < 0.5;
 
-  // Ensure the width and height of the obstacle are within the room's dimensions
-  const maxWidth = horizontal ? room.width : getRandomNumber(0.05, 0.3) * room.width;
-  const maxHeight = horizontal ? getRandomNumber(0.05, 0.3) * room.height : room.height;
-
-  // Randomly determine the dimensions of the obstacle within the constraints
-  const width = getRandomNumber(0.05 * room.width, maxWidth);
-  const height = getRandomNumber(0.05 * room.height, maxHeight);
+  // Set width and height based on orientation
+  const width = horizontal ? getRandomNumber(room.width / 8, room.width / 3) : 0.2;
+  const height = horizontal ? 0.2 : getRandomNumber(room.height / 8, room.height / 3);
 
   // Adjust the x and y position to ensure the obstacle is within the room's bounds
-  const x = room.x + getRandomNumber(0, room.width - width);
-  const y = room.y + getRandomNumber(0, room.height - height);
+  const x = getRandomNumber(room.x, Math.floor(room.width + room.x - width));
+  const y = getRandomNumber(room.y, Math.floor(room.height + room.y - height));
 
   return {
     x,
@@ -154,11 +161,11 @@ export function createRectangleObstacleInRectangleRoom(room: RectangleRoom): Rec
 }
 
 export function createSquareObstacleInRectangleRoom(room: RectangleRoom): SquareObstacle {
-  const maxSize = Math.min(room.width, room.height, 2);
-  const size = getRandomNumber(0.5, maxSize);
+  const size = getRandomNumber(room.height / 8, room.height / 3);
 
-  const x = room.x + getRandomNumber(0, room.width - size);
-  const y = room.y + getRandomNumber(0, room.height - size);
+  // Adjust the x and y position to ensure the obstacle is within the room's bounds
+  const x = getRandomNumber(room.x, Math.floor(room.width + room.x - size));
+  const y = getRandomNumber(room.y, Math.floor(room.height + room.y - size));
 
   return {
     x,
@@ -250,16 +257,32 @@ function rectangleRectangleOverlap(rect1: IRectangle, rect2: IRectangle): boolea
 }
 
 export function createRectangleObstacleInCircularRoom(room: CircularRoom): RectangleObstacle {
-  // Logic to ensure the rectangle is within the circle
-  // Adjust as needed
   const horizontal = Math.random() < 0.5;
-  const maxSize = room.radius * Math.sqrt(2); // Maximum size fitting in the circle
-  const width = horizontal ? getRandomNumber(0.05, maxSize) : room.radius * 2;
-  const height = horizontal ? room.radius * 2 : getRandomNumber(0.05, maxSize);
+  const safeRadius = room.radius * 0.5; // Reduced radius for safe placement
+
+  let width, height, x, y;
+
+  if (horizontal) {
+    height = 0.2;
+    width = getRandomNumber((safeRadius * 2) / 8, (safeRadius * 2) / 3);
+
+    x = getRandomNumber(room.x - safeRadius + width / 2, room.x + safeRadius - width / 2);
+    y = getRandomNumber(room.y - safeRadius + height / 2, room.y + safeRadius - height / 2);
+  } else {
+    width = 0.2;
+    height = getRandomNumber((safeRadius * 2) / 8, (safeRadius * 2) / 3);
+
+    x = getRandomNumber(room.x - safeRadius + width / 2, room.x + safeRadius - width / 2);
+    y = getRandomNumber(room.y - safeRadius + height / 2, room.y + safeRadius - height / 2);
+  }
+
+  // Adjust x and y to convert from center-based to top-left-based coordinates
+  x -= width / 2;
+  y -= height / 2;
 
   return {
-    x: getRandomNumber(room.x - room.radius, room.x + room.radius - width),
-    y: getRandomNumber(room.y - room.radius, room.y + room.radius - height),
+    x,
+    y,
     width,
     height,
     type: 'rectangle',
@@ -267,14 +290,22 @@ export function createRectangleObstacleInCircularRoom(room: CircularRoom): Recta
 }
 
 export function createSquareObstacleInCircularRoom(room: CircularRoom): SquareObstacle {
-  // Logic to ensure the square is within the circle
-  // Adjust as needed
-  const maxSize = room.radius * Math.sqrt(2); // Maximum size fitting in the circle
-  const size = getRandomNumber(0.5, maxSize);
+  const safeRadius = room.radius * 0.5; // Reduced radius for safe placement
+
+  let x, y;
+
+  const size = getRandomNumber((safeRadius * 2) / 8, (safeRadius * 2) / 3);
+
+  x = getRandomNumber(room.x - safeRadius + size / 2, room.x + safeRadius - size / 2);
+  y = getRandomNumber(room.y - safeRadius + size / 2, room.y + safeRadius - size / 2);
+
+  // Adjust x and y to convert from center-based to top-left-based coordinates
+  x -= size / 2;
+  y -= size / 2;
 
   return {
-    x: getRandomNumber(room.x - room.radius, room.x + room.radius - size),
-    y: getRandomNumber(room.y - room.radius, room.y + room.radius - size),
+    x,
+    y,
     width: size,
     height: size,
     type: 'square',

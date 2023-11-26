@@ -75,7 +75,7 @@ export class DungeonScene extends Container implements IScene {
     this.worldContainer.removeChildren();
 
     // Generate and draw the new dungeon
-    this.dungeon = generateDungeon(10);
+    this.dungeon = generateDungeon(12);
     // 'root' is the starting room
     const startRoom = this.dungeon.root;
     const startRoomX = startRoom.x * this.tileSize;
