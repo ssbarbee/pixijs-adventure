@@ -1,14 +1,7 @@
 import { Graphics, Text } from 'pixi.js';
 
-import { INK_COLOR, TILE_COLOR } from '../../../../constants';
-import {
-  CircularRoom,
-  ConnectableRoom,
-  ConnectionRoom,
-  Dungeon,
-  RectangleRoom,
-  SupportedObstacles,
-} from '../types';
+import { INK_COLOR, TILE_COLOR, TILE2_COLOR } from '../../../../constants';
+import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../types';
 
 export class DungeonRenderer {
   private dungeon: Dungeon;
@@ -20,6 +13,7 @@ export class DungeonRenderer {
   constructor(dungeon: Dungeon, tileSize: number, offsetX: number, offsetY: number) {
     this.dungeon = dungeon;
     this.graphics = new Graphics();
+    this.graphics.sortableChildren = true;
 
     // Offset, normally center of the screen, but adjustable
     this.offsetX = offsetX;
@@ -54,7 +48,6 @@ export class DungeonRenderer {
     const squareSize = this.tileSize;
     // Save the current line style to restore it later
     const savedLineStyle = this.graphics.lineStyle();
-
     // Loop through the rectangle's width and height and draw squares
     for (let x = room.x; x < room.x + room.width; x++) {
       for (let y = room.y; y < room.y + room.height; y++) {
@@ -69,15 +62,14 @@ export class DungeonRenderer {
         this.graphics.endFill();
       }
     }
-    // Draw a red dot at the center of the square
-    this.drawRedDot(room.x, room.y);
-    // Draw Room ID
-    this.drawRoomID(room);
     // Reset the line style to its previous values
     this.graphics.lineStyle(savedLineStyle);
-
     // Draw obstacles within the room
-    this.drawObstacles(room.obstacles);
+    this.drawObstacles(room);
+    // Draw a red dot at the center of the square
+    this.drawRedDot(this.dungeonXToSceneX(room.x), this.dungeonYToSceneY(room.y));
+    // Draw Room ID
+    this.drawRoomID(room);
   }
 
   private drawCircularRoom(room: CircularRoom): void {
@@ -129,10 +121,9 @@ export class DungeonRenderer {
     this.graphics.addChild(maskGraphics);
     this.graphics.addChild(tilesGraphics);
     // Draw obstacles within the room
-    this.drawObstacles(room.obstacles);
-
+    this.drawObstacles(room);
     // Draw a red dot at the center
-    this.drawRedDot(room.x, room.y);
+    this.drawRedDot(this.dungeonXToSceneX(room.x), this.dungeonYToSceneY(room.y));
     // Draw Room ID (if needed)
     this.drawRoomID(room);
   }
@@ -141,7 +132,6 @@ export class DungeonRenderer {
     const squareSize = this.tileSize;
     // Save the current line style to restore it later
     const savedLineStyle = this.graphics.lineStyle();
-
     // Loop through the rectangle's width and height and draw squares
     for (let x = room.x; x < room.x + room.width; x++) {
       for (let y = room.y; y < room.y + room.height; y++) {
@@ -156,22 +146,19 @@ export class DungeonRenderer {
         this.graphics.endFill();
       }
     }
-    // Draw a red dot at the center of the square
-    this.drawRedDot(room.x, room.y);
-    // Draw Room ID
-    // this.drawRoomID(room);
     // Reset the line style to its previous values
     this.graphics.lineStyle(savedLineStyle);
+    // Draw a red dot at the center of the square
+    this.drawRedDot(this.dungeonXToSceneX(room.x), this.dungeonYToSceneY(room.y));
+    // Draw Room ID
+    // this.drawRoomID(room);
   }
 
-  private drawRedDot(x: number, y: number): void {
+  private drawRedDot(sceneX: number, sceneY: number): void {
     const graphics = new Graphics();
-    graphics.beginFill(0xff0000); // Red color
-    graphics.drawCircle(
-      x * this.tileSize + this.offsetX,
-      y * this.tileSize + this.offsetY,
-      this.tileSize / 8, // Radius of the dot
-    );
+    // Red color
+    graphics.beginFill(0xff0000);
+    graphics.drawCircle(sceneX, sceneY, this.tileSize / 8);
     graphics.endFill();
     this.graphics.addChild(graphics);
   }
@@ -189,16 +176,20 @@ export class DungeonRenderer {
     this.graphics.addChild(idText);
   }
 
-  private drawObstacles(obstacles: SupportedObstacles[]): void {
+  private drawObstacles(room: ConnectableRoom): void {
+    const obstacles = room.obstacles;
     obstacles.forEach((obstacle) => {
       const obstacleX = this.dungeonXToSceneX(obstacle.x);
       const obstacleY = this.dungeonYToSceneY(obstacle.y);
       const obstacleWidth = obstacle.width * this.tileSize;
       const obstacleHeight = obstacle.height * this.tileSize;
-
-      this.graphics.beginFill(0x000000); // Black color for obstacles
-      this.graphics.drawRect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
-      this.graphics.endFill();
+      const obstacleGraphics = new Graphics();
+      obstacleGraphics.beginFill(TILE2_COLOR);
+      obstacleGraphics.lineStyle(1, 0x000000, 1, 0.5, true);
+      obstacleGraphics.drawRect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
+      obstacleGraphics.endFill();
+      this.graphics.addChild(obstacleGraphics);
+      this.drawRedDot(obstacleX, obstacleY);
     });
   }
 

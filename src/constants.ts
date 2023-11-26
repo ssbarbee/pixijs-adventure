@@ -7,4 +7,5 @@ export const WATER0 = 'water0';
 
 export const BACKGROUND_COLOR = 0x2d2d2d;
 export const TILE_COLOR = 0xd9d5c3;
+export const TILE2_COLOR = 0xb8b2a7;
 export const INK_COLOR = 0x274c7f;
