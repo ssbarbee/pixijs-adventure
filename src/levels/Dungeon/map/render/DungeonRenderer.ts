@@ -1,6 +1,8 @@
 import { Graphics, Text } from 'pixi.js';
 
-import { INK_COLOR, TILE_COLOR, TILE2_COLOR } from '../../../../constants';
+import { INK_COLOR2, TILE_COLOR, TILE2_COLOR } from '../../../../constants';
+import { VisibilityRender } from '../../entities/visibility/main';
+import { Rectangle } from '../../entities/visibility/rectangle';
 import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../types';
 
 export class DungeonRenderer {
@@ -9,6 +11,7 @@ export class DungeonRenderer {
   private offsetX: number;
   private offsetY: number;
   private tileSize: number;
+  private visibilityRender: VisibilityRender = new VisibilityRender();
 
   constructor(dungeon: Dungeon, tileSize: number, offsetX: number, offsetY: number) {
     this.dungeon = dungeon;
@@ -44,6 +47,74 @@ export class DungeonRenderer {
     return this.graphics;
   }
 
+  drawVisibility(
+    room: ConnectableRoom | ConnectionRoom,
+    lightSource: {
+      x: number;
+      y: number;
+    },
+  ): Graphics {
+    if (room.type === 'rectangle') {
+      return this.visibilityRender.draw(
+        new Rectangle(
+          this.dungeonXToSceneX(room.x),
+          this.dungeonYToSceneY(room.y),
+          (room as RectangleRoom).width * this.tileSize,
+          (room as RectangleRoom).height * this.tileSize,
+        ),
+        room.obstacles.map((obs) => {
+          return new Rectangle(
+            this.dungeonXToSceneX(obs.x),
+            this.dungeonYToSceneY(obs.y),
+            obs.width * this.tileSize,
+            obs.height * this.tileSize,
+          );
+        }),
+        {
+          x: this.dungeonXToSceneX(lightSource.x),
+          y: this.dungeonYToSceneY(lightSource.y),
+        },
+      );
+    }
+    if (room.type === 'circular') {
+      return this.visibilityRender.draw(
+        new Rectangle(
+          this.dungeonXToSceneX(room.x),
+          this.dungeonYToSceneY(room.y),
+          (room as CircularRoom).radius * 2 * this.tileSize,
+          (room as CircularRoom).radius * 2 * this.tileSize,
+        ),
+        room.obstacles.map((obs) => {
+          return new Rectangle(
+            this.dungeonXToSceneX(obs.x),
+            this.dungeonYToSceneY(obs.y),
+            obs.width * this.tileSize,
+            obs.height * this.tileSize,
+          );
+        }),
+        {
+          x: this.dungeonXToSceneX(lightSource.x),
+          y: this.dungeonYToSceneY(lightSource.y),
+        },
+      );
+    }
+    if (room.type === 'connection') {
+      return this.visibilityRender.draw(
+        new Rectangle(
+          this.dungeonXToSceneX(room.x),
+          this.dungeonYToSceneY(room.y),
+          room.width * this.tileSize,
+          room.height * this.tileSize,
+        ),
+        [],
+        {
+          x: this.dungeonXToSceneX(lightSource.x),
+          y: this.dungeonYToSceneY(lightSource.y),
+        },
+      );
+    }
+    throw new Error('not supported room type');
+  }
   private drawRectangleRoom(room: RectangleRoom): void {
     // Draw the rectangle as the "floor" of the room
     this.drawRectangleRoomFloor(room);
@@ -68,7 +139,7 @@ export class DungeonRenderer {
   private drawRectangleRoomFloor(room: RectangleRoom | ConnectionRoom) {
     const graphics = new Graphics();
     // Room's floor color
-    graphics.beginFill(TILE_COLOR);
+    graphics.beginFill(TILE_COLOR, 0.1);
     graphics.drawRect(
       this.dungeonXToSceneX(room.x),
       this.dungeonYToSceneY(room.y),
@@ -102,7 +173,7 @@ export class DungeonRenderer {
 
         // Draw a square with a dashed border
         graphics.lineStyle(1, 0x000000, 1, 0.5, true); // 1px solid black dashed border
-        graphics.beginFill(TILE_COLOR);
+        graphics.beginFill(TILE_COLOR, 0.1);
         graphics.drawRect(squareX, squareY, squareSize, squareSize);
         graphics.endFill();
       }
@@ -112,7 +183,7 @@ export class DungeonRenderer {
 
   private drawCircularRoom(room: CircularRoom): void {
     // // Draw the circle as the "floor" of the room
-    this.graphics.beginFill(TILE_COLOR); // Room's floor color
+    this.graphics.beginFill(TILE_COLOR, 0.1); // Room's floor color
     this.graphics.drawCircle(
       this.dungeonXToSceneX(room.x),
       this.dungeonYToSceneY(room.y),
@@ -181,7 +252,7 @@ export class DungeonRenderer {
   private drawRoomID(room: ConnectableRoom | ConnectionRoom): void {
     const idText = new Text(`${room.id}`, {
       fontSize: this.tileSize,
-      fill: INK_COLOR,
+      fill: INK_COLOR2,
       fontWeight: 'bold',
       fontFamily: 'Arial',
       fontStyle: 'italic',

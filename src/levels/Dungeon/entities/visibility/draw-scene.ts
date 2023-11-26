@@ -1,48 +1,32 @@
+import { Graphics } from 'pixi.js';
+
+import { TILE_COLOR } from '../../../../constants';
 import { Point } from './point';
-import { Rectangle } from './rectangle';
-import { Segment } from './segment';
-import { EndPoint } from './end-point';
+export const createVisibilityTriangles = (
+  color: number, // PixiJS uses numeric color values
+  lightSource: Point,
+  visibilityOutput: Point[][],
+): Graphics => {
+  const graphics = new Graphics();
+  graphics.beginFill(color, 0.3);
+  // graphics.lineStyle(1, color, 0.3);
 
-const drawRectangle = (ctx: CanvasRenderingContext2D, color: string, rectangle: Rectangle) => {
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.strokeRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-  ctx.restore();
-};
-
-const drawSegment = (ctx: CanvasRenderingContext2D, color: string, segment: Segment) => {
-  ctx.save();
-  ctx.beginPath();
-  ctx.strokeStyle = color;
-  ctx.moveTo(segment.p1.x, segment.p1.y);
-  ctx.lineTo(segment.p2.x, segment.p2.y);
-  ctx.closePath();
-  ctx.stroke();
-  ctx.restore();
-};
-
-const drawVisibilityTriangles = (ctx: CanvasRenderingContext2D, color: string, lightSource: Point, visibilityOutput: Point[][]) => {
-  ctx.save();
-  ctx.strokeStyle = color;
   for (const points of visibilityOutput) {
-    ctx.beginPath();
-    ctx.moveTo(lightSource.x, lightSource.y);
-    ctx.lineTo(points[0].x, points[0].y);
-    ctx.lineTo(points[1].x, points[1].y);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    graphics.moveTo(lightSource.x, lightSource.y);
+    graphics.lineTo(points[0].x, points[0].y);
+    graphics.lineTo(points[1].x, points[1].y);
+    graphics.closePath();
   }
-  ctx.restore();
+
+  graphics.endFill();
+  return graphics;
 };
 
-export const drawScene = (ctx: CanvasRenderingContext2D, lightSource: Point, blocks: Rectangle[], walls: Segment[], visibilityOutput: Point[][]) => {
-  ctx.clearRect(-10000, -10000, 20000, 20000);
-  for (const block of blocks) {
-    drawRectangle(ctx, 'blue', block);
-  }
-  for (const wall of walls) {
-    drawSegment(ctx, 'red', wall);
-  }
-  drawVisibilityTriangles(ctx, 'yellow', lightSource, visibilityOutput);
+export const createScene = (lightSource: Point, visibilityOutput: Point[][]): Graphics => {
+  const sceneGraphics = new Graphics();
+
+  const triangleGraphics = createVisibilityTriangles(TILE_COLOR, lightSource, visibilityOutput);
+  sceneGraphics.addChild(triangleGraphics);
+
+  return sceneGraphics;
 };

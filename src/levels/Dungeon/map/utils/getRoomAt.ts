@@ -1,5 +1,12 @@
 // Helper function to check if a point is inside a rectangle
-import { CircularRoom, ConnectableRoom, ConnectionRoom, IRectangle, RectangleRoom } from '../types';
+import {
+  CircularRoom,
+  ConnectableRoom,
+  ConnectionRoom,
+  Dungeon,
+  IRectangle,
+  RectangleRoom,
+} from '../types';
 
 function isPointInsideRectangle(rect: IRectangle, x: number, y: number): boolean {
   return x >= rect.x && x < rect.x + rect.width && y >= rect.y && y < rect.y + rect.height;
@@ -27,9 +34,9 @@ function isPointInsideItem(x: number, y: number, item: ConnectableRoom | Connect
 export function getRoomAt(
   x: number,
   y: number,
-  grid: (ConnectableRoom | ConnectionRoom)[][][],
-  gridSize: number,
+  dungeon: Dungeon,
 ): ConnectableRoom | ConnectionRoom | null {
+  const { gridSize, grid } = dungeon;
   const gridX = Math.floor(x / gridSize);
   const gridY = Math.floor(y / gridSize);
 

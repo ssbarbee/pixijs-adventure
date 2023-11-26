@@ -1,4 +1,4 @@
-import { Container } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 
 import {
   DebugInfo,
@@ -8,7 +8,9 @@ import {
   isWallAt,
   Player,
   PlayerBox,
+  RectangleRoom,
 } from '../levels/Dungeon';
+import { getRoomAt } from '../levels/Dungeon/map/utils/getRoomAt';
 import { IScene, Manager } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {
@@ -20,6 +22,8 @@ export class DungeonScene extends Container implements IScene {
   private debugInfo: DebugInfo;
   private dungeonOffsetX: number = 0;
   private dungeonOffsetY: number = 0;
+  private dungeonRenderer: DungeonRenderer | null = null;
+  private vGraphics: Graphics | null = null;
 
   constructor() {
     super();
@@ -84,13 +88,13 @@ export class DungeonScene extends Container implements IScene {
     this.dungeonOffsetX = Manager.width / 2 - startRoomX;
     this.dungeonOffsetY = Manager.height / 2 - startRoomY;
 
-    const dungeonRenderer = new DungeonRenderer(
+    this.dungeonRenderer = new DungeonRenderer(
       this.dungeon,
       this.tileSize,
       this.dungeonOffsetX,
       this.dungeonOffsetY,
     );
-    const dungeonGraphics = dungeonRenderer.draw();
+    const dungeonGraphics = this.dungeonRenderer.draw();
     this.worldContainer.addChild(dungeonGraphics);
   }
 
@@ -116,6 +120,18 @@ export class DungeonScene extends Container implements IScene {
     // Implement game logic or sprite movements here
     // For example, you can move the player sprite here
     this.player.update(framesPassed);
+    const playerCenterX = this.sceneXtoDungeonX(this.player.x + this.playerTileSize / 2);
+    const playerCenterY = this.sceneYtoDungeonY(this.player.y + this.playerTileSize / 2);
+    const room = getRoomAt(playerCenterX, playerCenterY, this.dungeon!);
+    if (this.vGraphics) {
+      this.worldContainer.removeChild(this.vGraphics);
+    }
+    this.vGraphics = this.dungeonRenderer!.drawVisibility(room as RectangleRoom, {
+      x: playerCenterX,
+      y: playerCenterY,
+    });
+    // Draw visibility ray-casting
+    this.worldContainer.addChild(this.vGraphics);
     // Debug info
     this.drawDebugInfo();
   }

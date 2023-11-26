@@ -3,8 +3,7 @@ import { Dungeon } from '../types';
 import { getRoomAt } from './getRoomAt';
 
 export function isWallAt(x: number, y: number, dungeon: Dungeon): boolean {
-  const { gridSize, grid } = dungeon;
-  const roomOrConnection = getRoomAt(x, y, grid, gridSize);
+  const roomOrConnection = getRoomAt(x, y, dungeon);
   if (!roomOrConnection) {
     // If no room or connection is found at the position, it's likely a wall or empty space
     return true;
