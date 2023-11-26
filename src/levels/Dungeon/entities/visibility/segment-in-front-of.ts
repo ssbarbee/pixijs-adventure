@@ -2,16 +2,14 @@ import { Point } from './point';
 import { Segment } from './segment';
 
 const leftOf = (segment: Segment, point: Point) => {
-  const cross = (segment.p2.x - segment.p1.x) * (point.y - segment.p1.y)
-    - (segment.p2.y - segment.p1.y) * (point.x - segment.p1.x);
+  const cross =
+    (segment.p2.x - segment.p1.x) * (point.y - segment.p1.y) -
+    (segment.p2.y - segment.p1.y) * (point.x - segment.p1.x);
   return cross < 0;
 };
 
 const interpolate = (pointA: Point, pointB: Point, f: number) => {
-  return new Point(
-    pointA.x * (1 - f) + pointB.x * f,
-    pointA.y * (1 - f) + pointB.y * f,
-  );
+  return new Point(pointA.x * (1 - f) + pointB.x * f, pointA.y * (1 - f) + pointB.y * f);
 };
 
 export const segmentInFrontOf = (segmentA: Segment, segmentB: Segment, relativePoint: Point) => {
