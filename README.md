@@ -38,6 +38,7 @@ https://ssbarbee.github.io/pixijs-adventure
 - [PixiJS Elementals](https://www.pixijselementals.com)
 - [2d Visibility General Concepts](https://www.redblobgames.com/articles/visibility/)
 - [2d-visibility-typescript-repo](https://github.com/Petah/2d-visibility/tree/master/src)
+- https://simblob.blogspot.com/2012/07/2d-visibility.html
 
 ## License
 
