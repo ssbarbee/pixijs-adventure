@@ -9,6 +9,7 @@
 # PixiJS Learning Project
 
 This project is a part of my journey to learn PixiJS, a powerful 2D rendering engine for the web. I'm following the tutorial provided at [PixiJS Elementals](https://www.pixijselementals.com) to enhance my PixiJS skills.
+It is written in Typescript!
 
 ## Getting Started
 
@@ -20,10 +21,10 @@ This project is a part of my journey to learn PixiJS, a powerful 2D rendering en
 
 Before you start, make sure you have the following installed:
 
-- Node.js and npm
+- `node.js` and `yarn`
 - Any modern web browser
 
-## Demo
+## Hosted demo
 https://ssbarbee.github.io/pixijs-adventure
 
 ## Usage
@@ -32,9 +33,11 @@ https://ssbarbee.github.io/pixijs-adventure
 2. Start the development server with `yarn start`.
 3. Visit `http://localhost:1234` in your browser to see your PixiJS project in action.
 
-## Credits
+## Credits and tutorials
 
-- Tutorial: [PixiJS Elementals](https://www.pixijselementals.com)
+- [PixiJS Elementals](https://www.pixijselementals.com)
+- [2d Visibility General Concepts](https://www.redblobgames.com/articles/visibility/)
+- [2d-visibility-typescript-repo](https://github.com/Petah/2d-visibility/tree/master/src)
 
 ## License
 
