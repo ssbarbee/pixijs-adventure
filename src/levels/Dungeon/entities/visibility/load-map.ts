@@ -1,7 +1,7 @@
 import { EndPoint } from './end-point';
 import { Point } from './point';
-import { Rectangle } from './rectangle';
 import { Segment } from './segment';
+import { Segmentable } from './segmentable';
 
 const calculateEndPointAngles = (lightSource: Point, segment: Segment) => {
   const { x, y } = lightSource;
@@ -36,7 +36,7 @@ const processSegments = (lightSource: Point, segments: Segment[]) => {
   return segments;
 };
 
-export function loadMap(room: Rectangle, blocks: Rectangle[], lightSource: Point): EndPoint[] {
+export function loadMap(room: Segmentable, blocks: Segmentable[], lightSource: Point): EndPoint[] {
   const segments: Segment[] = [];
   for (const segment of room.getCornerSegments()) {
     segments.push(segment);

@@ -6,7 +6,6 @@ import { ConnectableRoom } from '../types';
 
 // Function to randomly decide the room type
 function getRandomRoomType(): 'rectangle' | 'circular' {
-  return 'rectangle';
   return Math.random() < 0.5 ? 'rectangle' : 'circular';
 }
 

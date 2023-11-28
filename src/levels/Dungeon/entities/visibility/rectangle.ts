@@ -1,7 +1,8 @@
 import { Point } from './point';
 import { Segment } from './segment';
+import { Segmentable } from './segmentable';
 
-export class Rectangle {
+export class Rectangle implements Segmentable {
   constructor(
     public x: number,
     public y: number,

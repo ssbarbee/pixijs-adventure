@@ -1,6 +1,7 @@
 import { Graphics, Text } from 'pixi.js';
 
 import { INK_COLOR2, TILE_COLOR, TILE2_COLOR } from '../../../../constants';
+import { Circle } from '../../entities/visibility/circle';
 import { VisibilityRender } from '../../entities/visibility/main';
 import { Rectangle } from '../../entities/visibility/rectangle';
 import { CircularRoom, ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../types';
@@ -78,11 +79,10 @@ export class DungeonRenderer {
     }
     if (room.type === 'circular') {
       return this.visibilityRender.draw(
-        new Rectangle(
+        new Circle(
           this.dungeonXToSceneX(room.x),
           this.dungeonYToSceneY(room.y),
-          (room as CircularRoom).radius * 2 * this.tileSize,
-          (room as CircularRoom).radius * 2 * this.tileSize,
+          (room as CircularRoom).radius * this.tileSize,
         ),
         room.obstacles.map((obs) => {
           return new Rectangle(
