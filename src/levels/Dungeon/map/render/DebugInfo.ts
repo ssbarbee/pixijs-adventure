@@ -6,11 +6,9 @@ export class DebugInfo {
   private debugText: Text | null = null;
   private debugRectangle: Graphics | null = null;
   private container: Container;
-  private tileSize: number;
 
-  constructor(container: Container, tileSize: number) {
+  constructor(container: Container) {
     this.container = container;
-    this.tileSize = tileSize;
   }
 
   public draw({ playerX, playerY }: { playerX: number; playerY: number }): void {
@@ -20,7 +18,7 @@ export class DebugInfo {
 
     if (!this.debugText) {
       this.debugText = new Text(debugInfo, {
-        fontSize: this.tileSize / 3,
+        fontSize: 16,
         fill: 0x274c7f,
         fontWeight: 'bold',
         fontFamily: 'Arial',

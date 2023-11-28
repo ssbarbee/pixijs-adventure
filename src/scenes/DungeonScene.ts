@@ -6,16 +6,16 @@ import {
   Dungeon,
   DungeonRenderer,
   generateDungeon,
+  getRoomAt,
   isWallAt,
   PlayerEntity,
   RectangleRoom,
 } from '../levels/Dungeon';
-import { getRoomAt } from '../levels/Dungeon/map/utils/getRoomAt';
 import { IScene, Manager } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {
   private player: PlayerEntity;
-  private tileSize = Manager.width / 16;
+  private tileSize = Manager.width / 32;
   private worldContainer: Container;
   private dungeon: Dungeon | null = null;
   private debugInfo: DebugInfo;
@@ -46,7 +46,7 @@ export class DungeonScene extends Container implements IScene {
     // Call centerCameraOnPlayer to initially center the world container on the player
     this.centerCameraOnPlayer();
 
-    this.debugInfo = new DebugInfo(this, this.tileSize);
+    this.debugInfo = new DebugInfo(this);
 
     window.addEventListener('keypress', (e) => this.handleKeypress(e));
   }
