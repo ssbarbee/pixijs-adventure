@@ -39,6 +39,7 @@ https://ssbarbee.github.io/pixijs-adventure
 - [2d Visibility General Concepts](https://www.redblobgames.com/articles/visibility/)
 - [2d-visibility-typescript-repo](https://github.com/Petah/2d-visibility/tree/master/src)
 - https://simblob.blogspot.com/2012/07/2d-visibility.html
+- https://www.gameart2d.com/free-dino-sprites.html
 
 ## License
 
