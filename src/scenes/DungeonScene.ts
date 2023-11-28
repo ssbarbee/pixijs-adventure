@@ -1,20 +1,20 @@
 import { Container, Graphics } from 'pixi.js';
 
+import { PlayerBox } from '../entities/Player';
 import {
   DebugInfo,
   Dungeon,
   DungeonRenderer,
   generateDungeon,
   isWallAt,
-  Player,
-  PlayerBox,
+  PlayerEntity,
   RectangleRoom,
 } from '../levels/Dungeon';
 import { getRoomAt } from '../levels/Dungeon/map/utils/getRoomAt';
 import { IScene, Manager } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {
-  private player: Player;
+  private player: PlayerEntity;
   private tileSize = Manager.width / 32;
   private playerTileSize = this.tileSize / 2;
   private worldContainer: Container;
@@ -37,12 +37,12 @@ export class DungeonScene extends Container implements IScene {
 
     this.generateAndDrawDungeon();
     // Create the player, centered in middle of screen
-    this.player = new Player(this.playerTileSize, Manager.width / 2, Manager.height / 2, (box) =>
+    this.player = new PlayerEntity(Manager.width / 2, Manager.height / 2, (box) =>
       this.onPlayerPositionUpdate(box),
     );
 
     // Add the player to the GameScene container (worldContainer)
-    this.worldContainer.addChild(this.player);
+    this.worldContainer.addChild(this.player.render);
 
     // Call centerCameraOnPlayer to initially center the world container on the player
     this.centerCameraOnPlayer();
@@ -117,11 +117,10 @@ export class DungeonScene extends Container implements IScene {
   public update(framesPassed: number): void {
     // Call centerCameraOnPlayer to continuously center the world container on the player
     this.centerCameraOnPlayer();
-    // Implement game logic or sprite movements here
-    // For example, you can move the player sprite here
+
     this.player.update(framesPassed);
-    const playerCenterX = this.sceneXtoDungeonX(this.player.x + this.playerTileSize / 2);
-    const playerCenterY = this.sceneYtoDungeonY(this.player.y + this.playerTileSize / 2);
+    const playerCenterX = this.sceneXtoDungeonX(this.player.centerX);
+    const playerCenterY = this.sceneYtoDungeonY(this.player.centerY);
     const room = getRoomAt(playerCenterX, playerCenterY, this.dungeon!);
     if (this.vGraphics) {
       this.worldContainer.removeChild(this.vGraphics);
