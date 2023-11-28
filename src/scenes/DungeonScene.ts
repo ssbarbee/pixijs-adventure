@@ -15,8 +15,7 @@ import { IScene, Manager } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {
   private player: PlayerEntity;
-  private tileSize = Manager.width / 32;
-  private playerTileSize = this.tileSize / 2;
+  private tileSize = Manager.width / 16;
   private worldContainer: Container;
   private dungeon: Dungeon | null = null;
   private debugInfo: DebugInfo;
