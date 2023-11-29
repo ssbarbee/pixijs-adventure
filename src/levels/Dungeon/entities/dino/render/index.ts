@@ -5,6 +5,7 @@ import { Manager } from '../../../../../Manager';
 export class DinoRender extends AnimatedSprite {
   tileSize: number = Manager.width / 8;
   private dot: Graphics;
+  private isRunning: boolean = false;
 
   constructor(startingX: number, startingY: number) {
     const textures = Array.from({ length: 10 }).map((_, index) => Texture.from(`dinoIdle${index}`));
@@ -31,5 +32,28 @@ export class DinoRender extends AnimatedSprite {
   public override update(framesPassed: number) {
     super.update(framesPassed);
     // this.drawDot();
+  }
+
+  public startRunning() {
+    if (!this.isRunning) {
+      this.stop();
+      this.animationSpeed = 0.1;
+      this.textures = Array.from({ length: 8 }).map((_, index) => Texture.from(`dinoRun${index}`));
+      this.play();
+    }
+    this.isRunning = true;
+  }
+
+  public stopRunning() {
+    if (this.isRunning) {
+      this.stop();
+      this.animationSpeed = 0.3;
+      this.textures = Array.from({ length: 10 }).map((_, index) =>
+        Texture.from(`dinoIdle${index}`),
+      );
+      this.play();
+    }
+
+    this.isRunning = false;
   }
 }

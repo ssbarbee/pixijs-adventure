@@ -1,18 +1,26 @@
+import { DinoBox, DinoModel } from './model';
 import { DinoRender } from './render';
 
 export class DinoEntity {
   render: DinoRender;
+  model: DinoModel;
 
-  constructor(startingX: number, startingY: number) {
+  constructor(
+    startingX: number,
+    startingY: number,
+    onPositionUpdate: (box: DinoBox) => boolean,
+    onIdle: () => void,
+  ) {
     this.render = new DinoRender(startingX, startingY);
-    // this.model = new PlayerModel(
-    //   this.render.x,
-    //   this.render.y,
-    //   this.render.width,
-    //   this.render.height,
-    //   this.render.tileSize * 0.2,
-    //   onPositionUpdate,
-    // );
+    this.model = new DinoModel(
+      this.render.x,
+      this.render.y,
+      this.render.width,
+      this.render.height,
+      this.render.tileSize * 0.02,
+      onPositionUpdate,
+      onIdle,
+    );
   }
 
   public get x() {
@@ -32,14 +40,14 @@ export class DinoEntity {
   }
 
   public update(framesPassed: number) {
-    // this.model.update(framesPassed);
+    this.model.update(framesPassed);
     this.render.update(framesPassed);
-    // this.render.x = this.model.x;
-    // this.render.y = this.model.y;
+    this.render.x = this.model.x;
+    this.render.y = this.model.y;
   }
 
   public destroy() {
-    // this.model.destroy();
+    this.model.destroy();
     this.render.destroy();
   }
 }

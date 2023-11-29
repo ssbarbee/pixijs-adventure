@@ -12,6 +12,7 @@ import {
   RectangleRoom,
 } from '../levels/Dungeon';
 import { DinoEntity } from '../levels/Dungeon/entities/dino';
+import { DinoBox } from '../levels/Dungeon/entities/dino/model';
 import { IScene, Manager } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {
@@ -41,7 +42,12 @@ export class DungeonScene extends Container implements IScene {
     this.player = new PlayerEntity(Manager.width / 2, Manager.height / 2, (box) =>
       this.onPlayerPositionUpdate(box),
     );
-    this.dino = new DinoEntity(Manager.width / 2, Manager.height / 2);
+    this.dino = new DinoEntity(
+      Manager.width / 2,
+      Manager.height / 2,
+      this.onDinoPositionUpdate.bind(this),
+      this.onDinoIdle.bind(this),
+    );
 
     // Add the player to the GameScene container (worldContainer)
     this.worldContainer.addChild(this.player.render);
@@ -75,6 +81,34 @@ export class DungeonScene extends Container implements IScene {
       }
     }
 
+    // Move was successful
+    return true;
+  }
+
+  private onDinoIdle() {
+    this.dino.render.stopRunning();
+  }
+
+  private onDinoPositionUpdate({ left, right, top, bottom }: DinoBox) {
+    if (!this.dungeon) {
+      return false;
+    }
+    // Check if any corner of the player is on a non-grass tile
+    for (let x = left; x <= right; x++) {
+      for (let y = top; y <= bottom; y++) {
+        // Convert screen coordinates (x, y) to dungeon coordinates
+        const dungeonX = this.sceneXtoDungeonX(x);
+        const dungeonY = this.sceneYtoDungeonY(y);
+
+        // Prevent the move if there's a wall
+        if (isWallAt(dungeonX, dungeonY, this.dungeon)) {
+          this.dino.render.stopRunning();
+          return false;
+        }
+      }
+    }
+
+    this.dino.render.startRunning();
     // Move was successful
     return true;
   }

@@ -244,14 +244,14 @@ export class DungeonRenderer {
     const graphics = new Graphics();
     // Red color
     graphics.beginFill(0xff0000);
-    graphics.drawCircle(sceneX, sceneY, this.tileSize / 8);
+    graphics.drawCircle(sceneX, sceneY, 4);
     graphics.endFill();
     this.graphics.addChild(graphics);
   }
 
   private drawRoomID(room: ConnectableRoom | ConnectionRoom): void {
     const idText = new Text(`${room.id}`, {
-      fontSize: this.tileSize,
+      fontSize: this.tileSize / 4,
       fill: INK_COLOR2,
       fontWeight: 'bold',
       fontFamily: 'Arial',
