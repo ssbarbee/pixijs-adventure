@@ -11,11 +11,13 @@ import {
   PlayerEntity,
   RectangleRoom,
 } from '../levels/Dungeon';
+import { DinoEntity } from '../levels/Dungeon/entities/dino';
 import { IScene, Manager } from '../Manager';
 
 export class DungeonScene extends Container implements IScene {
   private player: PlayerEntity;
-  private tileSize = Manager.width / 32;
+  private dino: DinoEntity;
+  private tileSize = Manager.width / 16;
   private worldContainer: Container;
   private dungeon: Dungeon | null = null;
   private debugInfo: DebugInfo;
@@ -39,9 +41,13 @@ export class DungeonScene extends Container implements IScene {
     this.player = new PlayerEntity(Manager.width / 2, Manager.height / 2, (box) =>
       this.onPlayerPositionUpdate(box),
     );
+    this.dino = new DinoEntity(Manager.width / 2, Manager.height / 2);
 
     // Add the player to the GameScene container (worldContainer)
     this.worldContainer.addChild(this.player.render);
+
+    // Add the dino to the GameScene container (worldContainer)
+    this.worldContainer.addChild(this.dino.render);
 
     // Call centerCameraOnPlayer to initially center the world container on the player
     this.centerCameraOnPlayer();
@@ -114,6 +120,7 @@ export class DungeonScene extends Container implements IScene {
   }
 
   public update(framesPassed: number): void {
+    this.dino.update(framesPassed);
     // Call centerCameraOnPlayer to continuously center the world container on the player
     this.centerCameraOnPlayer();
 
