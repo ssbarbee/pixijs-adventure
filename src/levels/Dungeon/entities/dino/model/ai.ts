@@ -1,7 +1,8 @@
 export class DinoAI {
-  private intervalId: NodeJS.Timeout | null = null;
+  private intervalId: number | null = null;
   private onKeyUp: (event: { key: string }) => void;
   private onKeyDown: (event: { key: string }) => void;
+  private currentDirection: 'up' | 'down' | 'left' | 'right' = 'up';
 
   constructor(
     onKeyUp: (event: { key: string }) => void,
@@ -14,12 +15,8 @@ export class DinoAI {
 
   start() {
     if (this.intervalId === null) {
-      this.intervalId = setInterval(() => {
-        const randomKey = this.getRandomKey();
-        this.emitKeyUp(randomKey);
-        setTimeout(() => {
-          this.emitKeyDown(randomKey);
-        }, 300);
+      this.intervalId = window.setInterval(() => {
+        this.move();
       }, 1000);
     }
   }
@@ -31,10 +28,38 @@ export class DinoAI {
     }
   }
 
-  private getRandomKey(): string {
-    const keys = ['w', 'a', 's', 'd'];
-    const randomIndex = Math.floor(Math.random() * keys.length);
-    return keys[randomIndex];
+  private getRandomDirection(): 'up' | 'down' | 'left' | 'right' {
+    const possibleDirections: Array<'up' | 'down' | 'left' | 'right'> = [];
+
+    // Only add directions that are not opposite to the current direction
+    if (this.currentDirection !== 'down') possibleDirections.push('up');
+    if (this.currentDirection !== 'up') possibleDirections.push('down');
+    if (this.currentDirection !== 'right') possibleDirections.push('left');
+    if (this.currentDirection !== 'left') possibleDirections.push('right');
+
+    const randomIndex = Math.floor(Math.random() * possibleDirections.length);
+    return possibleDirections[randomIndex];
+  }
+
+  private move() {
+    const newDirection = this.getRandomDirection();
+
+    // Emit key events based on the selected direction
+    if (newDirection === 'up') {
+      this.emitKeyUp('w');
+      this.emitKeyDown('s');
+    } else if (newDirection === 'down') {
+      this.emitKeyUp('s');
+      this.emitKeyDown('w');
+    } else if (newDirection === 'left') {
+      this.emitKeyUp('a');
+      this.emitKeyDown('d');
+    } else if (newDirection === 'right') {
+      this.emitKeyUp('d');
+      this.emitKeyDown('a');
+    }
+
+    this.currentDirection = newDirection;
   }
 
   private emitKeyUp(key: string) {
