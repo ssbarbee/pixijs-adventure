@@ -1,4 +1,4 @@
-import { Graphics, Text } from 'pixi.js';
+import { Graphics, Sprite, Text, Texture } from 'pixi.js';
 
 import { INK_COLOR2, TILE_COLOR, TILE2_COLOR } from '../../../../constants';
 import { Circle } from '../../entities/visibility/circle';
@@ -115,6 +115,16 @@ export class DungeonRenderer {
     }
     throw new Error('not supported room type');
   }
+
+  private createTileSprite(x: number, y: number, tileSize: number, textureSource: string): Sprite {
+    const texture = Texture.from(textureSource);
+    const sprite = new Sprite(texture);
+    sprite.x = x;
+    sprite.y = y;
+    sprite.scale.set(tileSize / sprite.width, tileSize / sprite.height);
+    return sprite;
+  }
+
   private drawRectangleRoom(room: RectangleRoom): void {
     // Draw the rectangle as the "floor" of the room
     this.drawRectangleRoomFloor(room);
@@ -171,25 +181,22 @@ export class DungeonRenderer {
         const squareX = this.dungeonXToSceneX(x);
         const squareY = this.dungeonYToSceneY(y);
 
-        // Draw a square with a dashed border
-        graphics.lineStyle(1, 0x000000, 1, 0.5, true); // 1px solid black dashed border
-        graphics.beginFill(TILE_COLOR, 0.1);
-        graphics.drawRect(squareX, squareY, squareSize, squareSize);
-        graphics.endFill();
+        const tileSprite = this.createTileSprite(squareX, squareY, squareSize, 'dungeonLand');
+        graphics.addChild(tileSprite);
       }
     }
     return graphics;
   }
 
   private drawCircularRoom(room: CircularRoom): void {
-    // // Draw the circle as the "floor" of the room
-    this.graphics.beginFill(TILE_COLOR, 0.1); // Room's floor color
-    this.graphics.drawCircle(
-      this.dungeonXToSceneX(room.x),
-      this.dungeonYToSceneY(room.y),
-      room.radius * this.tileSize,
-    );
-    this.graphics.endFill();
+    // // // Draw the circle as the "floor" of the room
+    // this.graphics.beginFill(TILE_COLOR, 0.1); // Room's floor color
+    // this.graphics.drawCircle(
+    //   this.dungeonXToSceneX(room.x),
+    //   this.dungeonYToSceneY(room.y),
+    //   room.radius * this.tileSize,
+    // );
+    // this.graphics.endFill();
 
     // Draw room grid
     const gridGraphics = this.drawRoomGrid({
