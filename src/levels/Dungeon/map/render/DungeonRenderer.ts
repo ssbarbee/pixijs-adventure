@@ -128,14 +128,22 @@ export class DungeonRenderer {
   private drawRectangleRoom(room: RectangleRoom): void {
     // Draw the rectangle as the "floor" of the room
     this.drawRectangleRoomFloor(room);
-    // Draw room grid
-    const gridGraphics = this.drawRoomGrid({
+    // Draw dungeon land
+    const dungeonLandGraphics = this.drawDungeonLand({
       top: room.y,
       left: room.x,
       width: room.width,
       height: room.height,
     });
-    this.graphics.addChild(gridGraphics);
+    this.graphics.addChild(dungeonLandGraphics);
+    // Draw room grid
+    // const gridGraphics = this.drawRoomGrid({
+    //   top: room.y,
+    //   left: room.x,
+    //   width: room.width,
+    //   height: room.height,
+    // });
+    // this.graphics.addChild(gridGraphics);
     // Draw obstacles within the room
     this.drawObstacles(room);
 
@@ -181,6 +189,36 @@ export class DungeonRenderer {
         const squareX = this.dungeonXToSceneX(x);
         const squareY = this.dungeonYToSceneY(y);
 
+        // Draw a square with a dashed border
+        graphics.lineStyle(1, 0x000000, 1, 0.5, true); // 1px solid black dashed border
+        graphics.beginFill(TILE_COLOR, 0.1);
+        graphics.drawRect(squareX, squareY, squareSize, squareSize);
+        graphics.endFill();
+      }
+    }
+    return graphics;
+  }
+
+  private drawDungeonLand({
+    top,
+    left,
+    width,
+    height,
+  }: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  }): Graphics {
+    const graphics = new Graphics();
+    const squareSize = this.tileSize;
+    // Loop through the rectangle's width and height and draw squares
+    for (let x = left; x < left + width; x++) {
+      for (let y = top; y < top + height; y++) {
+        // Calculate the coordinates for the current square
+        const squareX = this.dungeonXToSceneX(x);
+        const squareY = this.dungeonYToSceneY(y);
+
         const tileSprite = this.createTileSprite(squareX, squareY, squareSize, 'dungeonLand');
         graphics.addChild(tileSprite);
       }
@@ -198,13 +236,21 @@ export class DungeonRenderer {
     // );
     // this.graphics.endFill();
 
-    // Draw room grid
-    const gridGraphics = this.drawRoomGrid({
+    // Draw dungeon land graphics
+    const dungeonLandGraphics = this.drawDungeonLand({
       top: room.y - room.radius,
       left: room.x - room.radius,
       width: room.radius * 2,
       height: room.radius * 2,
     });
+    this.graphics.addChild(dungeonLandGraphics);
+    // Draw room grid
+    // const gridGraphics = this.drawRoomGrid({
+    //   top: room.y - room.radius,
+    //   left: room.x - room.radius,
+    //   width: room.radius * 2,
+    //   height: room.radius * 2,
+    // });
 
     // Create a mask for the circle
     const maskGraphics = new Graphics();
@@ -217,11 +263,11 @@ export class DungeonRenderer {
     maskGraphics.endFill();
 
     // Apply the mask to the tiles
-    gridGraphics.mask = maskGraphics;
+    dungeonLandGraphics.mask = maskGraphics;
 
     // Add the mask to the main graphics before the tiles
     this.graphics.addChild(maskGraphics);
-    this.graphics.addChild(gridGraphics);
+    this.graphics.addChild(dungeonLandGraphics);
     // Draw obstacles within the room
     this.drawObstacles(room);
     // Draw a red dot at the center
@@ -233,14 +279,22 @@ export class DungeonRenderer {
   private drawConnection(room: ConnectionRoom): void {
     // Draw the rectangle as the "floor" of the room
     this.drawRectangleRoomFloor(room);
-    // Draw room grid
-    const gridGraphics = this.drawRoomGrid({
+    // Draw dungeon land graphics
+    const dungeonLandGraphics = this.drawDungeonLand({
       top: room.y,
       left: room.x,
       width: room.width,
       height: room.height,
     });
-    this.graphics.addChild(gridGraphics);
+    this.graphics.addChild(dungeonLandGraphics);
+    // Draw room grid
+    // const gridGraphics = this.drawRoomGrid({
+    //   top: room.y,
+    //   left: room.x,
+    //   width: room.width,
+    //   height: room.height,
+    // });
+    // this.graphics.addChild(gridGraphics);
     // Draw a red dot at the center of the square
     this.drawRedDot(this.dungeonXToSceneX(room.x), this.dungeonYToSceneY(room.y));
     // Draw Room ID
