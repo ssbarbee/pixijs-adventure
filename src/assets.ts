@@ -19,7 +19,10 @@ export const manifest: AssetsManifest = {
     {
       name: 'dungeon',
       assets: {
+        dungeonDecor12: './dungeon/decor_12.png',
         dungeonLand: './dungeon/land.png',
+        dungeonWall7: './dungeon/wall_7.png',
+        dungeonWall8: './dungeon/wall_8.png',
       },
     },
     {

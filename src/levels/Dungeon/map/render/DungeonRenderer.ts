@@ -328,14 +328,24 @@ export class DungeonRenderer {
     obstacles.forEach((obstacle) => {
       const obstacleX = this.dungeonXToSceneX(obstacle.x);
       const obstacleY = this.dungeonYToSceneY(obstacle.y);
-      const obstacleWidth = obstacle.width * this.tileSize;
-      const obstacleHeight = obstacle.height * this.tileSize;
-      const obstacleGraphics = new Graphics();
-      obstacleGraphics.beginFill(TILE2_COLOR);
-      obstacleGraphics.lineStyle(1, 0x000000, 1, 0.5, true);
-      obstacleGraphics.drawRect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
-      obstacleGraphics.endFill();
-      this.graphics.addChild(obstacleGraphics);
+      if (obstacle.type === 'square') {
+        const tileSprite = this.createTileSprite(
+          obstacleX,
+          obstacleY,
+          obstacle.width * this.tileSize,
+          'dungeonDecor12',
+        );
+        this.graphics.addChild(tileSprite);
+      } else {
+        const obstacleWidth = obstacle.width * this.tileSize;
+        const obstacleHeight = obstacle.height * this.tileSize;
+        const obstacleGraphics = new Graphics();
+        obstacleGraphics.beginFill(TILE2_COLOR);
+        obstacleGraphics.lineStyle(1, 0x000000, 1, 0.5, true);
+        obstacleGraphics.drawRect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
+        obstacleGraphics.endFill();
+        this.graphics.addChild(obstacleGraphics);
+      }
       this.drawRedDot(obstacleX, obstacleY);
     });
   }
