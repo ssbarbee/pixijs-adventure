@@ -1,6 +1,7 @@
 import { Graphics, Sprite, Text, Texture } from 'pixi.js';
 
 import { INK_COLOR2, TILE_COLOR, TILE2_COLOR } from '../../../../constants';
+import { getRandomString } from '../../../../utils/getRandomString';
 import { Circle } from '../../entities/visibility/circle';
 import { VisibilityRender } from '../../entities/visibility/main';
 import { Rectangle } from '../../entities/visibility/rectangle';
@@ -333,7 +334,9 @@ export class DungeonRenderer {
           obstacleX,
           obstacleY,
           obstacle.width * this.tileSize,
-          'dungeonDecor12',
+          obstacle.width > 1
+            ? 'dungeonDecor12'
+            : getRandomString(['dungeonBricks9', 'dungeonBricks10']),
         );
         this.graphics.addChild(tileSprite);
       } else {
