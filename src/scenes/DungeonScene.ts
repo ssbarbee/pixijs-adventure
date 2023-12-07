@@ -47,6 +47,10 @@ export class DungeonScene extends Container implements IScene {
       Manager.height / 2,
       this.onDinoPositionUpdate.bind(this),
       this.onDinoIdle.bind(this),
+      this.player.render.x,
+      this.player.render.y,
+      this.player.render.width,
+      this.player.render.height,
     );
 
     // Add the player to the GameScene container (worldContainer)
@@ -82,6 +86,7 @@ export class DungeonScene extends Container implements IScene {
     }
 
     // Move was successful
+    this.dino.model.updatePlayerPosition(left, top, right - left, bottom - top);
     return true;
   }
 
@@ -187,6 +192,8 @@ export class DungeonScene extends Container implements IScene {
     this.debugInfo.draw({
       playerX: this.sceneXtoDungeonX(this.player.x),
       playerY: this.sceneYtoDungeonY(this.player.y),
+      dinoX: this.sceneXtoDungeonX(this.dino.x),
+      dinoY: this.sceneYtoDungeonY(this.dino.y),
     });
   }
 

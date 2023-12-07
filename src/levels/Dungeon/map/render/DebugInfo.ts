@@ -11,10 +11,20 @@ export class DebugInfo {
     this.container = container;
   }
 
-  public draw({ playerX, playerY }: { playerX: number; playerY: number }): void {
+  public draw({
+    playerX,
+    playerY,
+    dinoX,
+    dinoY,
+  }: {
+    playerX: number;
+    playerY: number;
+    dinoX: number;
+    dinoY: number;
+  }): void {
     const debugInfo = `Player: x:${playerX.toFixed(3)}, y:${playerY.toFixed(
       3,
-    )},\nFPS:${Ticker.shared.FPS.toFixed(2)}`;
+    )}\nDino: x:${dinoX.toFixed(3)}, y:${dinoY.toFixed(3)}\nFPS:${Ticker.shared.FPS.toFixed(2)}`;
 
     if (!this.debugText) {
       this.debugText = new Text(debugInfo, {

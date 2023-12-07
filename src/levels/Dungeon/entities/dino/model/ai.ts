@@ -1,15 +1,28 @@
+export type DinoDirection =
+  | 'up'
+  | 'down'
+  | 'left'
+  | 'right'
+  | 'upRight'
+  | 'upLeft'
+  | 'downRight'
+  | 'downLeft'
+  | 'idle';
+
 export class DinoAI {
   private intervalId: number | null = null;
-  private onKeyUp: (event: { key: string }) => void;
-  private onKeyDown: (event: { key: string }) => void;
-  private currentDirection: 'up' | 'down' | 'left' | 'right' = 'up';
+  private onMove: (direction: DinoDirection) => void;
+  private dinoPosition: { x: number; y: number; width: number; height: number };
+  private playerPosition: { x: number; y: number; width: number; height: number };
 
   constructor(
-    onKeyUp: (event: { key: string }) => void,
-    onKeyDown: (event: { key: string }) => void,
+    move: (direction: DinoDirection) => void,
+    dinoPosition: { x: number; y: number; width: number; height: number },
+    playerPosition: { x: number; y: number; width: number; height: number },
   ) {
-    this.onKeyDown = onKeyDown;
-    this.onKeyUp = onKeyUp;
+    this.onMove = move;
+    this.dinoPosition = dinoPosition;
+    this.playerPosition = playerPosition;
     this.start();
   }
 
@@ -17,7 +30,7 @@ export class DinoAI {
     if (this.intervalId === null) {
       this.intervalId = window.setInterval(() => {
         this.move();
-      }, 1000);
+      }, 1);
     }
   }
 
@@ -28,49 +41,83 @@ export class DinoAI {
     }
   }
 
-  private getRandomDirection(): 'up' | 'down' | 'left' | 'right' {
-    const possibleDirections: Array<'up' | 'down' | 'left' | 'right'> = [];
+  private getDirectionTowardsPlayer(): DinoDirection {
+    // Check if player is completely inside Dino
+    if (this.isPlayerCompletelyInsideDino()) {
+      return 'idle'; // Assuming 'idle' is a valid direction for no movement
+    }
 
-    // Only add directions that are not opposite to the current direction
-    if (this.currentDirection !== 'down') possibleDirections.push('up');
-    if (this.currentDirection !== 'up') possibleDirections.push('down');
-    if (this.currentDirection !== 'right') possibleDirections.push('left');
-    if (this.currentDirection !== 'left') possibleDirections.push('right');
+    const xDiff = this.playerPosition.x - this.dinoPosition.x;
+    const yDiff = this.playerPosition.y - this.dinoPosition.y;
+    const threshold = 10; // Adjust this value as needed
 
-    const randomIndex = Math.floor(Math.random() * possibleDirections.length);
-    return possibleDirections[randomIndex];
+    if (Math.abs(xDiff) < threshold && Math.abs(yDiff) < threshold) {
+      return 'idle'; // Return 'idle' if within the threshold to avoid jittering
+    }
+
+    if (xDiff > threshold && yDiff > threshold) {
+      return 'downRight';
+    }
+    if (xDiff > threshold && yDiff < -threshold) {
+      return 'upRight';
+    }
+    if (xDiff < -threshold && yDiff > threshold) {
+      return 'downLeft';
+    }
+    if (xDiff < -threshold && yDiff < -threshold) {
+      return 'upLeft';
+    }
+    if (xDiff > threshold) {
+      return 'right';
+    }
+    if (xDiff < -threshold) {
+      return 'left';
+    }
+    if (yDiff > threshold) {
+      return 'down';
+    }
+    if (yDiff < -threshold) {
+      return 'up';
+    }
+
+    // Default case if Dino and player are within threshold but not overlapping
+    return 'idle';
   }
 
   private move() {
-    const newDirection = this.getRandomDirection();
-
-    // Emit key events based on the selected direction
-    if (newDirection === 'up') {
-      this.emitKeyUp('w');
-      this.emitKeyDown('s');
-    } else if (newDirection === 'down') {
-      this.emitKeyUp('s');
-      this.emitKeyDown('w');
-    } else if (newDirection === 'left') {
-      this.emitKeyUp('a');
-      this.emitKeyDown('d');
-    } else if (newDirection === 'right') {
-      this.emitKeyUp('d');
-      this.emitKeyDown('a');
-    }
-
-    this.currentDirection = newDirection;
-  }
-
-  private emitKeyUp(key: string) {
-    this.onKeyUp({ key });
-  }
-
-  private emitKeyDown(key: string) {
-    this.onKeyDown({ key });
+    const newDirection = this.getDirectionTowardsPlayer();
+    console.log('### newDirection', newDirection);
+    this.onMove(newDirection);
   }
 
   public destroy() {
     this.stop();
+  }
+
+  public updatePlayerPosition(newPosition: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) {
+    this.playerPosition = newPosition;
+  }
+
+  public updateDinoPosition(newPosition: { x: number; y: number; width: number; height: number }) {
+    this.dinoPosition = newPosition;
+  }
+
+  private isPlayerCompletelyInsideDino(): boolean {
+    const dinoRight = this.dinoPosition.x + this.dinoPosition.width;
+    const dinoBottom = this.dinoPosition.y + this.dinoPosition.height;
+    const playerRight = this.playerPosition.x + this.playerPosition.width;
+    const playerBottom = this.playerPosition.y + this.playerPosition.height;
+
+    return (
+      this.playerPosition.x > this.dinoPosition.x &&
+      this.playerPosition.y > this.dinoPosition.y &&
+      playerRight < dinoRight &&
+      playerBottom < dinoBottom
+    );
   }
 }
