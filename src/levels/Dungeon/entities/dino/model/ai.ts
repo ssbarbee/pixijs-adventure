@@ -86,7 +86,6 @@ export class DinoAI {
 
   private move() {
     const newDirection = this.getDirectionTowardsPlayer();
-    console.log('### newDirection', newDirection);
     this.onMove(newDirection);
   }
 
