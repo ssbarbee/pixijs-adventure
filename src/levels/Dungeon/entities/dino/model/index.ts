@@ -64,6 +64,7 @@ export class DinoModel {
   }
 
   public update(framesPassed: number) {
+    this.ai.update();
     this.move(framesPassed);
   }
 

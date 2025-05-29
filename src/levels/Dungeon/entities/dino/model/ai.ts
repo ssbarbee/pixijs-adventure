@@ -23,22 +23,6 @@ export class DinoAI {
     this.onMove = move;
     this.dinoPosition = dinoPosition;
     this.playerPosition = playerPosition;
-    this.start();
-  }
-
-  start() {
-    if (this.intervalId === null) {
-      this.intervalId = window.setInterval(() => {
-        this.move();
-      }, 1);
-    }
-  }
-
-  stop() {
-    if (this.intervalId !== null) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
   }
 
   private getDirectionTowardsPlayer(): DinoDirection {
@@ -89,8 +73,11 @@ export class DinoAI {
     this.onMove(newDirection);
   }
 
-  public destroy() {
-    this.stop();
+  public destroy() {}
+
+  public update() {
+    const newDirection = this.getDirectionTowardsPlayer();
+    this.onMove(newDirection);
   }
 
   public updatePlayerPosition(newPosition: {
