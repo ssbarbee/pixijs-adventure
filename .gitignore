@@ -11,3 +11,4 @@ coverage/
 /.yarn/releases/** binary
 /.yarn/plugins/** binary
 .yarn/install-state.gz
+.env
