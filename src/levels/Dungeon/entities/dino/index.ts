@@ -1,5 +1,4 @@
 import { DinoBox, DinoModel } from './model';
-import { PatrolPoint } from './model/ai';
 import { DinoRender } from './render';
 
 export class DinoEntity {
@@ -15,7 +14,6 @@ export class DinoEntity {
     playerStartingY: number,
     playerStartingWidth: number,
     playerStartingHeight: number,
-    patrolPoints: PatrolPoint[],
   ) {
     this.render = new DinoRender(startingX, startingY);
     this.model = new DinoModel(
@@ -30,7 +28,6 @@ export class DinoEntity {
       playerStartingY,
       playerStartingWidth,
       playerStartingHeight,
-      patrolPoints,
     );
   }
 

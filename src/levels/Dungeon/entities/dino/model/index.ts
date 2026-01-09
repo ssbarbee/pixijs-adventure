@@ -1,4 +1,4 @@
-import { DinoAI, DinoDirection, PatrolPoint } from './ai';
+import { DinoAI, DinoDirection } from './ai';
 
 export type DinoBox = {
   left: number;
@@ -30,7 +30,6 @@ export class DinoModel {
     playerStartingY: number,
     playerWidth: number,
     playerHeight: number,
-    patrolPoints: PatrolPoint[],
   ) {
     this.x = startX;
     this.y = startY;
@@ -53,7 +52,6 @@ export class DinoModel {
         width: playerWidth,
         height: playerHeight,
       },
-      patrolPoints,
     );
   }
 
