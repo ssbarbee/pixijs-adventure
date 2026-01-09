@@ -1,5 +1,6 @@
 export function determineGridSize(dungeonWidth: number, dungeonHeight: number): number {
-  // Example: Use a fraction of the dungeon's width or height, or a fixed value
-  // Adjust this logic based on your game's requirements
-  return Math.max(1, Math.min(dungeonWidth, dungeonHeight) / 10);
+  // Use a fraction of the dungeon's smallest dimension, ensuring we return an integer >= 1
+  // This prevents floating-point precision issues in grid calculations
+  const size = Math.min(dungeonWidth, dungeonHeight) / 10;
+  return Math.max(1, Math.floor(size));
 }

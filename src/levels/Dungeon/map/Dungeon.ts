@@ -75,6 +75,8 @@ export function generateDungeon(totalRooms: number): Dungeon {
   const allConnections: ConnectionRoom[] = [];
 
   while (roomsCount < totalRooms) {
+    // Use BFS queue when available, fallback to random room selection if queue is exhausted
+    // (can happen if rooms fail to connect due to overlap constraints)
     const currentRoom = queue.length > 0 ? queue.shift()! : selectRandomRoom(root);
 
     for (let i = 0; i < 4; i++) {
@@ -283,26 +285,25 @@ function rectangleRectangleOverlap(rect1: IRectangle, rect2: IRectangle): boolea
 
 export function createRectangleObstacleInCircularRoom(room: CircularRoom): RectangleObstacle {
   const horizontal = Math.random() < 0.5;
-  const safeRadius = room.radius * 0.4; // Reduced radius for safe placement
+  const safeRadius = Math.max(1, room.radius * 0.4); // Reduced radius for safe placement, minimum 1
 
   // Calculate max dimensions that fit within safe area
-  const maxDimension = Math.max(1, safeRadius);
+  const maxDimension = Math.max(1, Math.floor(safeRadius));
 
-  const width = horizontal
-    ? Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxDimension)
-    : 0.2;
-  const height = horizontal
-    ? 0.2
-    : Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxDimension);
+  const width = horizontal ? getRandomNumber(1, maxDimension) : 0.2;
+  const height = horizontal ? 0.2 : getRandomNumber(1, maxDimension);
 
   // Calculate valid position range ensuring obstacle stays within safe radius
-  const minX = room.x - safeRadius;
-  const maxX = Math.max(minX, room.x + safeRadius - width);
-  const minY = room.y - safeRadius;
-  const maxY = Math.max(minY, room.y + safeRadius - height);
+  // Use room center as the anchor point for positioning
+  const halfRange = Math.max(0, safeRadius - (horizontal ? width : height) / 2);
+  const minX = Math.floor(room.x - halfRange);
+  const maxX = Math.floor(room.x + halfRange - width);
+  const minY = Math.floor(room.y - halfRange);
+  const maxY = Math.floor(room.y + halfRange - height);
 
-  const x = getRandomNumber(Math.floor(minX), Math.floor(maxX));
-  const y = getRandomNumber(Math.floor(minY), Math.floor(maxY));
+  // getRandomNumber now handles min > max cases gracefully
+  const x = getRandomNumber(minX, maxX);
+  const y = getRandomNumber(minY, maxY);
 
   return {
     x,
@@ -314,20 +315,22 @@ export function createRectangleObstacleInCircularRoom(room: CircularRoom): Recta
 }
 
 export function createSquareObstacleInCircularRoom(room: CircularRoom): SquareObstacle {
-  const safeRadius = room.radius * 0.4; // Reduced radius for safe placement
+  const safeRadius = Math.max(1, room.radius * 0.4); // Reduced radius for safe placement, minimum 1
 
   // Ensure size fits within safe area
-  const maxSize = Math.max(1, safeRadius);
-  const size = Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxSize);
+  const maxSize = Math.max(1, Math.floor(safeRadius));
+  const size = getRandomNumber(1, maxSize);
 
   // Calculate valid position range ensuring obstacle stays within safe radius
-  const minX = room.x - safeRadius;
-  const maxX = Math.max(minX, room.x + safeRadius - size);
-  const minY = room.y - safeRadius;
-  const maxY = Math.max(minY, room.y + safeRadius - size);
+  const halfRange = Math.max(0, safeRadius - size / 2);
+  const minX = Math.floor(room.x - halfRange);
+  const maxX = Math.floor(room.x + halfRange - size);
+  const minY = Math.floor(room.y - halfRange);
+  const maxY = Math.floor(room.y + halfRange - size);
 
-  const x = getRandomNumber(Math.floor(minX), Math.floor(maxX));
-  const y = getRandomNumber(Math.floor(minY), Math.floor(maxY));
+  // getRandomNumber now handles min > max cases gracefully
+  const x = getRandomNumber(minX, maxX);
+  const y = getRandomNumber(minY, maxY);
 
   return {
     x,
