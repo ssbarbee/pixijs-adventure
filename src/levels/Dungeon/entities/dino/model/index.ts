@@ -1,4 +1,3 @@
-import { Dungeon } from '../../../map/types';
 import { DinoAI, DinoDirection, PatrolPoint } from './ai';
 
 export type DinoBox = {
@@ -32,7 +31,6 @@ export class DinoModel {
     playerWidth: number,
     playerHeight: number,
     patrolPoints: PatrolPoint[],
-    spawnRoomId: string | null,
   ) {
     this.x = startX;
     this.y = startY;
@@ -56,12 +54,7 @@ export class DinoModel {
         height: playerHeight,
       },
       patrolPoints,
-      spawnRoomId,
     );
-  }
-
-  public setDungeon(dungeon: Dungeon) {
-    this.ai.setDungeon(dungeon);
   }
 
   public getAIState() {

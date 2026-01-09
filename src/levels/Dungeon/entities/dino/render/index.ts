@@ -2,10 +2,12 @@ import { AnimatedSprite, Graphics, Texture } from 'pixi.js';
 
 import { Manager } from '../../../../../Manager';
 
+type DinoAnimationState = 'idle' | 'walk' | 'run' | 'dead';
+
 export class DinoRender extends AnimatedSprite {
-  tileSize: number = Manager.width / 8;
+  tileSize: number = Manager.width / 16;
   private dot: Graphics;
-  private isRunning: boolean = false;
+  private animationState: DinoAnimationState = 'idle';
 
   constructor(startingX: number, startingY: number) {
     const textures = Array.from({ length: 10 }).map((_, index) => Texture.from(`dinoIdle${index}`));
@@ -34,26 +36,53 @@ export class DinoRender extends AnimatedSprite {
     // this.drawDot();
   }
 
-  public startRunning() {
-    if (!this.isRunning) {
+  public startWalking() {
+    if (this.animationState !== 'walk') {
       this.stop();
-      this.animationSpeed = 0.1;
-      this.textures = Array.from({ length: 8 }).map((_, index) => Texture.from(`dinoRun${index}`));
+      this.animationSpeed = 0.2;
+      this.textures = Array.from({ length: 12 }).map((_, index) =>
+        Texture.from(`dinoWalk${index}`),
+      );
       this.play();
+      this.animationState = 'walk';
     }
-    this.isRunning = true;
   }
 
-  public stopRunning() {
-    if (this.isRunning) {
+  public startRunning() {
+    if (this.animationState !== 'run') {
+      this.stop();
+      this.animationSpeed = 0.3;
+      this.textures = Array.from({ length: 8 }).map((_, index) => Texture.from(`dinoRun${index}`));
+      this.play();
+      this.animationState = 'run';
+    }
+  }
+
+  public stopMoving() {
+    if (this.animationState !== 'idle' && this.animationState !== 'dead') {
       this.stop();
       this.animationSpeed = 0.3;
       this.textures = Array.from({ length: 10 }).map((_, index) =>
         Texture.from(`dinoIdle${index}`),
       );
       this.play();
+      this.animationState = 'idle';
     }
+  }
 
-    this.isRunning = false;
+  public playDead() {
+    if (this.animationState !== 'dead') {
+      this.stop();
+      this.animationSpeed = 0.15;
+      this.loop = false;
+      this.textures = Array.from({ length: 8 }).map((_, index) => Texture.from(`dinoDead${index}`));
+      this.play();
+      this.animationState = 'dead';
+    }
+  }
+
+  // Keep for backwards compatibility
+  public stopRunning() {
+    this.stopMoving();
   }
 }

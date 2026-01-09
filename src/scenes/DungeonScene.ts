@@ -101,11 +101,7 @@ export class DungeonScene extends Container implements IScene {
       this.player.render.width,
       this.player.render.height,
       patrolPoints,
-      spawnRoom.id,
     );
-
-    // Set dungeon reference for room detection
-    this.dino.setDungeon(this.dungeon!);
 
     // Add the player to the GameScene container (worldContainer)
     this.worldContainer.addChild(this.player.render);
@@ -161,13 +157,19 @@ export class DungeonScene extends Container implements IScene {
 
         // Prevent the move if there's a wall
         if (isWallAt(dungeonX, dungeonY, this.dungeon)) {
-          this.dino.render.stopRunning();
+          this.dino.render.stopMoving();
           return false;
         }
       }
     }
 
-    this.dino.render.startRunning();
+    // Use run animation when chasing player, walk animation for patrol/return
+    const aiState = this.dino.getAIState();
+    if (aiState === 'chase') {
+      this.dino.render.startRunning();
+    } else {
+      this.dino.render.startWalking();
+    }
     // Move was successful
     return true;
   }
@@ -248,6 +250,7 @@ export class DungeonScene extends Container implements IScene {
       playerY: this.sceneYtoDungeonY(this.player.y),
       dinoX: this.sceneXtoDungeonX(this.dino.x),
       dinoY: this.sceneYtoDungeonY(this.dino.y),
+      dinoState: this.dino.getAIState(),
     });
   }
 

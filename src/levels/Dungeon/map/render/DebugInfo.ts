@@ -16,15 +16,17 @@ export class DebugInfo {
     playerY,
     dinoX,
     dinoY,
+    dinoState,
   }: {
     playerX: number;
     playerY: number;
     dinoX: number;
     dinoY: number;
+    dinoState: string;
   }): void {
     const debugInfo = `Player: x:${playerX.toFixed(3)}, y:${playerY.toFixed(
       3,
-    )}\nDino: x:${dinoX.toFixed(3)}, y:${dinoY.toFixed(3)}\nFPS:${Ticker.shared.FPS.toFixed(2)}`;
+    )}\nDino: x:${dinoX.toFixed(3)}, y:${dinoY.toFixed(3)}, state:${dinoState}\nFPS:${Ticker.shared.FPS.toFixed(2)}`;
 
     if (!this.debugText) {
       this.debugText = new Text(debugInfo, {
