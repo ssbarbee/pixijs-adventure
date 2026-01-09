@@ -148,8 +148,12 @@ export function createRectangleObstacleInRectangleRoom(room: RectangleRoom): Rec
   const maxWidth = Math.max(1, room.width - margin * 2);
   const maxHeight = Math.max(1, room.height - margin * 2);
 
-  const width = horizontal ? Math.min(getRandomNumber(1, Math.floor(room.width / 3)), maxWidth) : 0.2;
-  const height = horizontal ? 0.2 : Math.min(getRandomNumber(1, Math.floor(room.height / 3)), maxHeight);
+  const width = horizontal
+    ? Math.min(getRandomNumber(1, Math.floor(room.width / 3)), maxWidth)
+    : 0.2;
+  const height = horizontal
+    ? 0.2
+    : Math.min(getRandomNumber(1, Math.floor(room.height / 3)), maxHeight);
 
   // Calculate valid position range ensuring obstacle stays within room bounds
   const minX = room.x + margin;
@@ -174,7 +178,10 @@ export function createSquareObstacleInRectangleRoom(room: RectangleRoom): Square
 
   // Ensure size fits within room with margins
   const maxSize = Math.max(1, Math.min(room.width, room.height) - margin * 2);
-  const size = Math.min(getRandomNumber(1, Math.floor(Math.min(room.width, room.height) / 3)), maxSize);
+  const size = Math.min(
+    getRandomNumber(1, Math.floor(Math.min(room.width, room.height) / 3)),
+    maxSize,
+  );
 
   // Calculate valid position range ensuring obstacle stays within room bounds
   const minX = room.x + margin;
@@ -281,8 +288,12 @@ export function createRectangleObstacleInCircularRoom(room: CircularRoom): Recta
   // Calculate max dimensions that fit within safe area
   const maxDimension = Math.max(1, safeRadius);
 
-  const width = horizontal ? Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxDimension) : 0.2;
-  const height = horizontal ? 0.2 : Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxDimension);
+  const width = horizontal
+    ? Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxDimension)
+    : 0.2;
+  const height = horizontal
+    ? 0.2
+    : Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxDimension);
 
   // Calculate valid position range ensuring obstacle stays within safe radius
   const minX = room.x - safeRadius;

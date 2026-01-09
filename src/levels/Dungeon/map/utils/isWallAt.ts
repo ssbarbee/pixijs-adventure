@@ -1,4 +1,4 @@
-import { ConnectableRoom, Dungeon, SupportedObstacles } from '../types';
+import { Dungeon, SupportedObstacles } from '../types';
 import { getRoomAt } from './getRoomAt';
 
 function isPointInsideObstacle(x: number, y: number, obstacle: SupportedObstacles): boolean {
@@ -19,8 +19,7 @@ export function isWallAt(x: number, y: number, dungeon: Dungeon): boolean {
 
   // Check if the point is inside an obstacle (only ConnectableRooms have obstacles)
   if (roomOrConnection.type !== 'connection') {
-    const room = roomOrConnection as ConnectableRoom;
-    for (const obstacle of room.obstacles) {
+    for (const obstacle of roomOrConnection.obstacles) {
       if (isPointInsideObstacle(x, y, obstacle)) {
         return true;
       }
