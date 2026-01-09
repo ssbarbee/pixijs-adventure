@@ -1,6 +1,5 @@
-import { Text } from '@pixi/text';
 import { FancyButton } from '@pixi/ui';
-import { Container } from 'pixi.js';
+import { Container, Text } from 'pixi.js';
 
 import { generateWorld } from '../levels/CellularMapGenerator';
 import { generateMap as generateNoiseWorld } from '../levels/NoiseJSMapGenerator';

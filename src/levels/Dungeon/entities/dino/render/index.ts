@@ -26,14 +26,7 @@ export class DinoRender extends AnimatedSprite {
 
   private drawDot() {
     this.dot.clear();
-    this.dot.beginFill(0x00ff00); // Green color
-    this.dot.drawCircle(0, 0, 4); // Draw a circle at the player's center
-    this.dot.endFill();
-  }
-
-  public override update(framesPassed: number) {
-    super.update(framesPassed);
-    // this.drawDot();
+    this.dot.circle(0, 0, 4).fill(0x00ff00); // Green color
   }
 
   public startWalking() {

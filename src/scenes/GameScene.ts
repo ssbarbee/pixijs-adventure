@@ -72,9 +72,7 @@ export class GameScene extends Container implements IScene {
 
   private createPlayerDot() {
     this.playerDot = new Graphics();
-    this.playerDot.beginFill(0xffff00); // Yellow color
-    this.playerDot.drawCircle(0, 0, 3); // Adjust the size as needed
-    this.playerDot.endFill();
+    this.playerDot.circle(0, 0, 3).fill(0xffff00); // Yellow color
     this.minimap.addChild(this.playerDot);
   }
 

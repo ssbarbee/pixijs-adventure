@@ -8,17 +8,16 @@ export const createVisibilityTriangles = (
   visibilityOutput: Point[][],
 ): Graphics => {
   const graphics = new Graphics();
-  graphics.beginFill(color, 0.3);
-  // graphics.lineStyle(1, color, 0.3);
 
   for (const points of visibilityOutput) {
-    graphics.moveTo(lightSource.x, lightSource.y);
-    graphics.lineTo(points[0].x, points[0].y);
-    graphics.lineTo(points[1].x, points[1].y);
-    graphics.closePath();
+    graphics
+      .moveTo(lightSource.x, lightSource.y)
+      .lineTo(points[0].x, points[0].y)
+      .lineTo(points[1].x, points[1].y)
+      .closePath()
+      .fill({ color, alpha: 0.3 });
   }
 
-  graphics.endFill();
   return graphics;
 };
 

@@ -15,14 +15,11 @@ export class LoaderScene extends Container implements IScene {
     const loaderBarWidth = Manager.width * 0.8;
 
     this.loaderBarFill = new Graphics();
-    this.loaderBarFill.beginFill(0x008800, 1);
-    this.loaderBarFill.drawRect(0, 0, loaderBarWidth, 50);
-    this.loaderBarFill.endFill();
+    this.loaderBarFill.rect(0, 0, loaderBarWidth, 50).fill({ color: 0x008800, alpha: 1 });
     this.loaderBarFill.scale.x = 0;
 
     this.loaderBarBoder = new Graphics();
-    this.loaderBarBoder.lineStyle(10, 0x0, 1);
-    this.loaderBarBoder.drawRect(0, 0, loaderBarWidth, 50);
+    this.loaderBarBoder.rect(0, 0, loaderBarWidth, 50).stroke({ width: 10, color: 0x0, alpha: 1 });
 
     this.loaderBar = new Container();
     this.loaderBar.addChild(this.loaderBarFill);

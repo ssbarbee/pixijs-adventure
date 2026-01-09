@@ -38,9 +38,7 @@ export class Player extends Sprite {
 
   private drawDot() {
     this.dot.clear();
-    this.dot.beginFill(0x00ff00); // Green color
-    this.dot.drawCircle(0, 0, 2); // Draw a circle at the player's center
-    this.dot.endFill();
+    this.dot.circle(0, 0, 2).fill(0x00ff00); // Green color
   }
 
   private handleKeyDown(event: KeyboardEvent) {

@@ -158,14 +158,14 @@ export class DungeonRenderer {
   private drawRectangleRoomFloor(room: RectangleRoom | ConnectionRoom) {
     const graphics = new Graphics();
     // Room's floor color
-    graphics.beginFill(TILE_COLOR, 0.1);
-    graphics.drawRect(
-      this.dungeonXToSceneX(room.x),
-      this.dungeonYToSceneY(room.y),
-      room.width * this.tileSize,
-      room.height * this.tileSize,
-    );
-    graphics.endFill();
+    graphics
+      .rect(
+        this.dungeonXToSceneX(room.x),
+        this.dungeonYToSceneY(room.y),
+        room.width * this.tileSize,
+        room.height * this.tileSize,
+      )
+      .fill({ color: TILE_COLOR, alpha: 0.1 });
 
     this.graphics.addChild(graphics);
   }
@@ -190,11 +190,11 @@ export class DungeonRenderer {
         const squareX = this.dungeonXToSceneX(x);
         const squareY = this.dungeonYToSceneY(y);
 
-        // Draw a square with a dashed border
-        graphics.lineStyle(1, 0x000000, 1, 0.5, true); // 1px solid black dashed border
-        graphics.beginFill(TILE_COLOR, 0.1);
-        graphics.drawRect(squareX, squareY, squareSize, squareSize);
-        graphics.endFill();
+        // Draw a square with a border
+        graphics
+          .rect(squareX, squareY, squareSize, squareSize)
+          .fill({ color: TILE_COLOR, alpha: 0.1 })
+          .stroke({ width: 1, color: 0x000000, alpha: 1 });
       }
     }
     return graphics;
@@ -255,13 +255,13 @@ export class DungeonRenderer {
 
     // Create a mask for the circle
     const maskGraphics = new Graphics();
-    maskGraphics.beginFill(0xffffff);
-    maskGraphics.drawCircle(
-      this.dungeonXToSceneX(room.x),
-      this.dungeonYToSceneY(room.y),
-      room.radius * this.tileSize,
-    );
-    maskGraphics.endFill();
+    maskGraphics
+      .circle(
+        this.dungeonXToSceneX(room.x),
+        this.dungeonYToSceneY(room.y),
+        room.radius * this.tileSize,
+      )
+      .fill(0xffffff);
 
     // Apply the mask to the tiles
     dungeonLandGraphics.mask = maskGraphics;
@@ -305,9 +305,7 @@ export class DungeonRenderer {
   private drawRedDot(sceneX: number, sceneY: number): void {
     const graphics = new Graphics();
     // Red color
-    graphics.beginFill(0xff0000);
-    graphics.drawCircle(sceneX, sceneY, 4);
-    graphics.endFill();
+    graphics.circle(sceneX, sceneY, 4).fill(0xff0000);
     this.graphics.addChild(graphics);
   }
 
@@ -343,10 +341,10 @@ export class DungeonRenderer {
         const obstacleWidth = obstacle.width * this.tileSize;
         const obstacleHeight = obstacle.height * this.tileSize;
         const obstacleGraphics = new Graphics();
-        obstacleGraphics.beginFill(TILE2_COLOR);
-        obstacleGraphics.lineStyle(1, 0x000000, 1, 0.5, true);
-        obstacleGraphics.drawRect(obstacleX, obstacleY, obstacleWidth, obstacleHeight);
-        obstacleGraphics.endFill();
+        obstacleGraphics
+          .rect(obstacleX, obstacleY, obstacleWidth, obstacleHeight)
+          .fill(TILE2_COLOR)
+          .stroke({ width: 1, color: 0x000000, alpha: 1 });
         this.graphics.addChild(obstacleGraphics);
       }
       this.drawRedDot(obstacleX, obstacleY);

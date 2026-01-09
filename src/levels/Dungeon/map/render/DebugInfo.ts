@@ -53,16 +53,10 @@ export class DebugInfo {
     }
 
     this.debugRectangle.clear();
-    this.debugRectangle.lineStyle(2, INK_COLOR, 1);
-    this.debugRectangle.beginFill(TILE_COLOR);
-    this.debugRectangle.drawRoundedRect(
-      this.debugText.x - padding,
-      this.debugText.y - padding,
-      rectWidth,
-      rectHeight,
-      10,
-    );
-    this.debugRectangle.endFill();
+    this.debugRectangle
+      .roundRect(this.debugText.x - padding, this.debugText.y - padding, rectWidth, rectHeight, 10)
+      .fill(TILE_COLOR)
+      .stroke({ width: 2, color: INK_COLOR, alpha: 1 });
 
     // Set a high zIndex to ensure its on top
     this.debugText.zIndex = 1000;

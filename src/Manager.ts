@@ -1,9 +1,9 @@
-import { Application, DisplayObject } from 'pixi.js';
+import { Application, Container, Ticker } from 'pixi.js';
 
 export class Manager {
   private constructor() {}
   private static app: Application;
-  private static currentScene: IScene;
+  private static currentScene: IScene | null = null;
 
   public static get width(): number {
     return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -13,17 +13,18 @@ export class Manager {
     return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
   }
 
-  public static initialize(background: number): void {
-    Manager.app = new Application({
-      view: document.getElementById('pixi-canvas') as HTMLCanvasElement,
-      resizeTo: window, // This line here handles the actual resize!
+  public static async initialize(background: number): Promise<void> {
+    Manager.app = new Application();
+    await Manager.app.init({
+      canvas: document.getElementById('pixi-canvas') as HTMLCanvasElement,
+      resizeTo: window,
       resolution: window.devicePixelRatio || 1,
       autoDensity: true,
       backgroundColor: background,
     });
 
     // Add the ticker
-    Manager.app.ticker.add((framesPassed) => Manager.update(framesPassed));
+    Manager.app.ticker.add((ticker: Ticker) => Manager.update(ticker.deltaTime));
 
     // listen for the browser telling us that the screen size changed
     window.addEventListener('resize', () => Manager.resize());
@@ -40,13 +41,13 @@ export class Manager {
   public static changeScene(newScene: IScene): void {
     // Remove and destroy old scene... if we had one..
     if (Manager.currentScene) {
-      Manager.app.stage.removeChild(Manager.currentScene);
+      Manager.app.stage.removeChild(Manager.currentScene as Container);
       Manager.currentScene.destroy();
     }
 
     // Add the new one
     Manager.currentScene = newScene;
-    Manager.app.stage.addChild(Manager.currentScene);
+    Manager.app.stage.addChild(Manager.currentScene as Container);
   }
 
   // This update will be called by a pixi ticker and tell the scene that a tick happened
@@ -59,7 +60,7 @@ export class Manager {
   }
 }
 
-export interface IScene extends DisplayObject {
+export interface IScene extends Container {
   update(framesPassed: number): void;
 
   // we added the resize method to the interface

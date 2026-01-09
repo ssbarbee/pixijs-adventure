@@ -53,7 +53,6 @@ export class DinoEntity {
 
   public update(framesPassed: number) {
     this.model.update(framesPassed);
-    this.render.update(framesPassed);
     this.render.x = this.model.x;
     this.render.y = this.model.y;
   }
