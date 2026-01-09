@@ -2,6 +2,8 @@ import { Container, Graphics } from 'pixi.js';
 
 import { PlayerBox } from '../entities/Player';
 import {
+  CircularRoom,
+  ConnectableRoom,
   DebugInfo,
   Dungeon,
   DungeonRenderer,
@@ -13,7 +15,43 @@ import {
 } from '../levels/Dungeon';
 import { DinoEntity } from '../levels/Dungeon/entities/dino';
 import { DinoBox } from '../levels/Dungeon/entities/dino/model';
+import { PatrolPoint } from '../levels/Dungeon/entities/dino/model/ai';
 import { IScene, Manager } from '../Manager';
+
+function generatePatrolPoints(
+  room: ConnectableRoom,
+  tileSize: number,
+  offsetX: number,
+  offsetY: number,
+): PatrolPoint[] {
+  const margin = tileSize * 2;
+
+  if (room.type === 'rectangle') {
+    const rectRoom = room as RectangleRoom;
+    const roomScreenX = rectRoom.x * tileSize + offsetX;
+    const roomScreenY = rectRoom.y * tileSize + offsetY;
+    const roomScreenWidth = rectRoom.width * tileSize;
+    const roomScreenHeight = rectRoom.height * tileSize;
+
+    return [
+      { x: roomScreenX + margin, y: roomScreenY + roomScreenHeight / 2 },
+      { x: roomScreenX + roomScreenWidth - margin, y: roomScreenY + roomScreenHeight / 2 },
+    ];
+  } else if (room.type === 'circular') {
+    const circRoom = room as CircularRoom;
+    const roomScreenX = circRoom.x * tileSize + offsetX;
+    const roomScreenY = circRoom.y * tileSize + offsetY;
+    const radiusScreen = circRoom.radius * tileSize;
+    const offset = radiusScreen * 0.5;
+
+    return [
+      { x: roomScreenX - offset, y: roomScreenY },
+      { x: roomScreenX + offset, y: roomScreenY },
+    ];
+  }
+
+  return [];
+}
 
 export class DungeonScene extends Container implements IScene {
   private player: PlayerEntity;
@@ -38,10 +76,21 @@ export class DungeonScene extends Container implements IScene {
     this.addChild(this.worldContainer);
 
     this.generateAndDrawDungeon();
+
     // Create the player, centered in middle of screen
     this.player = new PlayerEntity(Manager.width / 2, Manager.height / 2, (box) =>
       this.onPlayerPositionUpdate(box),
     );
+
+    // Get spawn room (root room) for patrol points
+    const spawnRoom = this.dungeon!.root;
+    const patrolPoints = generatePatrolPoints(
+      spawnRoom,
+      this.tileSize,
+      this.dungeonOffsetX,
+      this.dungeonOffsetY,
+    );
+
     this.dino = new DinoEntity(
       Manager.width / 2,
       Manager.height / 2,
@@ -51,7 +100,12 @@ export class DungeonScene extends Container implements IScene {
       this.player.render.y,
       this.player.render.width,
       this.player.render.height,
+      patrolPoints,
+      spawnRoom.id,
     );
+
+    // Set dungeon reference for room detection
+    this.dino.setDungeon(this.dungeon!);
 
     // Add the player to the GameScene container (worldContainer)
     this.worldContainer.addChild(this.player.render);

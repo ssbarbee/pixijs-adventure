@@ -1,4 +1,5 @@
-import { DinoAI, DinoDirection } from './ai';
+import { Dungeon } from '../../../map/types';
+import { DinoAI, DinoDirection, PatrolPoint } from './ai';
 
 export type DinoBox = {
   left: number;
@@ -12,7 +13,6 @@ export class DinoModel {
   y: number = 0;
   private width: number = 0;
   private height: number = 0;
-  // Base move speed, you can adjust this as needed
   private baseMoveSpeed: number = 0;
   private directions: DinoDirection[] = [];
   private onPositionUpdate: (box: DinoBox) => boolean;
@@ -31,6 +31,8 @@ export class DinoModel {
     playerStartingY: number,
     playerWidth: number,
     playerHeight: number,
+    patrolPoints: PatrolPoint[],
+    spawnRoomId: string | null,
   ) {
     this.x = startX;
     this.y = startY;
@@ -39,7 +41,6 @@ export class DinoModel {
     this.baseMoveSpeed = baseMoveSpeed;
     this.onPositionUpdate = onPositionUpdate;
     this.onIdle = onIdle;
-    // Add keyboard event listeners for both keydown and keyup
     this.ai = new DinoAI(
       this.moveHandler.bind(this),
       {
@@ -54,7 +55,17 @@ export class DinoModel {
         width: playerWidth,
         height: playerHeight,
       },
+      patrolPoints,
+      spawnRoomId,
     );
+  }
+
+  public setDungeon(dungeon: Dungeon) {
+    this.ai.setDungeon(dungeon);
+  }
+
+  public getAIState() {
+    return this.ai.getState();
   }
 
   private moveHandler(dinoDirection: DinoDirection) {
@@ -81,8 +92,9 @@ export class DinoModel {
 
     const directions = [...this.directions];
     this.directions = [];
-    // Scale move speed by frames passed
-    const moveSpeed = this.baseMoveSpeed * framesPassed;
+    // Scale move speed by frames passed and apply AI speed multiplier
+    const speedMultiplier = this.ai.getSpeedMultiplier();
+    const moveSpeed = this.baseMoveSpeed * framesPassed * speedMultiplier;
 
     let newX = this.x;
     let newY = this.y;
