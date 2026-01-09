@@ -142,14 +142,23 @@ function adjustCoordinates(
 
 export function createRectangleObstacleInRectangleRoom(room: RectangleRoom): RectangleObstacle {
   const horizontal = Math.random() < 0.5;
+  const margin = 1; // Keep obstacles 1 unit away from room edges
 
-  // Set width and height based on orientation
-  const width = horizontal ? getRandomNumber(room.width / 8, room.width / 3) : 0.2;
-  const height = horizontal ? 0.2 : getRandomNumber(room.height / 8, room.height / 3);
+  // Set width and height based on orientation, but ensure they fit within the room
+  const maxWidth = Math.max(1, room.width - margin * 2);
+  const maxHeight = Math.max(1, room.height - margin * 2);
 
-  // Adjust the x and y position to ensure the obstacle is within the room's bounds
-  const x = getRandomNumber(room.x, Math.floor(room.width + room.x - width));
-  const y = getRandomNumber(room.y, Math.floor(room.height + room.y - height));
+  const width = horizontal ? Math.min(getRandomNumber(1, Math.floor(room.width / 3)), maxWidth) : 0.2;
+  const height = horizontal ? 0.2 : Math.min(getRandomNumber(1, Math.floor(room.height / 3)), maxHeight);
+
+  // Calculate valid position range ensuring obstacle stays within room bounds
+  const minX = room.x + margin;
+  const maxX = Math.max(minX, room.x + room.width - width - margin);
+  const minY = room.y + margin;
+  const maxY = Math.max(minY, room.y + room.height - height - margin);
+
+  const x = getRandomNumber(Math.floor(minX), Math.floor(maxX));
+  const y = getRandomNumber(Math.floor(minY), Math.floor(maxY));
 
   return {
     x,
@@ -161,11 +170,20 @@ export function createRectangleObstacleInRectangleRoom(room: RectangleRoom): Rec
 }
 
 export function createSquareObstacleInRectangleRoom(room: RectangleRoom): SquareObstacle {
-  const size = getRandomNumber(room.height / 8, room.height / 3);
+  const margin = 1; // Keep obstacles 1 unit away from room edges
 
-  // Adjust the x and y position to ensure the obstacle is within the room's bounds
-  const x = getRandomNumber(room.x, Math.floor(room.width + room.x - size));
-  const y = getRandomNumber(room.y, Math.floor(room.height + room.y - size));
+  // Ensure size fits within room with margins
+  const maxSize = Math.max(1, Math.min(room.width, room.height) - margin * 2);
+  const size = Math.min(getRandomNumber(1, Math.floor(Math.min(room.width, room.height) / 3)), maxSize);
+
+  // Calculate valid position range ensuring obstacle stays within room bounds
+  const minX = room.x + margin;
+  const maxX = Math.max(minX, room.x + room.width - size - margin);
+  const minY = room.y + margin;
+  const maxY = Math.max(minY, room.y + room.height - size - margin);
+
+  const x = getRandomNumber(Math.floor(minX), Math.floor(maxX));
+  const y = getRandomNumber(Math.floor(minY), Math.floor(maxY));
 
   return {
     x,
@@ -258,27 +276,22 @@ function rectangleRectangleOverlap(rect1: IRectangle, rect2: IRectangle): boolea
 
 export function createRectangleObstacleInCircularRoom(room: CircularRoom): RectangleObstacle {
   const horizontal = Math.random() < 0.5;
-  const safeRadius = room.radius * 0.5; // Reduced radius for safe placement
+  const safeRadius = room.radius * 0.4; // Reduced radius for safe placement
 
-  let width, height, x, y;
+  // Calculate max dimensions that fit within safe area
+  const maxDimension = Math.max(1, safeRadius);
 
-  if (horizontal) {
-    height = 0.2;
-    width = getRandomNumber((safeRadius * 2) / 8, (safeRadius * 2) / 3);
+  const width = horizontal ? Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxDimension) : 0.2;
+  const height = horizontal ? 0.2 : Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxDimension);
 
-    x = getRandomNumber(room.x - safeRadius + width / 2, room.x + safeRadius - width / 2);
-    y = getRandomNumber(room.y - safeRadius + height / 2, room.y + safeRadius - height / 2);
-  } else {
-    width = 0.2;
-    height = getRandomNumber((safeRadius * 2) / 8, (safeRadius * 2) / 3);
+  // Calculate valid position range ensuring obstacle stays within safe radius
+  const minX = room.x - safeRadius;
+  const maxX = Math.max(minX, room.x + safeRadius - width);
+  const minY = room.y - safeRadius;
+  const maxY = Math.max(minY, room.y + safeRadius - height);
 
-    x = getRandomNumber(room.x - safeRadius + width / 2, room.x + safeRadius - width / 2);
-    y = getRandomNumber(room.y - safeRadius + height / 2, room.y + safeRadius - height / 2);
-  }
-
-  // Adjust x and y to convert from center-based to top-left-based coordinates
-  x -= width / 2;
-  y -= height / 2;
+  const x = getRandomNumber(Math.floor(minX), Math.floor(maxX));
+  const y = getRandomNumber(Math.floor(minY), Math.floor(maxY));
 
   return {
     x,
@@ -290,18 +303,20 @@ export function createRectangleObstacleInCircularRoom(room: CircularRoom): Recta
 }
 
 export function createSquareObstacleInCircularRoom(room: CircularRoom): SquareObstacle {
-  const safeRadius = room.radius * 0.5; // Reduced radius for safe placement
+  const safeRadius = room.radius * 0.4; // Reduced radius for safe placement
 
-  let x, y;
+  // Ensure size fits within safe area
+  const maxSize = Math.max(1, safeRadius);
+  const size = Math.min(getRandomNumber(1, Math.floor(safeRadius)), maxSize);
 
-  const size = getRandomNumber((safeRadius * 2) / 8, (safeRadius * 2) / 3);
+  // Calculate valid position range ensuring obstacle stays within safe radius
+  const minX = room.x - safeRadius;
+  const maxX = Math.max(minX, room.x + safeRadius - size);
+  const minY = room.y - safeRadius;
+  const maxY = Math.max(minY, room.y + safeRadius - size);
 
-  x = getRandomNumber(room.x - safeRadius + size / 2, room.x + safeRadius - size / 2);
-  y = getRandomNumber(room.y - safeRadius + size / 2, room.y + safeRadius - size / 2);
-
-  // Adjust x and y to convert from center-based to top-left-based coordinates
-  x -= size / 2;
-  y -= size / 2;
+  const x = getRandomNumber(Math.floor(minX), Math.floor(maxX));
+  const y = getRandomNumber(Math.floor(minY), Math.floor(maxY));
 
   return {
     x,
