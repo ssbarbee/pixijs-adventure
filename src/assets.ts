@@ -19,13 +19,48 @@ export const manifest: AssetsManifest = {
     {
       name: 'dungeon',
       assets: {
+        // Bricks (for small obstacles)
+        dungeonBricks1: './dungeon/bricks_1.png',
+        dungeonBricks2: './dungeon/bricks_2.png',
+        dungeonBricks3: './dungeon/bricks_3.png',
+        dungeonBricks4: './dungeon/bricks_4.png',
+        dungeonBricks5: './dungeon/bricks_5.png',
         dungeonBricks6: './dungeon/bricks_6.png',
+        dungeonBricks7: './dungeon/bricks_7.png',
+        dungeonBricks8: './dungeon/bricks_8.png',
         dungeonBricks9: './dungeon/bricks_9.png',
         dungeonBricks10: './dungeon/bricks_10.png',
+        // Decor (for decorations and large obstacles)
+        dungeonDecor1: './dungeon/decor_1.png',
+        dungeonDecor2: './dungeon/decor_2.png',
+        dungeonDecor3: './dungeon/decor_3.png',
+        dungeonDecor4: './dungeon/decor_4.png',
+        dungeonDecor5: './dungeon/decor_5.png',
+        dungeonDecor6: './dungeon/decor_6.png',
+        dungeonDecor7: './dungeon/decor_7.png',
         dungeonDecor12: './dungeon/decor_12.png',
-        dungeonLand: './dungeon/land.png',
+        dungeonDecor14: './dungeon/decor_14.png',
+        dungeonDecor15: './dungeon/decor_15.png',
+        // Stones (for floor variation)
+        dungeonStones1: './dungeon/stones_1.png',
+        dungeonStones2: './dungeon/stones_2.png',
+        dungeonStones3: './dungeon/stones_3.png',
+        dungeonStones4: './dungeon/stones_4.png',
+        dungeonStones5: './dungeon/stones_5.png',
+        // Walls (for room boundaries)
+        dungeonWall1: './dungeon/wall_1.png',
+        dungeonWall2: './dungeon/wall_2.png',
+        dungeonWall3: './dungeon/wall_3.png',
+        dungeonWall4: './dungeon/wall_4.png',
+        dungeonWall5: './dungeon/wall_5.png',
+        dungeonWall6: './dungeon/wall_6.png',
         dungeonWall7: './dungeon/wall_7.png',
         dungeonWall8: './dungeon/wall_8.png',
+        dungeonWall9: './dungeon/wall_9.png',
+        dungeonWall12: './dungeon/wall_12.png',
+        dungeonWall13: './dungeon/wall_13.png',
+        // Land (floor)
+        dungeonLand: './dungeon/land.png',
       },
     },
     {
@@ -75,12 +110,5 @@ export const manifest: AssetsManifest = {
         dinoWalk11: './dino/walk11.png',
       },
     },
-    // {
-    //     name : "another bundle",
-    //     assets:
-    //         {
-    //             "whistle" : "./whistle.mp3",
-    //         }
-    // },
   ],
 };
