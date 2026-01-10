@@ -61,6 +61,8 @@ export const manifest: AssetsManifest = {
         dungeonWall13: './dungeon/wall_13.png',
         // Land (floor)
         dungeonLand: './dungeon/land.png',
+        // Items
+        trophy: './dungeon/trophy.png',
       },
     },
     {

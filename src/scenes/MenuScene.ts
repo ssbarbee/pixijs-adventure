@@ -4,8 +4,11 @@ import { Container, Text } from 'pixi.js';
 import { generateWorld } from '../levels/CellularMapGenerator';
 import { generateMap as generateNoiseWorld } from '../levels/NoiseJSMapGenerator';
 import { IScene, Manager } from '../Manager';
-import { DungeonScene } from './DungeonScene';
 import { GameScene } from './GameScene';
+
+export interface MenuSceneCallbacks {
+  onDungeon: () => void;
+}
 
 export class MenuScene extends Container implements IScene {
   private cellularMapSceneButton: FancyButton;
@@ -15,7 +18,7 @@ export class MenuScene extends Container implements IScene {
   private exitGameButton: FancyButton;
   private titleText: Text;
 
-  constructor() {
+  constructor(callbacks: MenuSceneCallbacks) {
     super();
 
     // Create a title text
@@ -41,10 +44,7 @@ export class MenuScene extends Container implements IScene {
       });
       Manager.changeScene(new GameScene(world, playerStartingX, playerStartingY));
     });
-    this.dungeonSceneButton = this.createAnimatedButton('Dungeon', () => {
-      // Handle New Game button click
-      Manager.changeScene(new DungeonScene());
-    });
+    this.dungeonSceneButton = this.createAnimatedButton('Dungeon', callbacks.onDungeon);
     this.highScoreButton = this.createAnimatedButton('High Score', () => {
       // Handle High Score button click
       // console.log('High Score button clicked');

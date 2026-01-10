@@ -1,10 +1,12 @@
-import { Container, Graphics } from 'pixi.js';
+import { Container, Graphics, Sprite, Texture } from 'pixi.js';
 
 import { PlayerBox } from '../entities/Player';
 import {
+  CircularRoom,
   DebugInfo,
   Dungeon,
   DungeonRenderer,
+  findFarthestRoom,
   generateDungeon,
   getRoomAt,
   isWallAt,
@@ -14,6 +16,8 @@ import {
 import { DinoEntity } from '../levels/Dungeon/entities/dino';
 import { DinoBox } from '../levels/Dungeon/entities/dino/model';
 import { IScene, Manager } from '../Manager';
+import { MenuScene } from './MenuScene';
+import { VictoryScene } from './VictoryScene';
 
 export class DungeonScene extends Container implements IScene {
   private player: PlayerEntity;
@@ -26,10 +30,19 @@ export class DungeonScene extends Container implements IScene {
   private dungeonOffsetY: number = 0;
   private dungeonRenderer: DungeonRenderer | null = null;
   private vGraphics: Graphics | null = null;
+  // Trophy-related properties
+  private trophy: Sprite | null = null;
+  private trophySceneX: number = 0;
+  private trophySceneY: number = 0;
+  private startTime: number = 0;
+  private gameWon: boolean = false;
 
   constructor() {
     super();
     this.sortableChildren = true;
+
+    // Start the game timer
+    this.startTime = Date.now();
 
     // Create a container for the entire world
     this.worldContainer = new Container();
@@ -148,6 +161,90 @@ export class DungeonScene extends Container implements IScene {
     );
     const dungeonGraphics = this.dungeonRenderer.draw();
     this.worldContainer.addChild(dungeonGraphics);
+
+    // Place trophy in the farthest room from the start
+    this.placeTrophy();
+  }
+
+  private placeTrophy(): void {
+    if (!this.dungeon) return;
+
+    const farthestRoom = findFarthestRoom(this.dungeon.root);
+
+    // Calculate trophy position at the center of the farthest room
+    let trophyDungeonX: number;
+    let trophyDungeonY: number;
+
+    if (farthestRoom.type === 'rectangle') {
+      const rectRoom = farthestRoom as RectangleRoom;
+      trophyDungeonX = rectRoom.x + rectRoom.width / 2;
+      trophyDungeonY = rectRoom.y + rectRoom.height / 2;
+    } else {
+      // Circular room - use center
+      const circRoom = farthestRoom as CircularRoom;
+      trophyDungeonX = circRoom.x;
+      trophyDungeonY = circRoom.y;
+    }
+
+    // Convert to scene coordinates
+    this.trophySceneX = this.dungeonXToSceneX(trophyDungeonX);
+    this.trophySceneY = this.dungeonYToSceneY(trophyDungeonY);
+
+    // Create trophy sprite
+    const texture = Texture.from('trophy');
+    this.trophy = new Sprite(texture);
+    this.trophy.anchor.set(0.5);
+
+    // Scale trophy to be visible but not too large
+    const trophySize = this.tileSize * 0.8;
+    this.trophy.scale.set(trophySize / this.trophy.width, trophySize / this.trophy.height);
+
+    // Position trophy
+    this.trophy.x = this.trophySceneX;
+    this.trophy.y = this.trophySceneY;
+
+    this.worldContainer.addChild(this.trophy);
+  }
+
+  private dungeonXToSceneX(dungeonX: number): number {
+    return dungeonX * this.tileSize + this.dungeonOffsetX;
+  }
+
+  private dungeonYToSceneY(dungeonY: number): number {
+    return dungeonY * this.tileSize + this.dungeonOffsetY;
+  }
+
+  private checkTrophyCollision(): void {
+    if (this.gameWon || !this.trophy) return;
+
+    const playerCenterX = this.player.centerX;
+    const playerCenterY = this.player.centerY;
+
+    // Check distance between player center and trophy center
+    const dx = playerCenterX - this.trophySceneX;
+    const dy = playerCenterY - this.trophySceneY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Collision threshold - player needs to be close to the trophy
+    const collisionThreshold = this.tileSize * 0.6;
+
+    if (distance < collisionThreshold) {
+      this.gameWon = true;
+      const elapsedTime = Date.now() - this.startTime;
+
+      // Navigate to victory scene with callbacks
+      Manager.changeScene(
+        new VictoryScene(elapsedTime, {
+          onPlayAgain: () => Manager.changeScene(new DungeonScene()),
+          onMainMenu: () =>
+            Manager.changeScene(
+              new MenuScene({
+                onDungeon: () => Manager.changeScene(new DungeonScene()),
+              }),
+            ),
+        }),
+      );
+    }
   }
 
   private centerCameraOnPlayer() {
@@ -167,11 +264,16 @@ export class DungeonScene extends Container implements IScene {
   }
 
   public update(framesPassed: number): void {
+    if (this.gameWon) return;
+
     this.dino.update(framesPassed);
     // Call centerCameraOnPlayer to continuously center the world container on the player
     this.centerCameraOnPlayer();
 
     this.player.update(framesPassed);
+
+    // Check if player reached the trophy
+    this.checkTrophyCollision();
     const playerCenterX = this.sceneXtoDungeonX(this.player.centerX);
     const playerCenterY = this.sceneYtoDungeonY(this.player.centerY);
     const room = getRoomAt(playerCenterX, playerCenterY, this.dungeon!);
