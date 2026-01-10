@@ -5,8 +5,13 @@ export class PlayerEntity {
   model: PlayerModel;
   render: PlayerRender;
 
-  constructor(startingX: number, startingY: number, onPositionUpdate: (box: PlayerBox) => boolean) {
-    this.render = new PlayerRender(startingX, startingY);
+  constructor(
+    startingX: number,
+    startingY: number,
+    tileSize: number,
+    onPositionUpdate: (box: PlayerBox) => boolean,
+  ) {
+    this.render = new PlayerRender(startingX, startingY, tileSize);
     this.model = new PlayerModel(
       this.render.x,
       this.render.y,

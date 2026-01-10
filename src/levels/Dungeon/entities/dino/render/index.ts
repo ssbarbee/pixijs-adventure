@@ -1,19 +1,18 @@
 import { AnimatedSprite, Graphics, Texture } from 'pixi.js';
 
-import { Manager } from '../../../../../Manager';
-
 type DinoAnimationState = 'idle' | 'walk' | 'run' | 'dead';
 
 export class DinoRender extends AnimatedSprite {
-  tileSize: number = Manager.width / 16;
+  tileSize: number;
   private dot: Graphics;
   private animationState: DinoAnimationState = 'idle';
 
-  constructor(startingX: number, startingY: number) {
+  constructor(startingX: number, startingY: number, tileSize: number) {
     const textures = Array.from({ length: 10 }).map((_, index) => Texture.from(`dinoIdle${index}`));
     super(textures);
-    this.play();
 
+    this.tileSize = tileSize;
+    this.play();
     this.scale.set(this.tileSize / this.width, this.tileSize / 1.44 / this.height);
     this.animationSpeed = 0.3;
     this.x = startingX;

@@ -53,13 +53,16 @@ export class DungeonScene extends Container implements IScene {
     this.generateAndDrawDungeon();
 
     // Create the player, centered in middle of screen
-    this.player = new PlayerEntity(Manager.width / 2, Manager.height / 2, (box) =>
+    // Player tileSize is 1/4 of the dungeon tileSize
+    const playerTileSize = this.tileSize / 4;
+    this.player = new PlayerEntity(Manager.width / 2, Manager.height / 2, playerTileSize, (box) =>
       this.onPlayerPositionUpdate(box),
     );
 
     this.dino = new DinoEntity(
       Manager.width / 2,
       Manager.height / 2,
+      this.tileSize,
       this.onDinoPositionUpdate.bind(this),
       this.onDinoIdle.bind(this),
       this.player.render.x,

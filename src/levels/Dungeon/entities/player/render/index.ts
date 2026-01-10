@@ -1,15 +1,14 @@
 import { Graphics, Sprite, Texture } from 'pixi.js';
 
-import { Manager } from '../../../../../Manager';
-
 export class PlayerRender extends Sprite {
-  tileSize: number = Manager.width / 64;
+  tileSize: number;
   private dot: Graphics;
 
-  constructor(startingX: number, startingY: number) {
+  constructor(startingX: number, startingY: number, tileSize: number) {
     const texture = Texture.from('player');
     super(texture);
 
+    this.tileSize = tileSize;
     this.scale.set(this.tileSize / this.width, this.tileSize / this.height);
     this.x = startingX;
     this.y = startingY;

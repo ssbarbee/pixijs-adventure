@@ -8,6 +8,7 @@ export class DinoEntity {
   constructor(
     startingX: number,
     startingY: number,
+    tileSize: number,
     onPositionUpdate: (box: DinoBox) => boolean,
     onIdle: () => void,
     playerStartingX: number,
@@ -15,7 +16,7 @@ export class DinoEntity {
     playerStartingWidth: number,
     playerStartingHeight: number,
   ) {
-    this.render = new DinoRender(startingX, startingY);
+    this.render = new DinoRender(startingX, startingY, tileSize);
     this.model = new DinoModel(
       this.render.x,
       this.render.y,
