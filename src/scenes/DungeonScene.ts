@@ -9,6 +9,7 @@ import {
   findFarthestRoom,
   generateDungeon,
   getRoomAt,
+  getSpawnableRooms,
   isWallAt,
   PlayerEntity,
   RectangleRoom,
@@ -20,14 +21,16 @@ import { IScene, Manager } from '../Manager';
 import { MenuScene } from './MenuScene';
 import { VictoryScene } from './VictoryScene';
 
+const DINO_SPAWN_CHANCE = 0.3;
+
 export class DungeonScene extends Container implements IScene {
-  private player: PlayerEntity;
-  private dino: DinoEntity;
+  private player!: PlayerEntity;
+  private dinos: DinoEntity[] = [];
   private trophy: TrophyEntity | null = null;
   private tileSize = Manager.width / 16;
   private worldContainer: Container;
   private dungeon: Dungeon | null = null;
-  private debugInfo: DebugInfo;
+  private debugInfo!: DebugInfo;
   private dungeonOffsetX: number = 0;
   private dungeonOffsetY: number = 0;
   private dungeonRenderer: DungeonRenderer | null = null;
@@ -60,25 +63,11 @@ export class DungeonScene extends Container implements IScene {
       onPositionUpdate: (box) => this.onPlayerPositionUpdate(box),
     });
 
-    this.dino = new DinoEntity({
-      x: Manager.width / 2,
-      y: Manager.height / 2,
-      tileSize: this.tileSize,
-      onPositionUpdate: this.onDinoPositionUpdate.bind(this),
-      onIdle: this.onDinoIdle.bind(this),
-      player: {
-        x: this.player.render.x,
-        y: this.player.render.y,
-        width: this.player.render.width,
-        height: this.player.render.height,
-      },
-    });
-
     // Add the player to the GameScene container (worldContainer)
     this.worldContainer.addChild(this.player.render);
 
-    // Add the dino to the GameScene container (worldContainer)
-    this.worldContainer.addChild(this.dino.render);
+    // Spawn dinos in eligible rooms
+    this.spawnDinos();
 
     // Call centerCameraOnPlayer to initially center the world container on the player
     this.centerCameraOnPlayer();
@@ -86,6 +75,41 @@ export class DungeonScene extends Container implements IScene {
     this.debugInfo = new DebugInfo(this);
 
     window.addEventListener('keypress', (e) => this.handleKeypress(e));
+  }
+
+  private spawnDinos(): void {
+    if (!this.dungeon) return;
+
+    const spawnableRooms = getSpawnableRooms(this.dungeon.root);
+
+    for (const { centerX, centerY } of spawnableRooms) {
+      // 30% chance to spawn a dino in each eligible room
+      if (Math.random() < DINO_SPAWN_CHANCE) {
+        const sceneX = this.dungeonXToSceneX(centerX);
+        const sceneY = this.dungeonYToSceneY(centerY);
+
+        const dino = this.createDino(sceneX, sceneY);
+        this.dinos.push(dino);
+        this.worldContainer.addChild(dino.render);
+      }
+    }
+  }
+
+  private createDino(x: number, y: number): DinoEntity {
+    const dino: DinoEntity = new DinoEntity({
+      x,
+      y,
+      tileSize: this.tileSize,
+      onPositionUpdate: (box) => this.onDinoPositionUpdate(dino, box),
+      onIdle: () => this.onDinoIdle(dino),
+      player: {
+        x: this.player.render.x,
+        y: this.player.render.y,
+        width: this.player.render.width,
+        height: this.player.render.height,
+      },
+    });
+    return dino;
   }
 
   private onPlayerPositionUpdate({ left, right, top, bottom }: PlayerBox) {
@@ -106,20 +130,22 @@ export class DungeonScene extends Container implements IScene {
       }
     }
 
-    // Move was successful
-    this.dino.model.updatePlayerPosition(left, top, right - left, bottom - top);
+    // Move was successful - update all dinos with player position
+    for (const dino of this.dinos) {
+      dino.model.updatePlayerPosition(left, top, right - left, bottom - top);
+    }
     return true;
   }
 
-  private onDinoIdle() {
-    this.dino.render.stopRunning();
+  private onDinoIdle(dino: DinoEntity) {
+    dino.render.stopRunning();
   }
 
-  private onDinoPositionUpdate({ left, right, top, bottom }: DinoBox) {
+  private onDinoPositionUpdate(dino: DinoEntity, { left, right, top, bottom }: DinoBox) {
     if (!this.dungeon) {
       return false;
     }
-    // Check if any corner of the player is on a non-grass tile
+    // Check if any corner of the dino is on a non-grass tile
     for (let x = left; x <= right; x++) {
       for (let y = top; y <= bottom; y++) {
         // Convert screen coordinates (x, y) to dungeon coordinates
@@ -128,18 +154,18 @@ export class DungeonScene extends Container implements IScene {
 
         // Prevent the move if there's a wall
         if (isWallAt(dungeonX, dungeonY, this.dungeon)) {
-          this.dino.render.stopMoving();
+          dino.render.stopMoving();
           return false;
         }
       }
     }
 
     // Use run animation when chasing player, walk animation for patrol/return
-    const aiState = this.dino.getAIState();
+    const aiState = dino.getAIState();
     if (aiState === 'chase') {
-      this.dino.render.startRunning();
+      dino.render.startRunning();
     } else {
-      this.dino.render.startWalking();
+      dino.render.startWalking();
     }
     // Move was successful
     return true;
@@ -258,7 +284,11 @@ export class DungeonScene extends Container implements IScene {
   public update(framesPassed: number): void {
     if (this.gameWon) return;
 
-    this.dino.update(framesPassed);
+    // Update all dinos
+    for (const dino of this.dinos) {
+      dino.update(framesPassed);
+    }
+
     // Call centerCameraOnPlayer to continuously center the world container on the player
     this.centerCameraOnPlayer();
 
@@ -291,12 +321,15 @@ export class DungeonScene extends Container implements IScene {
   }
 
   private drawDebugInfo(): void {
+    // Show debug info for first dino if exists
+    const firstDino = this.dinos[0];
     this.debugInfo.draw({
       playerX: this.sceneXtoDungeonX(this.player.x),
       playerY: this.sceneYtoDungeonY(this.player.y),
-      dinoX: this.sceneXtoDungeonX(this.dino.x),
-      dinoY: this.sceneYtoDungeonY(this.dino.y),
-      dinoState: this.dino.getAIState(),
+      dinoX: firstDino ? this.sceneXtoDungeonX(firstDino.x) : 0,
+      dinoY: firstDino ? this.sceneYtoDungeonY(firstDino.y) : 0,
+      dinoState: firstDino ? firstDino.getAIState() : 'idle',
+      dinoCount: this.dinos.length,
     });
   }
 
