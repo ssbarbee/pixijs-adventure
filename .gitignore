@@ -12,3 +12,5 @@ coverage/
 /.yarn/plugins/** binary
 .yarn/install-state.gz
 .env
+CLAUDE.md
+.idea

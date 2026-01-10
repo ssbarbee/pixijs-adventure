@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Texture } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 
 import { PlayerBox } from '../entities/Player';
 import {
@@ -12,6 +12,7 @@ import {
   isWallAt,
   PlayerEntity,
   RectangleRoom,
+  TrophyEntity,
 } from '../levels/Dungeon';
 import { DinoEntity } from '../levels/Dungeon/entities/dino';
 import { DinoBox } from '../levels/Dungeon/entities/dino/model';
@@ -22,6 +23,7 @@ import { VictoryScene } from './VictoryScene';
 export class DungeonScene extends Container implements IScene {
   private player: PlayerEntity;
   private dino: DinoEntity;
+  private trophy: TrophyEntity | null = null;
   private tileSize = Manager.width / 16;
   private worldContainer: Container;
   private dungeon: Dungeon | null = null;
@@ -30,10 +32,6 @@ export class DungeonScene extends Container implements IScene {
   private dungeonOffsetY: number = 0;
   private dungeonRenderer: DungeonRenderer | null = null;
   private vGraphics: Graphics | null = null;
-  // Trophy-related properties
-  private trophy: Sprite | null = null;
-  private trophySceneX: number = 0;
-  private trophySceneY: number = 0;
   private startTime: number = 0;
   private gameWon: boolean = false;
 
@@ -190,23 +188,15 @@ export class DungeonScene extends Container implements IScene {
     }
 
     // Convert to scene coordinates
-    this.trophySceneX = this.dungeonXToSceneX(trophyDungeonX);
-    this.trophySceneY = this.dungeonYToSceneY(trophyDungeonY);
+    const trophySceneX = this.dungeonXToSceneX(trophyDungeonX);
+    const trophySceneY = this.dungeonYToSceneY(trophyDungeonY);
 
-    // Create trophy sprite
-    const texture = Texture.from('trophy');
-    this.trophy = new Sprite(texture);
-    this.trophy.anchor.set(0.5);
+    // Create trophy entity with callback for when collected
+    this.trophy = new TrophyEntity(trophySceneX, trophySceneY, this.tileSize, () =>
+      this.onTrophyCollected(),
+    );
 
-    // Scale trophy to be visible but not too large
-    const trophySize = this.tileSize * 0.8;
-    this.trophy.scale.set(trophySize / this.trophy.width, trophySize / this.trophy.height);
-
-    // Position trophy
-    this.trophy.x = this.trophySceneX;
-    this.trophy.y = this.trophySceneY;
-
-    this.worldContainer.addChild(this.trophy);
+    this.worldContainer.addChild(this.trophy.render);
   }
 
   private dungeonXToSceneX(dungeonX: number): number {
@@ -220,34 +210,25 @@ export class DungeonScene extends Container implements IScene {
   private checkTrophyCollision(): void {
     if (this.gameWon || !this.trophy) return;
 
-    const playerCenterX = this.player.centerX;
-    const playerCenterY = this.player.centerY;
+    this.trophy.checkCollision(this.player.centerX, this.player.centerY);
+  }
 
-    // Check distance between player center and trophy center
-    const dx = playerCenterX - this.trophySceneX;
-    const dy = playerCenterY - this.trophySceneY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+  private onTrophyCollected(): void {
+    this.gameWon = true;
+    const elapsedTime = Date.now() - this.startTime;
 
-    // Collision threshold - player needs to be close to the trophy
-    const collisionThreshold = this.tileSize * 0.6;
-
-    if (distance < collisionThreshold) {
-      this.gameWon = true;
-      const elapsedTime = Date.now() - this.startTime;
-
-      // Navigate to victory scene with callbacks
-      Manager.changeScene(
-        new VictoryScene(elapsedTime, {
-          onPlayAgain: () => Manager.changeScene(new DungeonScene()),
-          onMainMenu: () =>
-            Manager.changeScene(
-              new MenuScene({
-                onDungeon: () => Manager.changeScene(new DungeonScene()),
-              }),
-            ),
-        }),
-      );
-    }
+    // Navigate to victory scene with callbacks
+    Manager.changeScene(
+      new VictoryScene(elapsedTime, {
+        onPlayAgain: () => Manager.changeScene(new DungeonScene()),
+        onMainMenu: () =>
+          Manager.changeScene(
+            new MenuScene({
+              onDungeon: () => Manager.changeScene(new DungeonScene()),
+            }),
+          ),
+      }),
+    );
   }
 
   private centerCameraOnPlayer() {
