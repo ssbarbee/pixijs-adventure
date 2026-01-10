@@ -44,6 +44,10 @@ export class TrophyEntity {
     return this.model.isCollected();
   }
 
+  public update(): void {
+    this.render.update(this.model.isCollected());
+  }
+
   public destroy(): void {
     this.render.destroy();
   }

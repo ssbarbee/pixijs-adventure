@@ -80,10 +80,34 @@ export class DungeonScene extends Container implements IScene {
   private spawnDinos(): void {
     if (!this.dungeon) return;
 
-    const spawnableRooms = getSpawnableRooms(this.dungeon.root);
+    // Always spawn a dino in the trophy room (farthest room)
+    const farthestRoom = findFarthestRoom(this.dungeon.root);
+    let trophyRoomCenterX: number;
+    let trophyRoomCenterY: number;
+
+    if (farthestRoom.type === 'rectangle') {
+      const rectRoom = farthestRoom as RectangleRoom;
+      trophyRoomCenterX = rectRoom.x + rectRoom.width / 2;
+      trophyRoomCenterY = rectRoom.y + rectRoom.height / 2;
+    } else {
+      const circRoom = farthestRoom as CircularRoom;
+      trophyRoomCenterX = circRoom.x;
+      trophyRoomCenterY = circRoom.y;
+    }
+
+    // Spawn dino slightly offset from trophy so they don't overlap
+    const guardSceneX = this.dungeonXToSceneX(trophyRoomCenterX + 1);
+    const guardSceneY = this.dungeonYToSceneY(trophyRoomCenterY + 1);
+    const guardDino = this.createDino(guardSceneX, guardSceneY);
+    this.dinos.push(guardDino);
+    this.worldContainer.addChild(guardDino.render);
+
+    // Spawn dinos in other rooms with 30% chance (excluding trophy room)
+    const spawnableRooms = getSpawnableRooms(this.dungeon.root).filter(
+      (room) => room.centerX !== trophyRoomCenterX || room.centerY !== trophyRoomCenterY,
+    );
 
     for (const { centerX, centerY } of spawnableRooms) {
-      // 30% chance to spawn a dino in each eligible room
       if (Math.random() < DINO_SPAWN_CHANCE) {
         const sceneX = this.dungeonXToSceneX(centerX);
         const sceneY = this.dungeonYToSceneY(centerY);
@@ -294,6 +318,9 @@ export class DungeonScene extends Container implements IScene {
 
     this.player.update(framesPassed);
 
+    // Update trophy
+    this.trophy?.update();
+
     // Check if player reached the trophy
     this.checkTrophyCollision();
     const playerCenterX = this.sceneXtoDungeonX(this.player.centerX);
@@ -308,8 +335,9 @@ export class DungeonScene extends Container implements IScene {
     });
     // Draw visibility ray-casting
     this.worldContainer.addChild(this.vGraphics);
-    // Debug info
-    this.drawDebugInfo();
+
+    // Global debug info (FPS only)
+    this.debugInfo.draw();
   }
 
   private sceneXtoDungeonX(x: number) {
@@ -318,19 +346,6 @@ export class DungeonScene extends Container implements IScene {
 
   private sceneYtoDungeonY(y: number) {
     return (y - this.dungeonOffsetY) / this.tileSize;
-  }
-
-  private drawDebugInfo(): void {
-    // Show debug info for first dino if exists
-    const firstDino = this.dinos[0];
-    this.debugInfo.draw({
-      playerX: this.sceneXtoDungeonX(this.player.x),
-      playerY: this.sceneYtoDungeonY(this.player.y),
-      dinoX: firstDino ? this.sceneXtoDungeonX(firstDino.x) : 0,
-      dinoY: firstDino ? this.sceneYtoDungeonY(firstDino.y) : 0,
-      dinoState: firstDino ? firstDino.getAIState() : 'idle',
-      dinoCount: this.dinos.length,
-    });
   }
 
   resize(): void {

@@ -1,5 +1,7 @@
 import { Graphics, Sprite, Texture } from 'pixi.js';
 
+import { EntityDebugInfo } from '../../EntityDebugInfo';
+
 export interface PlayerRenderProps {
   x: number;
   y: number;
@@ -9,6 +11,7 @@ export interface PlayerRenderProps {
 export class PlayerRender extends Sprite {
   tileSize: number;
   private dot: Graphics;
+  private debugInfo: EntityDebugInfo;
 
   constructor(props: PlayerRenderProps) {
     const texture = Texture.from('player');
@@ -21,6 +24,14 @@ export class PlayerRender extends Sprite {
     this.dot = new Graphics();
     this.addChild(this.dot);
     this.drawDot();
+
+    this.debugInfo = new EntityDebugInfo({
+      container: this,
+      offsetX: this.tileSize + 5,
+      offsetY: -5,
+      parentScaleX: this.scale.x,
+      parentScaleY: this.scale.y,
+    });
   }
 
   private drawDot() {
@@ -29,6 +40,9 @@ export class PlayerRender extends Sprite {
   }
 
   public update() {
-    // this.drawDot();
+    this.debugInfo.update({
+      x: this.x,
+      y: this.y,
+    });
   }
 }

@@ -11,25 +11,8 @@ export class DebugInfo {
     this.container = container;
   }
 
-  public draw({
-    playerX,
-    playerY,
-    dinoX,
-    dinoY,
-    dinoState,
-    dinoCount,
-  }: {
-    playerX: number;
-    playerY: number;
-    dinoX: number;
-    dinoY: number;
-    dinoState: string;
-    dinoCount?: number;
-  }): void {
-    const dinoCountStr = dinoCount !== undefined ? `, count:${dinoCount}` : '';
-    const debugInfo = `Player: x:${playerX.toFixed(3)}, y:${playerY.toFixed(
-      3,
-    )}\nDino: x:${dinoX.toFixed(3)}, y:${dinoY.toFixed(3)}, state:${dinoState}${dinoCountStr}\nFPS:${Ticker.shared.FPS.toFixed(2)}`;
+  public draw(): void {
+    const debugInfo = `FPS: ${Ticker.shared.FPS.toFixed(0)}`;
 
     if (!this.debugText) {
       this.debugText = new Text(debugInfo, {
@@ -63,6 +46,6 @@ export class DebugInfo {
 
     // Set a high zIndex to ensure its on top
     this.debugText.zIndex = 1000;
-    this.debugRectangle.zIndex = 999; // Slightly lower so it's behind the text
+    this.debugRectangle.zIndex = 999;
   }
 }

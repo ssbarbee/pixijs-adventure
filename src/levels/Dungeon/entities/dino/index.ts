@@ -61,6 +61,7 @@ export class DinoEntity {
     this.model.update(framesPassed);
     this.render.x = this.model.x;
     this.render.y = this.model.y;
+    this.render.updateDebugInfo(this.getAIState());
   }
 
   public destroy() {

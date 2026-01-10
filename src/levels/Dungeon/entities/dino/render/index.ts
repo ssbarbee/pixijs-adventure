@@ -1,5 +1,7 @@
 import { AnimatedSprite, Graphics, Texture } from 'pixi.js';
 
+import { EntityDebugInfo } from '../../EntityDebugInfo';
+
 type DinoAnimationState = 'idle' | 'walk' | 'run' | 'dead';
 
 export interface DinoRenderProps {
@@ -12,6 +14,7 @@ export class DinoRender extends AnimatedSprite {
   tileSize: number;
   private dot: Graphics;
   private animationState: DinoAnimationState = 'idle';
+  private debugInfo: EntityDebugInfo;
 
   constructor(props: DinoRenderProps) {
     const textures = Array.from({ length: 10 }).map((_, index) => Texture.from(`dinoIdle${index}`));
@@ -26,11 +29,28 @@ export class DinoRender extends AnimatedSprite {
     this.dot = new Graphics();
     this.addChild(this.dot);
     this.drawDot();
+
+    this.debugInfo = new EntityDebugInfo({
+      container: this,
+      offsetX: this.tileSize + 5,
+      offsetY: -5,
+      parentScaleX: this.scale.x,
+      parentScaleY: this.scale.y,
+    });
   }
 
   private drawDot() {
     this.dot.clear();
     this.dot.circle(0, 0, 4).fill(0x00ff00);
+  }
+
+  public updateDebugInfo(aiState: string) {
+    this.debugInfo.update({
+      x: this.x,
+      y: this.y,
+      anim: this.animationState,
+      ai: aiState,
+    });
   }
 
   public startWalking() {
