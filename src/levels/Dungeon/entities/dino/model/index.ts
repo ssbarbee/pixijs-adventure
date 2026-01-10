@@ -7,6 +7,22 @@ export type DinoBox = {
   top: number;
 };
 
+export interface DinoModelProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  baseMoveSpeed: number;
+  onPositionUpdate: (box: DinoBox) => boolean;
+  onIdle: () => void;
+  player: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+}
+
 export class DinoModel {
   x: number = 0;
   y: number = 0;
@@ -18,39 +34,27 @@ export class DinoModel {
   private onIdle: () => void;
   private ai: DinoAI;
 
-  constructor(
-    startX: number,
-    startY: number,
-    width: number,
-    height: number,
-    baseMoveSpeed: number,
-    onPositionUpdate: (box: DinoBox) => boolean,
-    onIdle: () => void,
-    playerStartingX: number,
-    playerStartingY: number,
-    playerWidth: number,
-    playerHeight: number,
-  ) {
-    this.x = startX;
-    this.y = startY;
-    this.width = width;
-    this.height = height;
-    this.baseMoveSpeed = baseMoveSpeed;
-    this.onPositionUpdate = onPositionUpdate;
-    this.onIdle = onIdle;
+  constructor(props: DinoModelProps) {
+    this.x = props.x;
+    this.y = props.y;
+    this.width = props.width;
+    this.height = props.height;
+    this.baseMoveSpeed = props.baseMoveSpeed;
+    this.onPositionUpdate = props.onPositionUpdate;
+    this.onIdle = props.onIdle;
     this.ai = new DinoAI(
       this.moveHandler.bind(this),
       {
-        x: startX,
-        y: startY,
-        width: width,
-        height: height,
+        x: props.x,
+        y: props.y,
+        width: props.width,
+        height: props.height,
       },
       {
-        x: playerStartingX,
-        y: playerStartingY,
-        width: playerWidth,
-        height: playerHeight,
+        x: props.player.x,
+        y: props.player.y,
+        width: props.player.width,
+        height: props.player.height,
       },
     );
   }
@@ -83,13 +87,11 @@ export class DinoModel {
 
     const directions = [...this.directions];
     this.directions = [];
-    // Scale move speed by frames passed and apply AI speed multiplier
     const speedMultiplier = this.ai.getSpeedMultiplier();
     const moveSpeed = this.baseMoveSpeed * framesPassed * speedMultiplier;
 
     let newX = this.x;
     let newY = this.y;
-    // Check for each key in the directions set and move accordingly
     if (
       directions.indexOf('up') !== -1 ||
       directions.indexOf('upRight') !== -1 ||
@@ -115,7 +117,6 @@ export class DinoModel {
     )
       newX += moveSpeed;
 
-    // Calculate the bounds of the player
     const left = newX;
     const right = newX + this.width - 1;
     const top = newY;

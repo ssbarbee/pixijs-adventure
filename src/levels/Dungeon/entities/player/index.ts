@@ -1,25 +1,31 @@
 import { PlayerBox, PlayerModel } from './model';
 import { PlayerRender } from './render';
 
+export interface PlayerEntityProps {
+  x: number;
+  y: number;
+  tileSize: number;
+  onPositionUpdate: (box: PlayerBox) => boolean;
+}
+
 export class PlayerEntity {
   model: PlayerModel;
   render: PlayerRender;
 
-  constructor(
-    startingX: number,
-    startingY: number,
-    tileSize: number,
-    onPositionUpdate: (box: PlayerBox) => boolean,
-  ) {
-    this.render = new PlayerRender(startingX, startingY, tileSize);
-    this.model = new PlayerModel(
-      this.render.x,
-      this.render.y,
-      this.render.width,
-      this.render.height,
-      this.render.tileSize * 0.2,
-      onPositionUpdate,
-    );
+  constructor(props: PlayerEntityProps) {
+    this.render = new PlayerRender({
+      x: props.x,
+      y: props.y,
+      tileSize: props.tileSize,
+    });
+    this.model = new PlayerModel({
+      x: this.render.x,
+      y: this.render.y,
+      width: this.render.width,
+      height: this.render.height,
+      baseMoveSpeed: this.render.tileSize * 0.2,
+      onPositionUpdate: props.onPositionUpdate,
+    });
   }
 
   public get x() {

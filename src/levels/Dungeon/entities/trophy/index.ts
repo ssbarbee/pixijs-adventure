@@ -1,16 +1,31 @@
 import { TrophyModel } from './model';
 import { TrophyRender } from './render';
 
+export interface TrophyEntityProps {
+  x: number;
+  y: number;
+  tileSize: number;
+  onCollected: () => void;
+}
+
 export class TrophyEntity {
   model: TrophyModel;
   render: TrophyRender;
 
-  constructor(x: number, y: number, tileSize: number, onCollected: () => void) {
-    this.render = new TrophyRender(x, y, tileSize);
+  constructor(props: TrophyEntityProps) {
+    this.render = new TrophyRender({
+      x: props.x,
+      y: props.y,
+      tileSize: props.tileSize,
+    });
 
-    // Collision threshold is 60% of tile size
-    const collisionThreshold = tileSize * 0.6;
-    this.model = new TrophyModel(x, y, collisionThreshold, onCollected);
+    const collisionThreshold = props.tileSize * 0.6;
+    this.model = new TrophyModel({
+      x: props.x,
+      y: props.y,
+      collisionThreshold,
+      onCollected: props.onCollected,
+    });
   }
 
   public get x(): number {

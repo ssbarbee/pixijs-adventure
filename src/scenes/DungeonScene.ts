@@ -53,21 +53,26 @@ export class DungeonScene extends Container implements IScene {
     // Create the player, centered in middle of screen
     // Player tileSize is 1/4 of the dungeon tileSize
     const playerTileSize = this.tileSize / 4;
-    this.player = new PlayerEntity(Manager.width / 2, Manager.height / 2, playerTileSize, (box) =>
-      this.onPlayerPositionUpdate(box),
-    );
+    this.player = new PlayerEntity({
+      x: Manager.width / 2,
+      y: Manager.height / 2,
+      tileSize: playerTileSize,
+      onPositionUpdate: (box) => this.onPlayerPositionUpdate(box),
+    });
 
-    this.dino = new DinoEntity(
-      Manager.width / 2,
-      Manager.height / 2,
-      this.tileSize,
-      this.onDinoPositionUpdate.bind(this),
-      this.onDinoIdle.bind(this),
-      this.player.render.x,
-      this.player.render.y,
-      this.player.render.width,
-      this.player.render.height,
-    );
+    this.dino = new DinoEntity({
+      x: Manager.width / 2,
+      y: Manager.height / 2,
+      tileSize: this.tileSize,
+      onPositionUpdate: this.onDinoPositionUpdate.bind(this),
+      onIdle: this.onDinoIdle.bind(this),
+      player: {
+        x: this.player.render.x,
+        y: this.player.render.y,
+        width: this.player.render.width,
+        height: this.player.render.height,
+      },
+    });
 
     // Add the player to the GameScene container (worldContainer)
     this.worldContainer.addChild(this.player.render);
@@ -192,9 +197,12 @@ export class DungeonScene extends Container implements IScene {
     const trophySceneY = this.dungeonYToSceneY(trophyDungeonY);
 
     // Create trophy entity with callback for when collected
-    this.trophy = new TrophyEntity(trophySceneX, trophySceneY, this.tileSize, () =>
-      this.onTrophyCollected(),
-    );
+    this.trophy = new TrophyEntity({
+      x: trophySceneX,
+      y: trophySceneY,
+      tileSize: this.tileSize,
+      onCollected: () => this.onTrophyCollected(),
+    });
 
     this.worldContainer.addChild(this.trophy.render);
   }

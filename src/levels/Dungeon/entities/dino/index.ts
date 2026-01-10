@@ -1,35 +1,40 @@
 import { DinoBox, DinoModel } from './model';
 import { DinoRender } from './render';
 
+export interface DinoEntityProps {
+  x: number;
+  y: number;
+  tileSize: number;
+  onPositionUpdate: (box: DinoBox) => boolean;
+  onIdle: () => void;
+  player: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+}
+
 export class DinoEntity {
   render: DinoRender;
   model: DinoModel;
 
-  constructor(
-    startingX: number,
-    startingY: number,
-    tileSize: number,
-    onPositionUpdate: (box: DinoBox) => boolean,
-    onIdle: () => void,
-    playerStartingX: number,
-    playerStartingY: number,
-    playerStartingWidth: number,
-    playerStartingHeight: number,
-  ) {
-    this.render = new DinoRender(startingX, startingY, tileSize);
-    this.model = new DinoModel(
-      this.render.x,
-      this.render.y,
-      this.render.width,
-      this.render.height,
-      this.render.tileSize * 0.02,
-      onPositionUpdate,
-      onIdle,
-      playerStartingX,
-      playerStartingY,
-      playerStartingWidth,
-      playerStartingHeight,
-    );
+  constructor(props: DinoEntityProps) {
+    this.render = new DinoRender({
+      x: props.x,
+      y: props.y,
+      tileSize: props.tileSize,
+    });
+    this.model = new DinoModel({
+      x: this.render.x,
+      y: this.render.y,
+      width: this.render.width,
+      height: this.render.height,
+      baseMoveSpeed: this.render.tileSize * 0.02,
+      onPositionUpdate: props.onPositionUpdate,
+      onIdle: props.onIdle,
+      player: props.player,
+    });
   }
 
   public getAIState() {

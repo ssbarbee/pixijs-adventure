@@ -2,30 +2,35 @@ import { AnimatedSprite, Graphics, Texture } from 'pixi.js';
 
 type DinoAnimationState = 'idle' | 'walk' | 'run' | 'dead';
 
+export interface DinoRenderProps {
+  x: number;
+  y: number;
+  tileSize: number;
+}
+
 export class DinoRender extends AnimatedSprite {
   tileSize: number;
   private dot: Graphics;
   private animationState: DinoAnimationState = 'idle';
 
-  constructor(startingX: number, startingY: number, tileSize: number) {
+  constructor(props: DinoRenderProps) {
     const textures = Array.from({ length: 10 }).map((_, index) => Texture.from(`dinoIdle${index}`));
     super(textures);
 
-    this.tileSize = tileSize;
+    this.tileSize = props.tileSize;
     this.play();
     this.scale.set(this.tileSize / this.width, this.tileSize / 1.44 / this.height);
     this.animationSpeed = 0.3;
-    this.x = startingX;
-    this.y = startingY;
-    // Initialize the dot
+    this.x = props.x;
+    this.y = props.y;
     this.dot = new Graphics();
-    this.addChild(this.dot); // Add the dot as a child of the player sprite
+    this.addChild(this.dot);
     this.drawDot();
   }
 
   private drawDot() {
     this.dot.clear();
-    this.dot.circle(0, 0, 4).fill(0x00ff00); // Green color
+    this.dot.circle(0, 0, 4).fill(0x00ff00);
   }
 
   public startWalking() {
@@ -73,7 +78,6 @@ export class DinoRender extends AnimatedSprite {
     }
   }
 
-  // Keep for backwards compatibility
   public stopRunning() {
     this.stopMoving();
   }

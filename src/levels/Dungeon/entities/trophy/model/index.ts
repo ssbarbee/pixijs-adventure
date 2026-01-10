@@ -1,3 +1,10 @@
+export interface TrophyModelProps {
+  x: number;
+  y: number;
+  collisionThreshold: number;
+  onCollected: () => void;
+}
+
 export class TrophyModel {
   readonly x: number;
   readonly y: number;
@@ -5,11 +12,11 @@ export class TrophyModel {
   private onCollected: () => void;
   private collected: boolean = false;
 
-  constructor(x: number, y: number, collisionThreshold: number, onCollected: () => void) {
-    this.x = x;
-    this.y = y;
-    this.collisionThreshold = collisionThreshold;
-    this.onCollected = onCollected;
+  constructor(props: TrophyModelProps) {
+    this.x = props.x;
+    this.y = props.y;
+    this.collisionThreshold = props.collisionThreshold;
+    this.onCollected = props.onCollected;
   }
 
   public checkCollision(playerCenterX: number, playerCenterY: number): boolean {
