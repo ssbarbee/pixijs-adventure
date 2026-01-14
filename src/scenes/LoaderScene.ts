@@ -3,6 +3,7 @@ import { Assets, Container, Graphics } from 'pixi.js';
 import { manifest } from '../assets';
 import { IScene, Manager } from '../Manager';
 import { DungeonScene } from './DungeonScene';
+import { MenuScene } from './MenuScene';
 
 export class LoaderScene extends Container implements IScene {
   // for making our loader graphics...
@@ -46,9 +47,11 @@ export class LoaderScene extends Container implements IScene {
   }
 
   private gameLoaded(): void {
-    // Change scene to the game scene!
-    // Manager.changeScene(new MenuScene());
-    Manager.changeScene(new DungeonScene());
+    Manager.changeScene(
+      new MenuScene({
+        onDungeon: () => Manager.changeScene(new DungeonScene()),
+      }),
+    );
   }
 
   public update(): void {
