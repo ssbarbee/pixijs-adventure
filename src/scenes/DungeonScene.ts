@@ -2,17 +2,10 @@ import { Container, Graphics } from 'pixi.js';
 
 import { PlayerBox } from '../entities/Player';
 import {
-  CircularRoom,
   DebugInfo,
-  Dungeon,
-  DungeonRenderer,
-  findFarthestRoom,
+  DungeonEntity,
   generateDungeon,
-  getRoomAt,
-  getSpawnableRooms,
-  isWallAt,
   PlayerEntity,
-  RectangleRoom,
   TrophyEntity,
 } from '../levels/Dungeon';
 import { DinoEntity } from '../levels/Dungeon/entities/dino';
@@ -29,11 +22,10 @@ export class DungeonScene extends Container implements IScene {
   private trophy: TrophyEntity | null = null;
   private tileSize = Manager.width / 16;
   private worldContainer: Container;
-  private dungeon: Dungeon | null = null;
+  private dungeonEntity: DungeonEntity | null = null;
   private debugInfo!: DebugInfo;
   private dungeonOffsetX: number = 0;
   private dungeonOffsetY: number = 0;
-  private dungeonRenderer: DungeonRenderer | null = null;
   private vGraphics: Graphics | null = null;
   private startTime: number = 0;
   private gameWon: boolean = false;
@@ -78,39 +70,28 @@ export class DungeonScene extends Container implements IScene {
   }
 
   private spawnDinos(): void {
-    if (!this.dungeon) return;
+    if (!this.dungeonEntity) return;
 
     // Always spawn a dino in the trophy room (farthest room)
-    const farthestRoom = findFarthestRoom(this.dungeon.root);
-    let trophyRoomCenterX: number;
-    let trophyRoomCenterY: number;
-
-    if (farthestRoom.type === 'rectangle') {
-      const rectRoom = farthestRoom as RectangleRoom;
-      trophyRoomCenterX = rectRoom.x + rectRoom.width / 2;
-      trophyRoomCenterY = rectRoom.y + rectRoom.height / 2;
-    } else {
-      const circRoom = farthestRoom as CircularRoom;
-      trophyRoomCenterX = circRoom.x;
-      trophyRoomCenterY = circRoom.y;
-    }
+    const farthestRoom = this.dungeonEntity.findFarthestRoom(this.dungeonEntity.getRoot());
+    const trophyRoomCenter = this.dungeonEntity.getRoomCenter(farthestRoom);
 
     // Spawn dino slightly offset from trophy so they don't overlap
-    const guardSceneX = this.dungeonXToSceneX(trophyRoomCenterX + 1);
-    const guardSceneY = this.dungeonYToSceneY(trophyRoomCenterY + 1);
+    const guardSceneX = this.dungeonXToSceneX(trophyRoomCenter.x + 1);
+    const guardSceneY = this.dungeonYToSceneY(trophyRoomCenter.y + 1);
     const guardDino = this.createDino(guardSceneX, guardSceneY);
     this.dinos.push(guardDino);
     this.worldContainer.addChild(guardDino.render);
 
     // Spawn dinos in other rooms with 30% chance (excluding trophy room)
-    const spawnableRooms = getSpawnableRooms(this.dungeon.root).filter(
-      (room) => room.centerX !== trophyRoomCenterX || room.centerY !== trophyRoomCenterY,
+    const spawnableRooms = this.dungeonEntity.getSpawnableRoomCenters().filter(
+      (room) => room.x !== trophyRoomCenter.x || room.y !== trophyRoomCenter.y,
     );
 
-    for (const { centerX, centerY } of spawnableRooms) {
+    for (const { x, y } of spawnableRooms) {
       if (Math.random() < DINO_SPAWN_CHANCE) {
-        const sceneX = this.dungeonXToSceneX(centerX);
-        const sceneY = this.dungeonYToSceneY(centerY);
+        const sceneX = this.dungeonXToSceneX(x);
+        const sceneY = this.dungeonYToSceneY(y);
 
         const dino = this.createDino(sceneX, sceneY);
         this.dinos.push(dino);
@@ -137,7 +118,7 @@ export class DungeonScene extends Container implements IScene {
   }
 
   private onPlayerPositionUpdate({ left, right, top, bottom }: PlayerBox) {
-    if (!this.dungeon) {
+    if (!this.dungeonEntity) {
       return false;
     }
     // Check if any corner of the player is on a non-grass tile
@@ -148,7 +129,7 @@ export class DungeonScene extends Container implements IScene {
         const dungeonY = this.sceneYtoDungeonY(y);
 
         // Prevent the move if there's a wall
-        if (isWallAt(dungeonX, dungeonY, this.dungeon)) {
+        if (this.dungeonEntity.isWallAt(dungeonX, dungeonY)) {
           return false;
         }
       }
@@ -166,7 +147,7 @@ export class DungeonScene extends Container implements IScene {
   }
 
   private onDinoPositionUpdate(dino: DinoEntity, { left, right, top, bottom }: DinoBox) {
-    if (!this.dungeon) {
+    if (!this.dungeonEntity) {
       return false;
     }
     // Check if any corner of the dino is on a non-grass tile
@@ -177,7 +158,7 @@ export class DungeonScene extends Container implements IScene {
         const dungeonY = this.sceneYtoDungeonY(y);
 
         // Prevent the move if there's a wall
-        if (isWallAt(dungeonX, dungeonY, this.dungeon)) {
+        if (this.dungeonEntity.isWallAt(dungeonX, dungeonY)) {
           dino.render.stopMoving();
           return false;
         }
@@ -199,52 +180,38 @@ export class DungeonScene extends Container implements IScene {
     // Clear the container of old dungeon elements
     this.worldContainer.removeChildren();
 
-    // Generate and draw the new dungeon
-    this.dungeon = generateDungeon(12);
+    // Generate the dungeon
+    const dungeon = generateDungeon(12);
     // 'root' is the starting room
-    const startRoom = this.dungeon.root;
+    const startRoom = dungeon.root;
     const startRoomX = startRoom.x * this.tileSize;
     const startRoomY = startRoom.y * this.tileSize;
 
     this.dungeonOffsetX = Manager.width / 2 - startRoomX;
     this.dungeonOffsetY = Manager.height / 2 - startRoomY;
 
-    this.dungeonRenderer = new DungeonRenderer(
-      this.dungeon,
-      this.tileSize,
-      this.dungeonOffsetX,
-      this.dungeonOffsetY,
-    );
-    const dungeonGraphics = this.dungeonRenderer.draw();
-    this.worldContainer.addChild(dungeonGraphics);
+    // Create the dungeon entity
+    this.dungeonEntity = new DungeonEntity({
+      dungeon,
+      tileSize: this.tileSize,
+      offsetX: this.dungeonOffsetX,
+      offsetY: this.dungeonOffsetY,
+    });
+    this.worldContainer.addChild(this.dungeonEntity.render);
 
     // Place trophy in the farthest room from the start
     this.placeTrophy();
   }
 
   private placeTrophy(): void {
-    if (!this.dungeon) return;
+    if (!this.dungeonEntity) return;
 
-    const farthestRoom = findFarthestRoom(this.dungeon.root);
-
-    // Calculate trophy position at the center of the farthest room
-    let trophyDungeonX: number;
-    let trophyDungeonY: number;
-
-    if (farthestRoom.type === 'rectangle') {
-      const rectRoom = farthestRoom as RectangleRoom;
-      trophyDungeonX = rectRoom.x + rectRoom.width / 2;
-      trophyDungeonY = rectRoom.y + rectRoom.height / 2;
-    } else {
-      // Circular room - use center
-      const circRoom = farthestRoom as CircularRoom;
-      trophyDungeonX = circRoom.x;
-      trophyDungeonY = circRoom.y;
-    }
+    const farthestRoom = this.dungeonEntity.findFarthestRoom(this.dungeonEntity.getRoot());
+    const trophyCenter = this.dungeonEntity.getRoomCenter(farthestRoom);
 
     // Convert to scene coordinates
-    const trophySceneX = this.dungeonXToSceneX(trophyDungeonX);
-    const trophySceneY = this.dungeonYToSceneY(trophyDungeonY);
+    const trophySceneX = this.dungeonXToSceneX(trophyCenter.x);
+    const trophySceneY = this.dungeonYToSceneY(trophyCenter.y);
 
     // Create trophy entity with callback for when collected
     this.trophy = new TrophyEntity({
@@ -325,16 +292,18 @@ export class DungeonScene extends Container implements IScene {
     this.checkTrophyCollision();
     const playerCenterX = this.sceneXtoDungeonX(this.player.centerX);
     const playerCenterY = this.sceneYtoDungeonY(this.player.centerY);
-    const room = getRoomAt(playerCenterX, playerCenterY, this.dungeon!);
+    const room = this.dungeonEntity!.getRoomAt(playerCenterX, playerCenterY);
     if (this.vGraphics) {
       this.worldContainer.removeChild(this.vGraphics);
     }
-    this.vGraphics = this.dungeonRenderer!.drawVisibility(room as RectangleRoom, {
-      x: playerCenterX,
-      y: playerCenterY,
-    });
-    // Draw visibility ray-casting
-    this.worldContainer.addChild(this.vGraphics);
+    if (room) {
+      this.vGraphics = this.dungeonEntity!.drawVisibility(room, {
+        x: playerCenterX,
+        y: playerCenterY,
+      });
+      // Draw visibility ray-casting
+      this.worldContainer.addChild(this.vGraphics);
+    }
 
     // Global debug info (FPS only)
     this.debugInfo.draw();
