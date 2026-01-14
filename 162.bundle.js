@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkpixijs_adventure=self.webpackChunkpixijs_adventure||[]).push([[162],{2162(e,s,u){u.r(s);u(4732),u(9010),u(8480),u(8928),u(5285),u(9305),u(6958),u(6444),u(9147),u(8723),u(1317),u(9935)}}]);
