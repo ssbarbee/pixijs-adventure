@@ -6,7 +6,7 @@ const unusedImports = require('eslint-plugin-unused-imports');
 module.exports = tseslint.config(
   // Global ignores
   {
-    ignores: ['dist/**', 'node_modules/**', 'src/types/*.d.ts', '*.config.js'],
+    ignores: ['dist/**', 'node_modules/**', 'src/types/*.d.ts', '*.config.js', '.storybook/**', '**/*.stories.ts'],
   },
 
   // Base TypeScript configuration

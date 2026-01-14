@@ -30,7 +30,9 @@
     "test": "vitest run --silent",
     "test:coverage": "vitest run --coverage",
     "generate:coverage-badges": "npx istanbul-badges-readme --silent",
-    "code-quality:check": "npx concurrently 'yarn ts:check' 'yarn prettier:check' 'yarn lint:check --quiet'"
+    "code-quality:check": "npx concurrently 'yarn ts:check' 'yarn prettier:check' 'yarn lint:check --quiet'",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@pixi/ui": "2.1.5",
@@ -43,6 +45,8 @@
     "@commitlint/config-conventional": "13.2.0",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/npm": "9.0.1",
+    "@storybook/addon-essentials": "8.5.3",
+    "@storybook/html-vite": "8.5.3",
     "@vitest/coverage-v8": "2.1.9",
     "concurrently": "7.6.0",
     "dpdm": "3.11.0",
@@ -61,6 +65,7 @@
     "semantic-release": "19.0.5",
     "semantic-release-cli": "5.4.4",
     "simplex-noise": "4.0.1",
+    "storybook": "8.5.3",
     "typescript": "5.9.3",
     "typescript-eslint": "8.33.1",
     "vite": "6.4.1",
