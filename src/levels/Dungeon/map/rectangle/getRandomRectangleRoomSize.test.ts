@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { MAX_RECTANGLE_ROOM_SIZE, MIN_RECTANGLE_ROOM_SIZE } from './constants';
 import { getRandomRectangleRoomSize } from './getRandomRectangleRoomSize';
 
