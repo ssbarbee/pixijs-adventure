@@ -1,20 +1,17 @@
-import { Graphics } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 
 import { TILE_COLOR } from '../../../../../../constants';
-import { SupportedObstacles } from '../../../../map/types';
-import { ObstacleEntity } from '../../../obstacle';
 import { BaseRoomRender, BaseRoomRenderProps } from '../../base/render';
 
 export interface RectangleRoomRenderProps extends BaseRoomRenderProps {
   width: number;
   height: number;
-  obstacles: SupportedObstacles[];
+  obstacleRenders: Container[];
 }
 
 export class RectangleRoomRender extends BaseRoomRender {
   private readonly roomWidth: number;
   private readonly roomHeight: number;
-  private readonly obstacleEntities: ObstacleEntity[] = [];
 
   constructor(props: RectangleRoomRenderProps) {
     super(props);
@@ -22,7 +19,7 @@ export class RectangleRoomRender extends BaseRoomRender {
     this.roomHeight = props.height;
 
     this.drawRoom();
-    this.createObstacles(props.obstacles);
+    this.addObstacleRenders(props.obstacleRenders);
     this.drawDebugInfo();
   }
 
@@ -53,34 +50,16 @@ export class RectangleRoomRender extends BaseRoomRender {
     this.addChild(graphics);
   }
 
-  private createObstacles(obstacles: SupportedObstacles[]): void {
-    for (const obstacle of obstacles) {
-      const obstacleEntity = new ObstacleEntity({
-        x: obstacle.x,
-        y: obstacle.y,
-        width: obstacle.width,
-        height: obstacle.height,
-        type: obstacle.type,
-        tileSize: this.tileSize,
-        offsetX: this.offsetX,
-        offsetY: this.offsetY,
-      });
-      this.obstacleEntities.push(obstacleEntity);
-      this.addChild(obstacleEntity.render);
+  private addObstacleRenders(obstacleRenders: Container[]): void {
+    for (const render of obstacleRenders) {
+      this.addChild(render);
     }
   }
 
   private drawDebugInfo(): void {
     // Draw red dot at room origin
-    this.drawDebugDot(
-      this.dungeonXToSceneX(this.dungeonX),
-      this.dungeonYToSceneY(this.dungeonY),
-    );
+    this.drawDebugDot(this.dungeonXToSceneX(this.dungeonX), this.dungeonYToSceneY(this.dungeonY));
     // Draw room ID
     this.drawRoomID();
-  }
-
-  getObstacleEntities(): ObstacleEntity[] {
-    return this.obstacleEntities;
   }
 }

@@ -7,12 +7,12 @@ import {
   Dungeon,
   RectangleRoom,
 } from '../../../map/types';
-import { Circle } from '../../visibility/circle';
-import { VisibilityRender } from '../../visibility/main';
-import { Rectangle } from '../../visibility/rectangle';
 import { CircularRoomEntity } from '../../room/circular';
 import { ConnectionRoomEntity } from '../../room/connection';
 import { RectangleRoomEntity } from '../../room/rectangle';
+import { Circle } from '../../visibility/circle';
+import { VisibilityRender } from '../../visibility/main';
+import { Rectangle } from '../../visibility/rectangle';
 
 export type RoomEntity = RectangleRoomEntity | CircularRoomEntity | ConnectionRoomEntity;
 
@@ -77,7 +77,7 @@ export class DungeonRender extends Container {
       offsetY: this.offsetY,
     });
     this.roomEntities.set(room.id, entity);
-    this.addChild(entity.render);
+    this.addChild(entity.view);
   }
 
   private createCircularRoomEntity(room: CircularRoom): void {
@@ -92,7 +92,7 @@ export class DungeonRender extends Container {
       offsetY: this.offsetY,
     });
     this.roomEntities.set(room.id, entity);
-    this.addChild(entity.render);
+    this.addChild(entity.view);
   }
 
   private createConnectionRoomEntity(connection: ConnectionRoom): void {
@@ -107,7 +107,7 @@ export class DungeonRender extends Container {
       offsetY: this.offsetY,
     });
     this.roomEntities.set(connection.id, entity);
-    this.addChild(entity.render);
+    this.addChild(entity.view);
   }
 
   getRoomEntity(id: string): RoomEntity | undefined {

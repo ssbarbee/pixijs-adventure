@@ -50,9 +50,6 @@ export class ConnectionRoomRender extends BaseRoomRender {
 
   private drawDebugInfo(): void {
     // Draw red dot at connection origin
-    this.drawDebugDot(
-      this.dungeonXToSceneX(this.dungeonX),
-      this.dungeonYToSceneY(this.dungeonY),
-    );
+    this.drawDebugDot(this.dungeonXToSceneX(this.dungeonX), this.dungeonYToSceneY(this.dungeonY));
   }
 }

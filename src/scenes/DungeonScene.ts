@@ -1,15 +1,14 @@
 import { Container, Graphics } from 'pixi.js';
 
-import { PlayerBox } from '../entities/Player';
 import {
   DebugInfo,
   DungeonEntity,
   generateDungeon,
+  PlayerBox,
   PlayerEntity,
   TrophyEntity,
 } from '../levels/Dungeon';
-import { DinoEntity } from '../levels/Dungeon/entities/dino';
-import { DinoBox } from '../levels/Dungeon/entities/dino/model';
+import { DinoBox, DinoEntity } from '../levels/Dungeon/entities/dino';
 import { IScene, Manager } from '../Manager';
 import { MenuScene } from './MenuScene';
 import { VictoryScene } from './VictoryScene';
@@ -56,7 +55,7 @@ export class DungeonScene extends Container implements IScene {
     });
 
     // Add the player to the GameScene container (worldContainer)
-    this.worldContainer.addChild(this.player.render);
+    this.worldContainer.addChild(this.player.view);
 
     // Spawn dinos in eligible rooms
     this.spawnDinos();
@@ -81,12 +80,12 @@ export class DungeonScene extends Container implements IScene {
     const guardSceneY = this.dungeonYToSceneY(trophyRoomCenter.y + 1);
     const guardDino = this.createDino(guardSceneX, guardSceneY);
     this.dinos.push(guardDino);
-    this.worldContainer.addChild(guardDino.render);
+    this.worldContainer.addChild(guardDino.view);
 
     // Spawn dinos in other rooms with 30% chance (excluding trophy room)
-    const spawnableRooms = this.dungeonEntity.getSpawnableRoomCenters().filter(
-      (room) => room.x !== trophyRoomCenter.x || room.y !== trophyRoomCenter.y,
-    );
+    const spawnableRooms = this.dungeonEntity
+      .getSpawnableRoomCenters()
+      .filter((room) => room.x !== trophyRoomCenter.x || room.y !== trophyRoomCenter.y);
 
     for (const { x, y } of spawnableRooms) {
       if (Math.random() < DINO_SPAWN_CHANCE) {
@@ -95,7 +94,7 @@ export class DungeonScene extends Container implements IScene {
 
         const dino = this.createDino(sceneX, sceneY);
         this.dinos.push(dino);
-        this.worldContainer.addChild(dino.render);
+        this.worldContainer.addChild(dino.view);
       }
     }
   }
@@ -108,10 +107,10 @@ export class DungeonScene extends Container implements IScene {
       onPositionUpdate: (box) => this.onDinoPositionUpdate(dino, box),
       onIdle: () => this.onDinoIdle(dino),
       player: {
-        x: this.player.render.x,
-        y: this.player.render.y,
-        width: this.player.render.width,
-        height: this.player.render.height,
+        x: this.player.x,
+        y: this.player.y,
+        width: this.player.width,
+        height: this.player.height,
       },
     });
     return dino;
@@ -137,13 +136,13 @@ export class DungeonScene extends Container implements IScene {
 
     // Move was successful - update all dinos with player position
     for (const dino of this.dinos) {
-      dino.model.updatePlayerPosition(left, top, right - left, bottom - top);
+      dino.updatePlayerPosition(left, top, right - left, bottom - top);
     }
     return true;
   }
 
   private onDinoIdle(dino: DinoEntity) {
-    dino.render.stopRunning();
+    dino.stopRunning();
   }
 
   private onDinoPositionUpdate(dino: DinoEntity, { left, right, top, bottom }: DinoBox) {
@@ -159,7 +158,7 @@ export class DungeonScene extends Container implements IScene {
 
         // Prevent the move if there's a wall
         if (this.dungeonEntity.isWallAt(dungeonX, dungeonY)) {
-          dino.render.stopMoving();
+          dino.stopMoving();
           return false;
         }
       }
@@ -168,9 +167,9 @@ export class DungeonScene extends Container implements IScene {
     // Use run animation when chasing player, walk animation for patrol/return
     const aiState = dino.getAIState();
     if (aiState === 'chase') {
-      dino.render.startRunning();
+      dino.startRunning();
     } else {
-      dino.render.startWalking();
+      dino.startWalking();
     }
     // Move was successful
     return true;
@@ -197,7 +196,7 @@ export class DungeonScene extends Container implements IScene {
       offsetX: this.dungeonOffsetX,
       offsetY: this.dungeonOffsetY,
     });
-    this.worldContainer.addChild(this.dungeonEntity.render);
+    this.worldContainer.addChild(this.dungeonEntity.view);
 
     // Place trophy in the farthest room from the start
     this.placeTrophy();
@@ -221,7 +220,7 @@ export class DungeonScene extends Container implements IScene {
       onCollected: () => this.onTrophyCollected(),
     });
 
-    this.worldContainer.addChild(this.trophy.render);
+    this.worldContainer.addChild(this.trophy.view);
   }
 
   private dungeonXToSceneX(dungeonX: number): number {

@@ -1,4 +1,7 @@
+import { Container } from 'pixi.js';
+
 import { SupportedObstacles } from '../../../map/types';
+import { ObstacleEntity } from '../../obstacle';
 import { RectangleRoomModel } from './model';
 import { RectangleRoomRender } from './render';
 
@@ -15,11 +18,12 @@ export interface RectangleRoomEntityProps {
 }
 
 export class RectangleRoomEntity {
-  readonly model: RectangleRoomModel;
-  readonly render: RectangleRoomRender;
+  private readonly _model: RectangleRoomModel;
+  private readonly _render: RectangleRoomRender;
+  private readonly obstacleEntities: ObstacleEntity[] = [];
 
   constructor(props: RectangleRoomEntityProps) {
-    this.model = new RectangleRoomModel({
+    this._model = new RectangleRoomModel({
       id: props.id,
       x: props.x,
       y: props.y,
@@ -28,28 +32,48 @@ export class RectangleRoomEntity {
       obstacles: props.obstacles,
     });
 
-    this.render = new RectangleRoomRender({
+    // Create obstacle entities at the Entity coordinator level
+    this.obstacleEntities = props.obstacles.map(
+      (obstacle) =>
+        new ObstacleEntity({
+          x: obstacle.x,
+          y: obstacle.y,
+          width: obstacle.width,
+          height: obstacle.height,
+          type: obstacle.type,
+          tileSize: props.tileSize,
+          offsetX: props.offsetX,
+          offsetY: props.offsetY,
+        }),
+    );
+
+    this._render = new RectangleRoomRender({
       id: props.id,
       x: props.x,
       y: props.y,
       width: props.width,
       height: props.height,
-      obstacles: props.obstacles,
+      obstacleRenders: this.obstacleEntities.map((e) => e.view),
       tileSize: props.tileSize,
       offsetX: props.offsetX,
       offsetY: props.offsetY,
     });
   }
 
+  /** The display object to add to a PixiJS container */
+  get view(): Container {
+    return this._render;
+  }
+
   containsPoint(x: number, y: number): boolean {
-    return this.model.containsPoint(x, y);
+    return this._model.containsPoint(x, y);
   }
 
   isWallAt(x: number, y: number): boolean {
-    return this.model.isWallAt(x, y);
+    return this._model.isWallAt(x, y);
   }
 
   getCenter(): { x: number; y: number } {
-    return this.model.getCenter();
+    return this._model.getCenter();
   }
 }

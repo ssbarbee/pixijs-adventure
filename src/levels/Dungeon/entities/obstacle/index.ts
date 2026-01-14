@@ -1,3 +1,5 @@
+import { Container } from 'pixi.js';
+
 import { ObstacleModel } from './model';
 import { ObstacleRender } from './render';
 
@@ -13,11 +15,11 @@ export interface ObstacleEntityProps {
 }
 
 export class ObstacleEntity {
-  readonly model: ObstacleModel;
-  readonly render: ObstacleRender;
+  private readonly _model: ObstacleModel;
+  private readonly _render: ObstacleRender;
 
   constructor(props: ObstacleEntityProps) {
-    this.model = new ObstacleModel({
+    this._model = new ObstacleModel({
       x: props.x,
       y: props.y,
       width: props.width,
@@ -25,7 +27,7 @@ export class ObstacleEntity {
       type: props.type,
     });
 
-    this.render = new ObstacleRender({
+    this._render = new ObstacleRender({
       x: props.x,
       y: props.y,
       width: props.width,
@@ -37,7 +39,12 @@ export class ObstacleEntity {
     });
   }
 
+  /** The display object to add to a PixiJS container */
+  get view(): Container {
+    return this._render;
+  }
+
   containsPoint(x: number, y: number): boolean {
-    return this.model.containsPoint(x, y);
+    return this._model.containsPoint(x, y);
   }
 }

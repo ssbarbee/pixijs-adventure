@@ -1,3 +1,5 @@
+import { Container } from 'pixi.js';
+
 import { TrophyModel } from './model';
 import { TrophyRender } from './render';
 
@@ -9,18 +11,18 @@ export interface TrophyEntityProps {
 }
 
 export class TrophyEntity {
-  model: TrophyModel;
-  render: TrophyRender;
+  private readonly _model: TrophyModel;
+  private readonly _render: TrophyRender;
 
   constructor(props: TrophyEntityProps) {
-    this.render = new TrophyRender({
+    this._render = new TrophyRender({
       x: props.x,
       y: props.y,
       tileSize: props.tileSize,
     });
 
     const collisionThreshold = props.tileSize * 0.6;
-    this.model = new TrophyModel({
+    this._model = new TrophyModel({
       x: props.x,
       y: props.y,
       collisionThreshold,
@@ -28,27 +30,32 @@ export class TrophyEntity {
     });
   }
 
+  /** The display object to add to a PixiJS container */
+  public get view(): Container {
+    return this._render;
+  }
+
   public get x(): number {
-    return this.render.x;
+    return this._render.x;
   }
 
   public get y(): number {
-    return this.render.y;
+    return this._render.y;
   }
 
   public checkCollision(playerCenterX: number, playerCenterY: number): boolean {
-    return this.model.checkCollision(playerCenterX, playerCenterY);
+    return this._model.checkCollision(playerCenterX, playerCenterY);
   }
 
   public isCollected(): boolean {
-    return this.model.isCollected();
+    return this._model.isCollected();
   }
 
   public update(): void {
-    this.render.update(this.model.isCollected());
+    this._render.update(this._model.isCollected());
   }
 
   public destroy(): void {
-    this.render.destroy();
+    this._render.destroy();
   }
 }

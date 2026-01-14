@@ -1,4 +1,4 @@
-import { Graphics } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 
 import { ConnectableRoom, ConnectionRoom, Dungeon } from '../../map/types';
 import { DungeonModel } from './model';
@@ -12,15 +12,15 @@ export interface DungeonEntityProps {
 }
 
 export class DungeonEntity {
-  readonly model: DungeonModel;
-  readonly render: DungeonRender;
+  private readonly _model: DungeonModel;
+  private readonly _render: DungeonRender;
 
   constructor(props: DungeonEntityProps) {
-    this.model = new DungeonModel({
+    this._model = new DungeonModel({
       dungeon: props.dungeon,
     });
 
-    this.render = new DungeonRender({
+    this._render = new DungeonRender({
       dungeon: props.dungeon,
       tileSize: props.tileSize,
       offsetX: props.offsetX,
@@ -28,58 +28,63 @@ export class DungeonEntity {
     });
   }
 
+  /** The display object to add to a PixiJS container */
+  get view(): Container {
+    return this._render;
+  }
+
   getRoomAt(x: number, y: number): ConnectableRoom | ConnectionRoom | null {
-    return this.model.getRoomAt(x, y);
+    return this._model.getRoomAt(x, y);
   }
 
   isWallAt(x: number, y: number): boolean {
-    return this.model.isWallAt(x, y);
+    return this._model.isWallAt(x, y);
   }
 
   getRoot(): ConnectableRoom {
-    return this.model.getRoot();
+    return this._model.getRoot();
   }
 
   getAllRooms(): ConnectableRoom[] {
-    return this.model.getAllRooms();
+    return this._model.getAllRooms();
   }
 
   getAllConnections(): ConnectionRoom[] {
-    return this.model.getAllConnections();
+    return this._model.getAllConnections();
   }
 
   getRoomCenter(room: ConnectableRoom | ConnectionRoom): { x: number; y: number } {
-    return this.model.getRoomCenter(room);
+    return this._model.getRoomCenter(room);
   }
 
   findFarthestRoom(startRoom: ConnectableRoom): ConnectableRoom {
-    return this.model.findFarthestRoom(startRoom);
+    return this._model.findFarthestRoom(startRoom);
   }
 
   getSpawnableRoomCenters(): Array<{ x: number; y: number; room: ConnectableRoom }> {
-    return this.model.getSpawnableRoomCenters();
+    return this._model.getSpawnableRoomCenters();
   }
 
   getRoomEntity(id: string): RoomEntity | undefined {
-    return this.render.getRoomEntity(id);
+    return this._render.getRoomEntity(id);
   }
 
   getAllRoomEntities(): RoomEntity[] {
-    return this.render.getAllRoomEntities();
+    return this._render.getAllRoomEntities();
   }
 
   drawVisibility(
     room: ConnectableRoom | ConnectionRoom,
     lightSource: { x: number; y: number },
   ): Graphics {
-    return this.render.drawVisibility(room, lightSource);
+    return this._render.drawVisibility(room, lightSource);
   }
 
   get width(): number {
-    return this.model.width;
+    return this._model.width;
   }
 
   get height(): number {
-    return this.model.height;
+    return this._model.height;
   }
 }

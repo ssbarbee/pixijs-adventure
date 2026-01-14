@@ -1,24 +1,21 @@
-import { Graphics } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 
-import { SupportedObstacles } from '../../../../map/types';
-import { ObstacleEntity } from '../../../obstacle';
 import { BaseRoomRender, BaseRoomRenderProps } from '../../base/render';
 
 export interface CircularRoomRenderProps extends BaseRoomRenderProps {
   radius: number;
-  obstacles: SupportedObstacles[];
+  obstacleRenders: Container[];
 }
 
 export class CircularRoomRender extends BaseRoomRender {
   private readonly radius: number;
-  private readonly obstacleEntities: ObstacleEntity[] = [];
 
   constructor(props: CircularRoomRenderProps) {
     super(props);
     this.radius = props.radius;
 
     this.drawRoom();
-    this.createObstacles(props.obstacles);
+    this.addObstacleRenders(props.obstacleRenders);
     this.drawDebugInfo();
   }
 
@@ -49,34 +46,16 @@ export class CircularRoomRender extends BaseRoomRender {
     this.addChild(dungeonLandGraphics);
   }
 
-  private createObstacles(obstacles: SupportedObstacles[]): void {
-    for (const obstacle of obstacles) {
-      const obstacleEntity = new ObstacleEntity({
-        x: obstacle.x,
-        y: obstacle.y,
-        width: obstacle.width,
-        height: obstacle.height,
-        type: obstacle.type,
-        tileSize: this.tileSize,
-        offsetX: this.offsetX,
-        offsetY: this.offsetY,
-      });
-      this.obstacleEntities.push(obstacleEntity);
-      this.addChild(obstacleEntity.render);
+  private addObstacleRenders(obstacleRenders: Container[]): void {
+    for (const render of obstacleRenders) {
+      this.addChild(render);
     }
   }
 
   private drawDebugInfo(): void {
     // Draw red dot at room center
-    this.drawDebugDot(
-      this.dungeonXToSceneX(this.dungeonX),
-      this.dungeonYToSceneY(this.dungeonY),
-    );
+    this.drawDebugDot(this.dungeonXToSceneX(this.dungeonX), this.dungeonYToSceneY(this.dungeonY));
     // Draw room ID
     this.drawRoomID();
-  }
-
-  getObstacleEntities(): ObstacleEntity[] {
-    return this.obstacleEntities;
   }
 }

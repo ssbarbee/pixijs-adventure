@@ -1,10 +1,4 @@
-import {
-  CircularRoom,
-  ConnectableRoom,
-  ConnectionRoom,
-  Dungeon,
-  RectangleRoom,
-} from '../../../map/types';
+import { ConnectableRoom, ConnectionRoom, Dungeon, RectangleRoom } from '../../../map/types';
 import { getRoomAt } from '../../../map/utils/getRoomAt';
 import { isWallAt } from '../../../map/utils/isWallAt';
 
@@ -73,7 +67,7 @@ export class DungeonModel {
       return { x: room.x, y: room.y };
     }
     if (room.type === 'connection') {
-      const connRoom = room as ConnectionRoom;
+      const connRoom = room;
       return {
         x: connRoom.x + connRoom.width / 2,
         y: connRoom.y + connRoom.height / 2,

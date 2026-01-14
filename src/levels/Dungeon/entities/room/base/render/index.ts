@@ -69,12 +69,7 @@ export abstract class BaseRoomRender extends Container {
     this.addChild(idText);
   }
 
-  protected drawDungeonLand(
-    top: number,
-    left: number,
-    width: number,
-    height: number,
-  ): Graphics {
+  protected drawDungeonLand(top: number, left: number, width: number, height: number): Graphics {
     const graphics = new Graphics();
     const squareSize = this.tileSize;
 
