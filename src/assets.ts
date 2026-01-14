@@ -8,6 +8,8 @@ export const manifest: AssetsManifest = {
       name: 'bundleName',
       assets: {
         player: './player.png',
+        // Custom font for menu
+        grandstander: 'https://pixijs.com/assets/webfont-loader/Grandstander-ExtraBold.ttf',
         [GRASS0]: './grass0.png',
         [GRASS1]: './grass1.png',
         [GRASS2]: './grass2.png',
