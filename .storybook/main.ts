@@ -8,6 +8,22 @@ const config: StorybookConfig = {
     options: {},
   },
   staticDirs: ['../public'],
+  viteFinal: (config) => {
+    // Suppress the virtual module warning from Storybook
+    config.build = {
+      ...config.build,
+      rollupOptions: {
+        ...config.build?.rollupOptions,
+        onwarn: (warning, warn) => {
+          if (warning.message?.includes('virtual:/@storybook')) {
+            return;
+          }
+          warn(warning);
+        },
+      },
+    };
+    return config;
+  },
 };
 
 export default config;
