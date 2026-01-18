@@ -1,6 +1,6 @@
 import { Container, Graphics, Sprite, Text, Texture } from 'pixi.js';
 
-import { INK_COLOR2 } from '../../../../../../constants';
+import { INK_COLOR2, TILE_COLOR } from '../../../../../../constants';
 
 export interface BaseRoomRenderProps {
   id: string;
@@ -9,6 +9,7 @@ export interface BaseRoomRenderProps {
   tileSize: number;
   offsetX: number;
   offsetY: number;
+  debug?: boolean;
 }
 
 export abstract class BaseRoomRender extends Container {
@@ -18,6 +19,7 @@ export abstract class BaseRoomRender extends Container {
   protected readonly roomId: string;
   protected readonly dungeonX: number;
   protected readonly dungeonY: number;
+  protected readonly debug: boolean;
 
   constructor(props: BaseRoomRenderProps) {
     super();
@@ -27,6 +29,7 @@ export abstract class BaseRoomRender extends Container {
     this.roomId = props.id;
     this.dungeonX = props.x;
     this.dungeonY = props.y;
+    this.debug = props.debug ?? false;
     this.sortableChildren = true;
   }
 
@@ -79,6 +82,24 @@ export abstract class BaseRoomRender extends Container {
         const squareY = this.dungeonYToSceneY(y);
         const tileSprite = this.createTileSprite(squareX, squareY, squareSize, 'dungeonLand');
         graphics.addChild(tileSprite);
+      }
+    }
+    return graphics;
+  }
+
+  protected drawDebugGrid(top: number, left: number, width: number, height: number): Graphics {
+    const graphics = new Graphics();
+    const squareSize = this.tileSize;
+
+    for (let x = left; x < left + width; x++) {
+      for (let y = top; y < top + height; y++) {
+        const squareX = this.dungeonXToSceneX(x);
+        const squareY = this.dungeonYToSceneY(y);
+
+        graphics
+          .rect(squareX, squareY, squareSize, squareSize)
+          .fill({ color: TILE_COLOR, alpha: 0.1 })
+          .stroke({ width: 1, color: 0x000000, alpha: 1 });
       }
     }
     return graphics;

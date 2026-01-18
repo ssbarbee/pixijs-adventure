@@ -44,6 +44,18 @@ export class CircularRoomRender extends BaseRoomRender {
     // Add mask first, then tiles
     this.addChild(maskGraphics);
     this.addChild(dungeonLandGraphics);
+
+    // Draw debug grid if enabled
+    if (this.debug) {
+      const gridGraphics = this.drawDebugGrid(
+        this.dungeonY - this.radius,
+        this.dungeonX - this.radius,
+        this.radius * 2,
+        this.radius * 2,
+      );
+      gridGraphics.mask = maskGraphics;
+      this.addChild(gridGraphics);
+    }
   }
 
   private addObstacleRenders(obstacleRenders: Container[]): void {

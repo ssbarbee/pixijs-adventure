@@ -69,3 +69,23 @@ export const WithObstacles: StoryObj = {
       { center: false },
     ),
 };
+
+export const DebugGrid: StoryObj = {
+  render: () =>
+    createPixiStory(
+      () => {
+        return new CircularRoomRender({
+          id: 'C4',
+          x: 0,
+          y: 0,
+          radius: 4,
+          obstacleRenders: [],
+          tileSize: TILE_SIZE,
+          offsetX: CANVAS_CENTER,
+          offsetY: CANVAS_CENTER,
+          debug: true,
+        });
+      },
+      { center: false },
+    ),
+};

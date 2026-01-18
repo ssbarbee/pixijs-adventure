@@ -85,3 +85,29 @@ export const RoomWithObstacles: StoryObj = {
       { center: false },
     ),
 };
+
+export const DebugGrid: StoryObj = {
+  render: () =>
+    createPixiStory(
+      () => {
+        const roomWidth = 6;
+        const roomHeight = 5;
+        const offsetX = (400 - roomWidth * TILE_SIZE) / 2;
+        const offsetY = (400 - roomHeight * TILE_SIZE) / 2;
+
+        return new RectangleRoomRender({
+          id: 'R4',
+          x: 0,
+          y: 0,
+          width: roomWidth,
+          height: roomHeight,
+          obstacleRenders: [],
+          tileSize: TILE_SIZE,
+          offsetX,
+          offsetY,
+          debug: true,
+        });
+      },
+      { center: false },
+    ),
+};

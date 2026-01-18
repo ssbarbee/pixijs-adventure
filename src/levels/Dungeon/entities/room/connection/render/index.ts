@@ -33,6 +33,17 @@ export class ConnectionRoomRender extends BaseRoomRender {
       this.corridorHeight,
     );
     this.addChild(dungeonLandGraphics);
+
+    // Draw debug grid if enabled
+    if (this.debug) {
+      const gridGraphics = this.drawDebugGrid(
+        this.dungeonY,
+        this.dungeonX,
+        this.corridorWidth,
+        this.corridorHeight,
+      );
+      this.addChild(gridGraphics);
+    }
   }
 
   private drawFloorOverlay(): void {

@@ -97,3 +97,28 @@ export const AllTypes: StoryObj = {
       { center: false },
     ),
 };
+
+export const DebugGrid: StoryObj = {
+  render: () =>
+    createPixiStory(
+      () => {
+        const corridorWidth = 6;
+        const corridorHeight = 2;
+        const offsetX = (400 - corridorWidth * TILE_SIZE) / 2;
+        const offsetY = (400 - corridorHeight * TILE_SIZE) / 2;
+
+        return new ConnectionRoomRender({
+          id: 'CONN3',
+          x: 0,
+          y: 0,
+          width: corridorWidth,
+          height: corridorHeight,
+          tileSize: TILE_SIZE,
+          offsetX,
+          offsetY,
+          debug: true,
+        });
+      },
+      { center: false },
+    ),
+};

@@ -35,6 +35,17 @@ export class RectangleRoomRender extends BaseRoomRender {
       this.roomHeight,
     );
     this.addChild(dungeonLandGraphics);
+
+    // Draw debug grid if enabled
+    if (this.debug) {
+      const gridGraphics = this.drawDebugGrid(
+        this.dungeonY,
+        this.dungeonX,
+        this.roomWidth,
+        this.roomHeight,
+      );
+      this.addChild(gridGraphics);
+    }
   }
 
   private drawFloorOverlay(): void {
