@@ -5,7 +5,7 @@ import { PlayerRender } from '../../levels/Dungeon/entities/player/render';
 import { createPixiStory } from '../utils/PixiStoryDecorator';
 
 const meta: Meta = {
-  title: 'Entities/PlayerEntity',
+  title: 'Dungeon/Entities/PlayerEntity',
 };
 
 export default meta;

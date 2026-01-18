@@ -4,7 +4,7 @@ import { RectangleRoomRender } from '../../levels/Dungeon/entities/room/rectangl
 import { createPixiStory } from '../utils/PixiStoryDecorator';
 
 const meta: Meta = {
-  title: 'Rooms/RectangleRoom',
+  title: 'Dungeon/Rooms/RectangleRoom',
 };
 
 export default meta;
@@ -26,7 +26,7 @@ export const SmallRoom: StoryObj = {
           y: 0,
           width: roomWidth,
           height: roomHeight,
-          obstacles: [],
+          obstacleRenders: [],
           tileSize: TILE_SIZE,
           offsetX,
           offsetY,
@@ -51,7 +51,7 @@ export const LargeRoom: StoryObj = {
           y: 0,
           width: roomWidth,
           height: roomHeight,
-          obstacles: [],
+          obstacleRenders: [],
           tileSize: TILE_SIZE,
           offsetX,
           offsetY,
@@ -76,10 +76,7 @@ export const RoomWithObstacles: StoryObj = {
           y: 0,
           width: roomWidth,
           height: roomHeight,
-          obstacles: [
-            { x: 2, y: 2, width: 1, height: 1, type: 'square' },
-            { x: 5, y: 3, width: 2, height: 1, type: 'rectangle' },
-          ],
+          obstacleRenders: [],
           tileSize: TILE_SIZE,
           offsetX,
           offsetY,

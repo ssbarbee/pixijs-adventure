@@ -5,7 +5,7 @@ import { ConnectionRoomRender } from '../../levels/Dungeon/entities/room/connect
 import { createPixiStory } from '../utils/PixiStoryDecorator';
 
 const meta: Meta = {
-  title: 'Rooms/ConnectionRoom',
+  title: 'Dungeon/Rooms/ConnectionRoom',
 };
 
 export default meta;

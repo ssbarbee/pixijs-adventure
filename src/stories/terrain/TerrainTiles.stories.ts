@@ -10,7 +10,7 @@ import { Water0 } from '../../entities/Water0';
 import { createPixiStory } from '../utils/PixiStoryDecorator';
 
 const meta: Meta = {
-  title: 'Terrain/Tiles',
+  title: 'Dungeon/Terrain/Tiles',
 };
 
 export default meta;

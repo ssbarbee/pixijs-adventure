@@ -5,7 +5,7 @@ import { ObstacleRender } from '../../levels/Dungeon/entities/obstacle/render';
 import { createPixiStory } from '../utils/PixiStoryDecorator';
 
 const meta: Meta = {
-  title: 'Entities/ObstacleEntity',
+  title: 'Dungeon/Entities/ObstacleEntity',
 };
 
 export default meta;

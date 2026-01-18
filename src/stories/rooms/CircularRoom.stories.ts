@@ -4,7 +4,7 @@ import { CircularRoomRender } from '../../levels/Dungeon/entities/room/circular/
 import { createPixiStory } from '../utils/PixiStoryDecorator';
 
 const meta: Meta = {
-  title: 'Rooms/CircularRoom',
+  title: 'Dungeon/Rooms/CircularRoom',
 };
 
 export default meta;
@@ -22,7 +22,7 @@ export const SmallRadius: StoryObj = {
           x: 0,
           y: 0,
           radius: 3,
-          obstacles: [],
+          obstacleRenders: [],
           tileSize: TILE_SIZE,
           offsetX: CANVAS_CENTER,
           offsetY: CANVAS_CENTER,
@@ -41,7 +41,7 @@ export const LargeRadius: StoryObj = {
           x: 0,
           y: 0,
           radius: 5,
-          obstacles: [],
+          obstacleRenders: [],
           tileSize: TILE_SIZE,
           offsetX: CANVAS_CENTER,
           offsetY: CANVAS_CENTER,
@@ -60,7 +60,7 @@ export const WithObstacles: StoryObj = {
           x: 0,
           y: 0,
           radius: 4,
-          obstacles: [{ x: -1, y: -1, width: 2, height: 2, type: 'square' }],
+          obstacleRenders: [],
           tileSize: TILE_SIZE,
           offsetX: CANVAS_CENTER,
           offsetY: CANVAS_CENTER,

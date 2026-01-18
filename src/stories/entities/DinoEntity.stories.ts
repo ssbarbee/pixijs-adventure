@@ -5,7 +5,7 @@ import { DinoRender } from '../../levels/Dungeon/entities/dino/render';
 import { createPixiStory } from '../utils/PixiStoryDecorator';
 
 const meta: Meta = {
-  title: 'Entities/DinoEntity',
+  title: 'Dungeon/Entities/DinoEntity',
 };
 
 export default meta;

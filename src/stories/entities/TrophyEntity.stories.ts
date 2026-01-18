@@ -5,7 +5,7 @@ import { TrophyRender } from '../../levels/Dungeon/entities/trophy/render';
 import { createPixiStory } from '../utils/PixiStoryDecorator';
 
 const meta: Meta = {
-  title: 'Entities/TrophyEntity',
+  title: 'Dungeon/Entities/TrophyEntity',
 };
 
 export default meta;
